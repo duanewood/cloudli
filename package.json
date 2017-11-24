@@ -1,0 +1,20 @@
+{
+  "name": "planbundle-util",
+  "version": "1.0.0",
+  "description": "PlanBundle Server Utilities",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "backpack | ./node_modules/.bin/pino",
+    "build": "backpack build"
+  },
+  "author": "Duane Wood",
+  "license": "ISC",
+  "dependencies": {
+    "backpack-core": "^0.4.3",
+    "firebase-admin": "^5.5.0",
+    "fs-extra": "^4.0.2",
+    "path": "^0.12.7",
+    "pino": "^4.10.2"
+  }
+}

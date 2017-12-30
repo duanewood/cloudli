@@ -37,7 +37,7 @@
 
       ],
       "eventIdentifier" : "7ED93E7B-EA90-443D-A713-A04DEFABB6D6:A44AD176-8023-4713-9089-CC842E075803",
-      "identifier" : "F0758BFE-8491-48F8-863C-25D9C6222D80",
+      "id" : "F0758BFE-8491-48F8-863C-25D9C6222D80",
       "daysOfTheYear" : [
 
       ],
@@ -72,7 +72,7 @@
 
       ],
       "priority" : "3",
-      "identifier" : "FFE33A54-570E-432E-B75A-4C9BE0B0E28A",
+      "id" : "FFE33A54-570E-432E-B75A-4C9BE0B0E28A",
       "isCompleted" : false,
       "daysOfTheYear" : [
 

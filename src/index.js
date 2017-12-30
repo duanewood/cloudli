@@ -23,12 +23,15 @@ function main() {
 
 async function setupData(db) {
   try {
+    // Uncomment the following lines to make changes
+    // TODO: implement CLI commands for these
+    
     //await deleteData(db, 'public-bundles')
     //await deleteUsers(db)
     //await addPublicBundles(db)
     //await addUserBundles(db)
+    //await backup(db, BACKUP_BASE_PATH)
 
-    await backup(db, BACKUP_BASE_PATH)
     pino.info('Setup data complete')
   } catch (error) {
     pino.error(error, 'Setup data error')

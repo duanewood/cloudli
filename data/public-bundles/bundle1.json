@@ -47,7 +47,7 @@
 
       ],
       "eventIdentifier" : "9020E11D-0940-419E-B919-27415AB3E16D:98840959-4F60-4E09-95E0-E7E8A4E3A7E0",
-      "identifier" : "23CCD86E-3E41-4DC6-8E77-88E199D0A9D5",
+      "id" : "23CCD86E-3E41-4DC6-8E77-88E199D0A9D5",
       "daysOfTheYear" : [
 
       ],
@@ -69,6 +69,7 @@
       "notes" : ""
     }
   ],
+  "reminders" : [],
   "notes" : [
     {
       "id" : "25E423E8-F201-4C21-BE51-0FBAA98C3682",

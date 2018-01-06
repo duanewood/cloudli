@@ -13,9 +13,11 @@ const BACKUP_BASE_PATH = './backups'
 main()
 
 function main() {
-  var serviceAccount = require('../.keys/TestProject-511552424481')
+  // var serviceAccount = require('../.keys/TestProject-511552424481')
+  var serviceAccount = require('../.keys/planbundle-60068-firebase-adminsdk-mt3dh-1404bc6bf4.json')
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: 'https://planbundle-60068.firebaseio.com'
   });
   var db = admin.firestore()  
   setupData(db)
@@ -26,11 +28,11 @@ async function setupData(db) {
     // Uncomment the following lines to make changes
     // TODO: implement CLI commands for these
     
-    //await deleteData(db, 'public-bundles')
-    //await deleteUsers(db)
-    //await addPublicBundles(db)
-    //await addUserBundles(db)
-    //await backup(db, BACKUP_BASE_PATH)
+    await deleteData(db, 'public-bundles')
+    await deleteUsers(db)
+    await addPublicBundles(db)
+    await addUserBundles(db)
+    await backup(db, BACKUP_BASE_PATH)
 
     pino.info('Setup data complete')
   } catch (error) {

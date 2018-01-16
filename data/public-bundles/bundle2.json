@@ -2,6 +2,10 @@
   "name" : "Bundle 2",
   "id" : "ACE564BF-EDFB-42D4-B61B-10B10E3D1566",
   "description" : "Bundle 2 description",
+  "image": {
+    "type": "imageurl",
+    "src": "https://loremflickr.com/220/220"
+  },
   "links" : [
     {
       "id" : "05859564-2C1A-4474-98DE-A1F269923B63",

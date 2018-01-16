@@ -2,6 +2,10 @@
   "name" : "Bundle 1",
   "id" : "44ED5985-B0E9-494B-8DFF-B838FF2E7F13",
   "description" : "Bundle 1 description",
+  "image": {
+    "type": "standard",
+    "name": "exercise3"
+  },
   "links" : [
     {
       "id" : "1E5BBA00-E669-49ED-8D10-E394219C25AC",

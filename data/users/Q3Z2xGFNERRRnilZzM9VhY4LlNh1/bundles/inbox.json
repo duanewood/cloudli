@@ -2,6 +2,10 @@
   "name" : "Inbox",
   "id" : "E2462586-5CE6-4E91-8E4B-EEFF205714F9",
   "description" : "Inbox bundle for imported items",
+  "image": {
+    "type": "standard",
+    "name": "school2"
+  },
   "links" : [
     {
       "id" : "65D4519E-6EFD-43C4-8DCA-4B968BA71E2A",

@@ -2,6 +2,10 @@
   "name" : "Match",
   "id" : "D4129A45-DE34-4356-9D53-2C3016BB9D56",
   "description" : "Test bundle with match contact",
+  "image": {
+    "type": "icon",
+    "name": "view_quilt"
+  },
   "links" : [
 
   ],

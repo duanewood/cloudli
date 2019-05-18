@@ -11,9 +11,18 @@
   "author": "Duane Wood",
   "license": "ISC",
   "dependencies": {
+    "@firebase/app-types": "^0.4.0",
+    "aws-sdk": "^2.458.0",
     "backpack-core": "^0.4.3",
+    "chalk": "^2.4.2",
+    "clear": "^0.1.0",
+    "clui": "^0.3.6",
+    "commander": "^2.20.0",
+    "config": "^3.1.0",
     "firebase-admin": "^5.5.0",
     "fs-extra": "^4.0.2",
+    "inquirer": "^6.3.1",
+    "moment": "^2.24.0",
     "path": "^0.12.7",
     "pino": "^4.10.2"
   }

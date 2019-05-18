@@ -1,0 +1,33 @@
+
+{
+  "test": {
+    "defaultMessage": "Goodnight, Moon",
+    "defaultLoud": false
+  },
+  "elasticsearch": {
+    "defaultIndex": "*",
+    "indices": [
+      {
+        "name": "bundles",
+        "path": "bundles",
+        "objectMapper": "bundleMapper",
+        "indexMapping": "./elasticsearch/indexMappings/bundle.json"
+      },
+      {
+        "name": "user_bundles",
+        "path": "users/*/bundles",
+        "objectMapper": "bundleMapper",
+        "indexMapping": "./elasticsearch/indexMappings/bundle.json"
+      }    
+      // , 
+      // {
+      //   "name": "users",
+      //   "path": "users"
+      // },
+      // {
+      //   "name": "images",
+      //   "path": "users/*/images"
+      // }
+    ]
+  }
+}

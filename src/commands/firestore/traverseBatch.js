@@ -14,7 +14,6 @@ const Snapshot = require("./snapshot")
  * @param {boolean} options.recursive true if the traverse should be recursive.
  * @param {boolean} options.shallow true if the traverse should be shallow (non-recursive).
  * @param {boolean} options.allCollections true if the traverse should universally visit all collections and docs.
- * @param {boolean} options.doconly true if should only visit the document referenced by path
  * @param {function(doc)} async function called for each document
  */
 function TraverseBatch(client, project, path, options, visit) {
@@ -24,7 +23,6 @@ function TraverseBatch(client, project, path, options, visit) {
   this.path = path
   this.recursive = Boolean(options.recursive)
   this.shallow = Boolean(options.shallow)
-  this.doconly = Boolean(options.doconly)
   this.allCollections = Boolean(options.allCollections)
 
   // Remove any leading or trailing slashes from the path
@@ -57,18 +55,6 @@ TraverseBatch.prototype._validateOptions = function() {
   if (this.isCollectionPath && !this.recursive && !this.shallow) {
     throw new Error(
       "Must pass recursive or shallow option when processing a collection."
-    )
-  }
-
-  if (this.isCollectionPath && this.doconly) {
-    throw new Error(
-      "Cannot pass doconly when processing a collection."
-    )
-  }
-
-  if (this.isDocumentPath && this.doconly && (this.recursive || this.shallow)) {
-    throw new Error(
-      "Cannot pass recursive or shallow option when processing the top document only (doconly option)."
     )
   }
 
@@ -258,20 +244,6 @@ TraverseBatch.prototype._getDescendantBatch = function(
   batchSize,
   startAfter
 ) {
-  // var url
-  // var body
-  // if (this.isDocumentPath) {
-  //   url = this.parent + "/" + this.path + ":runQuery"
-  //   body = this._docDescendantsQuery(allDescendants, batchSize, startAfter)
-  // } else {
-  //   url = this.parent + ":runQuery"
-  //   body = this._collectionDescendantsQuery(
-  //     allDescendants,
-  //     batchSize,
-  //     startAfter
-  //   )
-  // }
-
   let parent
   let structuredQuery
   if (this.isDocumentPath) {
@@ -299,25 +271,6 @@ TraverseBatch.prototype._getDescendantBatch = function(
         reject(error)
       })
   })
-
-  // // TODO: convert
-  // return api
-  //   .request("POST", "/v1beta1/" + url, {
-  //     auth: true,
-  //     data: body,
-  //     origin: api.firestoreOrigin
-  //   })
-  //   .then(function(res) {
-  //     // Return the 'document' property for each element in the response,
-  //     // where it exists.
-  //     return res.body
-  //       .filter(function(x) {
-  //         return x.document
-  //       })
-  //       .map(function(x) {
-  //         return x.document
-  //       })
-  //   })
 }
 
 /**
@@ -447,10 +400,6 @@ TraverseBatch.prototype._visitPath = function() {
   var self = this
   var initialVisit
   if (this.isDocumentPath) {
-
-    // TODO: need to getDocument for the top-level
-    // var doc = { name: this.parent + "/" + this.path, ref: { path: this.path } }
-
     initialVisit = this.client.getDocument({ name: this.parent + "/" + this.path })
       .then(responses => {
         const doc = responses[0]
@@ -472,26 +421,8 @@ TraverseBatch.prototype._visitPath = function() {
     initialVisit = Promise.resolve()
   }
 
-  // if (this.isDocumentPath) {
-  //   var doc = { name: this.parent + "/" + this.path, ref: { path: this.path } }
-  //   initialVisit = this.visit(doc).catch(err => {  
-  //     console.log("visitPath:initialVisit:error", err)
-  //     if (self.allDescendants) {
-  //       // On a recursive visit, we are insensitive to
-  //       // failures of the initial visit
-  //       return Promise.resolve()
-  //     }
-
-  //     // For a shallow visit, this error is fatal.
-  //     return Promise.reject(new Error("Unable to process " + chalk.cyan(this.path)))
-  //   })
-  // } else {
-  //   initialVisit = Promise.resolve()
-  // }
-
-  
   return initialVisit.then(() => {
-    if (self.doconly) {
+    if (this.isDocumentPath && !this.shallow && !this.recursive) {
       return Promise.resolve()
     } else {
       return self._recursiveBatchVisit()
@@ -549,27 +480,15 @@ TraverseBatch.prototype.checkHasChildren = function() {
  * Run the visit operation.
  */
 TraverseBatch.prototype.execute = function() {
-  var verifyRecurseSafe
-
-  if (this.isDocumentPath && !this.doconly && !this.recursive && !this.shallow) {
-    verifyRecurseSafe = this.checkHasChildren().then(function(multiple) {
-      if (multiple) {
-        return Promise.reject(new Error(
-          "Document has children, must specify doconly or recursive or shallow.")
-        )
-      }
-    })
-  } else {
-    verifyRecurseSafe = Promise.resolve()
-  }
-
   var self = this
-  return verifyRecurseSafe.then(function() {
+  if (self.path) {
     return self._visitPath().then(() => {
       TraverseBatch.progressBar.render(undefined, true) // force update of progress bar
       console.log()
     })
-  })
+  } else {
+    return self.visitDatabase()
+  }
 }
 
 module.exports = TraverseBatch

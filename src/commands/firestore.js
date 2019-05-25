@@ -32,19 +32,15 @@ exports.addCommand = (program, config, admin) => {
 
 const getDocuments = async (client) => {
   const projectId = await client.getProjectId()
-  const path = null
+  // const path = null
+  const path = `users`
   // const path = `users/DXmnNRjncvWSO7hvsObrW7Vaq9V2`
-  // const traverseBatch = new TraverseBatch(client, projectId, path, { recursive: true }, visit )
+  // const path = `users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1`
   
-  const traverseBatch = new TraverseBatch(client, projectId, path, { recursive: true }, visit )
+  // const traverseBatch = new TraverseBatch(client, projectId, path, {   }, visit )
   // const traverseBatch = new TraverseBatch(client, projectId, path, { shallow: true }, visit )
-  // const traverseBatch = new TraverseBatch(client, projectId, path, { recursive: false }, visit )
-  // return await traverseBatch.execute()    
-  if (!path) {
-    return await traverseBatch.visitDatabase()    
-  } else {
-    return await traverseBatch.execute()    
-  }
+  const traverseBatch = new TraverseBatch(client, projectId, path, { recursive: true }, visit )
+  return await traverseBatch.execute()    
 }
 
 const visit = async doc => {

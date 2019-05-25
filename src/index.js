@@ -20,13 +20,25 @@ const chalk = require('chalk')
  * Usage: node src/index.js [<subcommand> [<subcommand parameters> [--help]]] | --version | --help
  */
 
-const commands = ['test', 'elasticsearch']
+const commands = ['elasticsearch', 'firestore']
 
 function main() {
-  var serviceAccount = require('../.keys/planbundle-60068-firebase-adminsdk-mt3dh-1404bc6bf4.json')
+  if (!config.has('firebase.keyFilename')) {
+    console.error(chalk.red(`Error: Missing firebase.keyFilename in config`))
+    process.exit(1)
+  }
+
+  if (!config.has('firebase.databaseURL')) {
+    console.error(chalk.red(`Error: Missing firebase.databaseURL in config`))
+    process.exit(1)
+  }
+
+  const keyFilename = config.get('firebase.keyFilename')
+  const databaseURL = config.get('firebase.databaseURL')
+  const serviceAccount = require('../' + keyFilename)
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: 'https://planbundle-60068.firebaseio.com'
+    databaseURL: databaseURL
   })
 
   const firestore = admin.firestore()
@@ -35,6 +47,12 @@ function main() {
 
   program
     .version('0.1.0')
+
+  // error on unknown commands
+  program.on('command:*', () => {
+    console.error(chalk.red('Invalid command: %s\nSee --help for a list of available commands.'), program.args.join(' '))
+    process.exit(1)
+  })
 
   commands.forEach(command => {
     const commandModule = require(`./commands/${command}`)

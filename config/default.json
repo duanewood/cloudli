@@ -1,5 +1,10 @@
 
 {
+  "firebase": {
+    "keyFilename": ".keys/planbundle-60068-firebase-adminsdk-mt3dh-1404bc6bf4.json",
+    "databaseURL": "https://planbundle-60068.firebaseio.com",
+    "projectId": "planbundle-60068"
+  },
   "test": {
     "defaultMessage": "Goodnight, Moon",
     "defaultLoud": false
@@ -19,15 +24,6 @@
         "objectMapper": "bundleMapper",
         "indexMapping": "./elasticsearch/indexMappings/bundle.json"
       }    
-      // , 
-      // {
-      //   "name": "users",
-      //   "path": "users"
-      // },
-      // {
-      //   "name": "images",
-      //   "path": "users/*/images"
-      // }
     ]
   }
 }

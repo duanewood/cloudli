@@ -5,16 +5,52 @@ const ProgressBar = require("progress")
 const Snapshot = require("./snapshot")
 
 /**
+ * TraverseBatch allows batch processing of documents in a Firestore database.
+ * The path can be a document or a collection and allows shallow or recursive traversal 
+ * of descendent documents.
+ * 
+ * The supplied visit function is called for each selected document with a doc object.
+ * The doc parameter to the function is a simulation of DocumentSnapshot
+ * but only contains id, name, and ref.path properties, and data() funciton.
+ * 
+ * This code was adapted from the FirestoreDelete class in the google firebase-tools 
+ * project on github.  
+ * 
+ * The approach is to use the runQuery api that takes a StructuredQuery and then iterate 
+ * over the result in batches using a queueLoop (@see #_recursiveBatchVisit).  
+ * 
+ * Note that there are tunable parameters in _recursiveBatchVisit:
+ * 
+ *    readBatchSize - limit for query (1000)
+ *    visitBatchSize - number to visit at one time (100)
+ *    maxPendingVisits - max number of visit batches to run concurrently (original: 1)
+ * 
+ *    Note: Each visitBatch is a Promise.all of async visit calls so the potential promise count
+ *          for visit calls can be up to visitBatchSize * maxPendingVisits.  These parameters
+ *          were originally selected because the visitBatches were one call to delete a collection
+ *          of document id's in the FirestoreDelete code.  Since each document is now visited 
+ *          separately, the number of promises is higher.
+ * 
+ * @see https://github.com/firebase/firebase-tools/blob/master/src/firestore/delete.js
+ * @see https://cloud.google.com/nodejs/docs/reference/firestore/1.3.x/v1.FirestoreClient#runQuery
+ * @see https://cloud.google.com/nodejs/docs/reference/firestore/1.3.x/google.firestore.v1#.StructuredQuery
+ */
+
+
+/**
  * Construct a new Traverse Batch object
  *
  * @constructor
  * @param {object} FirestoreClient object
  * @param {string} project the Firestore project ID.
- * @param {string} path path to a document or collection.
+ * @param {string} path path to a document or collection.  If null or undefined, will include all root collections.
  * @param {boolean} options.recursive true if the traverse should be recursive.
  * @param {boolean} options.shallow true if the traverse should be shallow (non-recursive).
- * @param {boolean} options.allCollections true if the traverse should universally visit all collections and docs.
- * @param {function(doc)} async function called for each document
+ * @param {boolean} options.min true will only return name, id, and ref.path in document snaphot for visit
+ * @param {string} options.collectionId if set, will only include documents from collections with collectionId
+ * @param {function(doc)} visit async function called for each document.  
+ *                        The doc parameter to the function is a simulation of DocumentSnapshot
+ *                        but only contains id, name, and ref.path properties, and data() funciton.
  */
 function TraverseBatch(client, project, path, options, visit) {
   this.client = client
@@ -23,8 +59,9 @@ function TraverseBatch(client, project, path, options, visit) {
   this.path = path
   this.recursive = Boolean(options.recursive)
   this.shallow = Boolean(options.shallow)
-  this.allCollections = Boolean(options.allCollections)
-
+  this.min = Boolean(options.min)
+  this.collectionId = options.collectionId
+  
   // Remove any leading or trailing slashes from the path
   if (this.path) {
     this.path = this.path.replace(/(^\/+|\/+$)/g, "")
@@ -35,11 +72,6 @@ function TraverseBatch(client, project, path, options, visit) {
 
   this.allDescendants = this.recursive
   this.parent = "projects/" + project + "/databases/(default)/documents"
-
-  // When --all-collections is passed any other flags or arguments are ignored
-  if (!options.allCollections) {
-    this._validateOptions()
-  }
 }
 
 /**
@@ -166,12 +198,18 @@ TraverseBatch.prototype._collectionDescendantsQuery = function(
           allDescendants: allDescendants
         }
       ],
-      // TODO: option to select only name or full doc
-      // select: {
-      //   fields: [{ fieldPath: "__name__" }]
-      // },
       orderBy: [{ field: { fieldPath: "__name__" } }]
     }
+  }
+
+  if (this.min) {
+    query.structuredQuery.select = {
+      fields: [{ fieldPath: "__name__" }]
+    }
+  }
+
+  if (this.collectionId) {
+    query.structuredQuery.from[0].collectionId = this.collectionId
   }
 
   if (startAfter) {
@@ -210,12 +248,18 @@ TraverseBatch.prototype._docDescendantsQuery = function(
           allDescendants: allDescendants
         }
       ],
-      // TODO: option to select only name or full doc
-      // select: {
-      //   fields: [{ fieldPath: "__name__" }]
-      // },
       orderBy: [{ field: { fieldPath: "__name__" } }]
     }
+  }
+
+  if (this.min) {
+    query.structuredQuery.select = {
+      fields: [{ fieldPath: "__name__" }]
+    }
+  }
+
+  if (this.collectionId) {
+    query.structuredQuery.from[0].collectionId = this.collectionId
   }
 
   if (startAfter) {
@@ -292,9 +336,9 @@ TraverseBatch.prototype._recursiveBatchVisit = function() {
   var self = this
 
   // Tunable visit parameters
-  var readBatchSize = 7500
-  var visitBatchSize = 250
-  var maxPendingVisits = 15
+  var readBatchSize = 1000  // delete was 7500
+  var visitBatchSize = 100  // delete was 250 
+  var maxPendingVisits = 1  // delete was 15
   var maxQueueSize = visitBatchSize * maxPendingVisits * 2
 
   // All temporary variables for the visit queue.
@@ -452,9 +496,21 @@ TraverseBatch.prototype.visitDatabase = function() {
 
       for (var i = 0; i < collectionIds.length; i++) {
         var collectionId = collectionIds[i]
-        var visitOp = new TraverseBatch(self.client, self.project, collectionId, {
-          recursive: true
-        }, self.visit)
+        // var visitOp = new TraverseBatch(self.client, self.project, collectionId, {
+        //   recursive: true
+        // }, self.visit)
+
+        const options = {
+          shallow: self.shallow,
+          recursive: self.recursive,
+          min: self.min,
+        }
+
+        if (self.collectionId) {
+          options.collectionId = self.collectionId
+        }
+
+        var visitOp = new TraverseBatch(self.client, self.project, collectionId, options, self.visit)
 
         promises.push(visitOp.execute())
       }

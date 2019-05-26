@@ -11,7 +11,7 @@ const TraverseBatch = require('./firestore/traverseBatch')
  */
 exports.addCommand = (program, config, admin) => {
   program
-  .command('docs')
+  .command('firestore')
   .description('gets all document ids')
   .action((options) => {
     if (!config.has('firebase.keyFilename')) {
@@ -33,13 +33,13 @@ exports.addCommand = (program, config, admin) => {
 const getDocuments = async (client) => {
   const projectId = await client.getProjectId()
   // const path = null
-  const path = `users`
+  const path = `bundles`
   // const path = `users/DXmnNRjncvWSO7hvsObrW7Vaq9V2`
   // const path = `users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1`
   
   // const traverseBatch = new TraverseBatch(client, projectId, path, {   }, visit )
   // const traverseBatch = new TraverseBatch(client, projectId, path, { shallow: true }, visit )
-  const traverseBatch = new TraverseBatch(client, projectId, path, { recursive: true }, visit )
+  const traverseBatch = new TraverseBatch(client, projectId, path, { recursive: true, collectionId: 'bundles' }, visit )
   return await traverseBatch.execute()    
 }
 

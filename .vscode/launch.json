@@ -9,7 +9,7 @@
       "request": "launch",
       "name": "Launch node.js Program",
       "program": "${workspaceFolder}/src/index.js",
-      "args": ["docs"]
+      "args": ["firestore"]
     },
     {
       "name": "Chrome",

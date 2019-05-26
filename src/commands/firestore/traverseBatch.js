@@ -48,6 +48,10 @@ const Snapshot = require("./snapshot")
  * @param {boolean} options.shallow true if the traverse should be shallow (non-recursive).
  * @param {boolean} options.min true will only return name, id, and ref.path in document snaphot for visit
  * @param {string} options.collectionId if set, will only include documents from collections with collectionId
+ * @param {string} options.filterRegex if set, will only include documents with path that matches the regex.
+ *                 WARNING: This filter is applied after receiving the results from the query
+ *                          before calling visit function so consider performance / load considerations.
+ *                          Use path and collectionId to filter the query and then apply filterRegex.
  * @param {function(doc)} visit async function called for each document.  
  *                        The doc parameter to the function is a simulation of DocumentSnapshot
  *                        but only contains id, name, and ref.path properties, and data() funciton.
@@ -61,6 +65,7 @@ function TraverseBatch(client, project, path, options, visit) {
   this.shallow = Boolean(options.shallow)
   this.min = Boolean(options.min)
   this.collectionId = options.collectionId
+  this.filterRegex = options.filterRegex ? RegExp(options.filterRegex) : null
   
   // Remove any leading or trailing slashes from the path
   if (this.path) {
@@ -105,6 +110,23 @@ TraverseBatch.prototype._validateOptions = function() {
       throw new Error("Path must not have any empty segments.")
     }  
   }
+}
+
+/**
+ * Applies filterRegex to the current Document.
+ * 
+ * @param {Document} doc the Document returned from a query.  Must contain name property. 
+ * @return {boolean} true if filterRegex is set and matches the name of the current doc.
+ *            The name is determined by stripping off the parent prefix (database prefix), if matches.
+ */
+TraverseBatch.prototype._filterDoc = function(doc) {
+  if (!this.filterRegex) {
+    return true    
+  }
+
+  const database = this.parent
+  const path = database && doc.name.startsWith(database) ? doc.name.slice(database.length + 1) : doc.name
+  return this.filterRegex.test(path)
 }
 
 /**
@@ -319,6 +341,8 @@ TraverseBatch.prototype._getDescendantBatch = function(
 
 /**
  * Progress bar shared by the class.
+ * 
+ * TODO: consider generalizing for callback (in visitor)
  */
 TraverseBatch.progressBar = new ProgressBar(
   "Processed :current docs (:rate docs/s)",
@@ -374,7 +398,12 @@ TraverseBatch.prototype._recursiveBatchVisit = function() {
             return
           }
 
-          queue = queue.concat(docs)
+          if (self.filterRegex) {
+            const filteredDocs = docs.filter(doc => self._filterDoc(doc))
+            queue = queue.concat(filteredDocs)
+          } else {
+            queue = queue.concat(docs)
+          }
           lastDocName = docs[docs.length - 1].name
         })
         .catch(function(e) {
@@ -400,6 +429,15 @@ TraverseBatch.prototype._recursiveBatchVisit = function() {
 
     numPendingVisits++
 
+    // Call the visit function in batches (toVisit array)
+    //
+    // TODO: consider having a configurable batchVisitor with this Promise.all - toVisit
+    //       - could provide efficiencies for operations that could be processed in batches
+    //       - default would do what is here
+    //       - batchVisitor could take the visit function and could have default
+    //       - Note: also update the call to visit for the top level document
+    // TODO: consider sync, async options
+    //      - could be more efficient for sync operations
     Promise.all(toVisit.map(async doc => {
       return self.visit(new Snapshot(doc, self.parent)).then(() => {
         TraverseBatch.progressBar.tick(1)
@@ -433,6 +471,8 @@ TraverseBatch.prototype._recursiveBatchVisit = function() {
   })
 }
 
+const docCollectionIdRegex = new RegExp('(?:^.*\/|^)([^/]+)\/[^/]+$')
+
 /**
  * Visits everything under a given path. If the path represents
  * a document the document is processed and then all descendants
@@ -444,23 +484,40 @@ TraverseBatch.prototype._visitPath = function() {
   var self = this
   var initialVisit
   if (this.isDocumentPath) {
-    initialVisit = this.client.getDocument({ name: this.parent + "/" + this.path })
-      .then(responses => {
-        const doc = responses[0]
-        return this.visit(new Snapshot(doc, this.parent)).then(() => {
-          TraverseBatch.progressBar.tick(1)
-        })
-      }).catch(err => {
-        console.log("visitPath:initialVisit:error", err)
-        if (self.allDescendants) {
-          // On a recursive visit, we are insensitive to
-          // failures of the initial visit
-          return Promise.resolve()
-        }
 
-        // For a shallow visit, this error is fatal.
-        return Promise.reject(new Error("Unable to process " + chalk.cyan(this.path)))
-    })
+    // if there is a collectionId, don't visit if the parent collection is not
+    if (self.collectionId) {
+      const results = docCollectionIdRegex.exec(this.path)
+      if (!results || results.length < 2 || results[1] !== this.collectionId) {
+        initialVisit = Promise.resolve()
+      }
+    }
+    
+    if (!initialVisit) {
+      initialVisit = this.client.getDocument({ name: this.parent + "/" + this.path })
+        .then(responses => {
+          const doc = responses[0]
+
+          // if there is a filterRegex, only visit if matches
+          if (self._filterDoc(doc)) {
+            return self.visit(new Snapshot(doc, self.parent)).then(() => {
+              TraverseBatch.progressBar.tick(1)
+            })  
+          } else {
+            return Promise.resolve()
+          }
+        }).catch(err => {
+          console.log("visitPath:initialVisit:error", err)
+          if (self.allDescendants) {
+            // On a recursive visit, we are insensitive to
+            // failures of the initial visit
+            return Promise.resolve()
+          }
+
+          // For a shallow visit, this error is fatal.
+          return Promise.reject(new Error("Unable to process " + chalk.cyan(this.path)))
+        })
+    }
   } else {
     initialVisit = Promise.resolve()
   }
@@ -504,6 +561,7 @@ TraverseBatch.prototype.visitDatabase = function() {
           shallow: self.shallow,
           recursive: self.recursive,
           min: self.min,
+          filterRegex: self.filterRegex,
         }
 
         if (self.collectionId) {

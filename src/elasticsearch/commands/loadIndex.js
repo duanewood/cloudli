@@ -2,14 +2,14 @@ const chalk = require('chalk')
 // const traverse = require('../../firestore/api/traverse')
 const TraverseBatch = require('../../firestore/api/traverseBatch')
 const esapi = require('../api/esapi')
-const utils = require('./utils')
+const commonutils = require('../../commonutils')
 const firestoreUtils = require('../../firestore/commands/utils')
 
 async function loadIndexAction(index, options, config, admin) {
   try {
     const indices = utils.getIndexConfigsFromParams(index, options, config)
 
-    const confirmed = await utils.confirm(`About to index documents for indices`
+    const confirmed = await commonutils.confirm(`About to index documents for indices`
                                     + ` [${indices.map(indexConfig => indexConfig.name).join(', ')}].`
                                     + ` Are you sure?`)
     if (confirmed) {

@@ -1,6 +1,7 @@
 const chalk = require('chalk')
 const esapi = require('../api/esapi')
 const utils = require('./utils')
+const commonutils = require('../../commonutils')
 const createIndex = require('./createIndex')
 const loadIndex = require('./loadIndex')
 const firestoreUtils = require('../../firestore/commands/utils')
@@ -16,7 +17,7 @@ async function updateIndexReloadAction(index, options, config, admin) {
       }  
     })
 
-    const confirmed = await utils.confirm(`About to create a new index and reload all objects for indices`
+    const confirmed = await commonutils.confirm(`About to create a new index and reload all objects for indices`
                                     + ` [${indices.map(indexConfig => indexConfig.name).join(', ')}].`
                                     + ` Are you sure?`)
     // get confirmation
@@ -103,7 +104,7 @@ async function reindexAction(index, options, config, admin) {
       }  
     })
 
-    const confirmed = await utils.confirm(`About to reindex into a new index for indices`
+    const confirmed = await commonutils.confirm(`About to reindex into a new index for indices`
                                     + ` [${indices.map(indexConfig => indexConfig.name).join(', ')}].`
                                     + ` Are you sure?`)
     if (confirmed) {

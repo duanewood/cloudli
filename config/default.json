@@ -29,8 +29,9 @@
     ]
   },
   "firestore": {
+    "backupBasePath": "./backups",
     "docSets": {
-      "allDocs": {
+      "all": {
         "path": null,
         "recursive": true
       },

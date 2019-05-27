@@ -1,5 +1,3 @@
-const inquirer = require('inquirer')
-
 /**
  * Gets the list of IndexConfig objects based on command line parameters.
  * If index is null or undefined, defaults to all indices in config.
@@ -40,27 +38,6 @@ function getIndexConfigsFromParams(index, options, config) {
   return indices
 }
 
-/**
- * Displays a confirmation prompt
- * 
- * @param {string} prompt
- */
-async function confirm(prompt) {
-  return inquirer.prompt({
-    name: 'confirm',
-    type: 'confirm',
-    message: prompt,
-    default: false
-  }).then(answers => {
-    if (answers.confirm) {
-      return answers.confirm
-    } else {
-      return false
-    }
-  })
-}
-
 module.exports = {
-  getIndexConfigsFromParams: getIndexConfigsFromParams,
-  confirm: confirm
+  getIndexConfigsFromParams: getIndexConfigsFromParams
 }

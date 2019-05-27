@@ -1,5 +1,5 @@
 const chalk = require('chalk')
-const esapi = require('./esapi')
+const esapi = require('../api/esapi')
 const utils = require('./utils')
 
 /**

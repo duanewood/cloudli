@@ -1,6 +1,6 @@
 const chalk = require('chalk')
-const traverse = require('../firestore/traverse')
-const esapi = require('./esapi')
+const traverse = require('../../firestore/api/traverse')
+const esapi = require('../api/esapi')
 const utils = require('./utils')
 
 async function loadIndexAction(index, options, config, admin) {
@@ -37,7 +37,7 @@ const visitIndexer = indexConfig => {
   const index = indexConfig.name
   const writeIndex = `${index}_write`
   const mapper = indexConfig.objectMapper 
-                 ? require(`./objectMappers/${indexConfig.objectMapper}`) 
+                 ? require(`../objectMappers/${indexConfig.objectMapper}`) 
                  : null
   return async doc => {
     console.log(chalk.green(`visitIndexer: id: ${doc.id}, path: ${doc.ref.path}`))

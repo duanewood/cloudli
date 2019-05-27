@@ -20,7 +20,7 @@ const chalk = require('chalk')
  * Usage: node src/index.js [<subcommand> [<subcommand parameters> [--help]]] | --version | --help
  */
 
-const commands = ['elasticsearch', 'firestore']
+const commands = ['./elasticsearch/commands/elasticsearch', './firestore/commands/firestore']
 
 function main() {
   if (!config.has('firebase.keyFilename')) {
@@ -55,7 +55,7 @@ function main() {
   })
 
   commands.forEach(command => {
-    const commandModule = require(`./commands/${command}`)
+    const commandModule = require(`${command}`)
     commandModule.addCommand(program, config, admin)
   })
 

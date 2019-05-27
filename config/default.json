@@ -25,5 +25,31 @@
         "indexMapping": "./elasticsearch/indexMappings/bundle.json"
       }    
     ]
+  },
+  "firestore": {
+    "docSets": {
+      "allDocs": {
+        "path": null,
+        "recursive": true
+      },
+      "bundles": {
+        "path": "bundles",
+        "shallow": true
+      },
+      "userBundles": {
+        "path": "users",
+        "collectionId": "bundles",
+        "recursive": true
+      },
+      "users": {
+        "path": "users",
+        "shallow": true
+      },
+      "userImages": {
+        "path": "users",
+        "collectionId": "images",
+        "recursive": true
+      }
+    } 
   }
 }

@@ -1,7 +1,7 @@
 const fs = require('fs-extra')
 const chalk = require('chalk')
 const moment = require('moment')
-const esapi = require('./esapi')
+const esapi = require('../api/esapi')
 const utils = require('./utils')
 
 async function createIndexAction(index, options, config, admin) {

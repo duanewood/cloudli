@@ -15,9 +15,9 @@ const utils = require('./utils')
  * @param {*} admin The firebase admin object
  */
 async function getAliasIndexAction(index, options, config, admin) {
-  const indices = utils.getIndexConfigsFromParams(index, options, config)
 
   try {
+    const indices = utils.getIndexConfigsFromParams(index, options, config)
     await getAliasIndices(indices)
   } catch(error) {
     console.error(chalk.red(`Error: ${error.message}`))
@@ -37,7 +37,7 @@ async function getAliasIndices(indices) {
   return Promise.all(indices.map(async indexConfig => {
     const index = indexConfig.name
     const readIndices = await esapi.getReadAliasIndices(index)
-    const writeIndices = await esapi.getWriteAliasIndices(index)
+    const writeIndices = await esapi.getWriteAliasIndices(index)  
     readIndices.forEach(i => {
       console.log(chalk.green(`Index for ${chalk.bold(index)} read alias: ${chalk.bold(i)}`))
     })

@@ -1,4 +1,4 @@
-const FirestoreParser = require('firestore-parser')
+const FirestoreParser = require('./FirestoreParser')
 
 /**
  * A wrapper object that similates a Firestore DocumentSnapshot from a 

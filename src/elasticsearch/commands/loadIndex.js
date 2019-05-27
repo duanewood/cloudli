@@ -1,7 +1,9 @@
 const chalk = require('chalk')
-const traverse = require('../../firestore/api/traverse')
+// const traverse = require('../../firestore/api/traverse')
+const TraverseBatch = require('../../firestore/api/traverseBatch')
 const esapi = require('../api/esapi')
 const utils = require('./utils')
+const firestoreUtils = require('../../firestore/commands/utils')
 
 async function loadIndexAction(index, options, config, admin) {
   try {
@@ -11,7 +13,8 @@ async function loadIndexAction(index, options, config, admin) {
                                     + ` [${indices.map(indexConfig => indexConfig.name).join(', ')}].`
                                     + ` Are you sure?`)
     if (confirmed) {
-      await loadIndices(indices, admin)
+      const client = firestoreUtils.getClient(config)
+      await loadIndices(indices, config, admin, client)
     }
   } catch(error) {
     console.error(chalk.red(`Error: ${error.message}`))
@@ -19,18 +22,30 @@ async function loadIndexAction(index, options, config, admin) {
   }
 }
 
-async function loadIndices(indices, admin) {
+async function loadIndices(indices, config, admin, client) {
   return Promise.all(indices.map(async indexConfig => {
-    const result = await loadIndex(indexConfig, admin)
+    const result = await loadIndex(indexConfig, config, admin, client)
     return result
   }))
 }
 
-async function loadIndex(indexConfig, admin) {
+async function loadIndex(indexConfig, config, admin, client) {
   const db = admin.firestore()
   const index = indexConfig.name
+  const traverseOptions = firestoreUtils.getRefProp(config, indexConfig, 'docSet')
+  if (!traverseOptions) {
+    throw new Error(`Missing docSet in config: elasticsearch.indices.${indexConfig.name}`)
+  }
+  if (!traverseOptions.path) {
+    throw new Error(`Missing path in docSet for elasticsearch.indices.${indexConfig.name}`)
+  }
+
   console.log(chalk.blue(`loadIndex(${index})`))
-  return traverse.traverse(db, null, indexConfig.path, visitIndexer(indexConfig))
+  // return traverse.traverse(db, null, indexConfig.path, visitIndexer(indexConfig))
+  const projectId = await client.getProjectId()
+  const traverseBatch = new TraverseBatch(client, projectId, traverseOptions.path, 
+                                          traverseOptions, visitIndexer(indexConfig))
+  return await traverseBatch.execute()
 }
 
 const visitIndexer = indexConfig => {

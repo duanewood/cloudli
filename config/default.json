@@ -15,12 +15,14 @@
       {
         "name": "bundles",
         "path": "bundles",
+        "docSetRef": "firestore.docSets.bundles",
         "objectMapper": "bundleMapper",
         "indexMapping": "./elasticsearch/indexMappings/bundle.json"
       },
       {
         "name": "user_bundles",
         "path": "users/*/bundles",
+        "docSetRef": "firestore.docSets.userBundles",
         "objectMapper": "bundleMapper",
         "indexMapping": "./elasticsearch/indexMappings/bundle.json"
       }    
@@ -35,6 +37,7 @@
       "bundles": {
         "path": "bundles",
         "shallow": true
+        // , "filterRegex": "^bundles\/ed18d036-7d95-4f95-86b1-d8679b520a5f$"
       },
       "userBundles": {
         "path": "users",

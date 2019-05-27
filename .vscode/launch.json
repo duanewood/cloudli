@@ -7,9 +7,18 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch node.js Program",
+      "console": "integratedTerminal",
+      "name": "Launch node.js elasticsearch command",
       "program": "${workspaceFolder}/src/index.js",
-      "args": ["firestore"]
+      "args": ["load-index", "bundles"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "name": "Launch node.js firestore command",
+      "program": "${workspaceFolder}/src/index.js",
+      "args": ["firestore-docs", "-p", "bundles/f0a0e61d-0c7b-4cd8-8b5f-e2ac32e0bef3"]
     },
     {
       "name": "Chrome",

@@ -14,11 +14,40 @@ const getClient = config => {
   return client
 }
 
+/**
+ * Gets a property from an object that may optionally be a reference to property in the config.
+ * If a reference is used the reference property will be {baseProp}Ref.  The value of the reference 
+ * property will be the full path to the referenced property in config.
+ * 
+ * @param {Config} config The config object (from node-config).  @see https://github.com/lorenwest/node-config
+ * @param {object} obj The object containing property baseProp or {baseProp}Ref
+ * @param {*} baseProp The name path to the base property in obj.  Will look for baseProp or {baseProp}Ref.
+ * @return the value of the resolved property or null if not found
+ */
+const getRefProp = (config, obj, baseProp) => {
+  const refProp = baseProp + 'Ref'
+  if (obj[baseProp] && obj[refProp]) {
+    throw new Error(`Invalid property: '${baseProp}' and '${refProp}' cannot be used together`)
+  }
+
+  if (obj[baseProp]) {
+    return obj[baseProp]
+  } else if (obj[refProp]) {
+    const ref = obj[refProp]
+    if (config.has(ref)) {
+      return config.get(ref)
+    } else {
+      throw new Error(`Missing referenced config property '${ref}' referenced from ${refProp}`)
+    }
+  } else {
+    return null
+  }
+}
+
 const traverseOptionsFromCommandOptions = (docSetId, options, config) => {
   let traverseOptions = {}
   if (docSetId) {  
-    if (options.path || options.collectionId || options.recursive || options.shallow 
-                     || options.filterRegex) {
+    if (options.path || options.collectionId || options.recursive || options.shallow) { 
       throw new Error(`The optional docset cannot be specified with any of these options: path, collectionId, recursive, shallow, filterRegex`)
     }
 
@@ -40,7 +69,7 @@ const traverseOptionsFromCommandOptions = (docSetId, options, config) => {
   if (options.recursive) {
     traverseOptions.recursive = true
     if (options.shallow) {
-      throw new Error(`Recursive and shallow options cannot be specified together`)
+      throw new Error(`recursive and shallow options cannot be specified together`)
     }
   }
 
@@ -49,9 +78,16 @@ const traverseOptionsFromCommandOptions = (docSetId, options, config) => {
   }
 
   if (options.filter) {
+    if (options.idfilter) {
+      throw new Error(`filter and idfilter options cannot be specified together`)
+    }
     traverseOptions.filterRegex = options.filter
   }
   
+  if (options.idfilter) {
+    traverseOptions.filterRegex = `^.*\/${options.idfilter}$`
+  }
+
   if (options.min) {
     traverseOptions.min = true
   }
@@ -61,5 +97,6 @@ const traverseOptionsFromCommandOptions = (docSetId, options, config) => {
 
 module.exports = {
   getClient,
+  getRefProp,
   traverseOptionsFromCommandOptions
 }

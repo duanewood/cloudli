@@ -3,6 +3,7 @@ const esapi = require('../api/esapi')
 const utils = require('./utils')
 const createIndex = require('./createIndex')
 const loadIndex = require('./loadIndex')
+const firestoreUtils = require('../../firestore/commands/utils')
 
 async function updateIndexReloadAction(index, options, config, admin) {
   try {
@@ -20,7 +21,7 @@ async function updateIndexReloadAction(index, options, config, admin) {
                                     + ` Are you sure?`)
     // get confirmation
     if (confirmed) {
-      await updateIndexReload(indices, admin)
+      await updateIndexReload(indices, config, admin)
     }
   } catch(error) {
     console.error(chalk.red(`Error: ${error.message}`))
@@ -28,7 +29,9 @@ async function updateIndexReloadAction(index, options, config, admin) {
   }
 }
 
-async function updateIndexReload(indices, admin) {
+async function updateIndexReload(indices, config, admin) {
+  const client = firestoreUtils.getClient(config)
+
   return Promise.all(indices.map(async indexConfig => {
     const index = indexConfig.name
     const newIndex = await createIndex.createIndex(index, indexConfig.indexMapping)
@@ -46,7 +49,7 @@ async function updateIndexReload(indices, admin) {
     }
 
     try {
-      await loadIndex.loadIndex(indexConfig, admin)
+      await loadIndex.loadIndex(indexConfig, config, admin, client)
     } catch(error) {
       try {
         // attempt to change write alias back to the original index

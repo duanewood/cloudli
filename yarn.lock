@@ -2366,11 +2366,6 @@ firebase-admin@^5.5.0:
     jsonwebtoken "8.1.0"
     node-forge "0.7.4"
 
-firestore-parser@^0.8.8:
-  version "0.8.8"
-  resolved "https://registry.yarnpkg.com/firestore-parser/-/firestore-parser-0.8.8.tgz#161031d5cd4871330ea9c60f07d5798b62d00104"
-  integrity sha512-kB8Jpr6lyKhXsXjR/+lL+XQRuxKCZHvfCEVPlEy2AMlcYyTAL6hhmkRfsHW716+Eqv1q5DyXINY6AGYvfPAzww==
-
 flatstr@^1.0.5:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/flatstr/-/flatstr-1.0.11.tgz#e4215663ccb8a135a549a1d29c543f05e928e785"
@@ -3291,6 +3286,14 @@ json5@^1.0.1:
   integrity sha512-aKS4WQjPenRxiQsC93MNfjx+nbF4PAdYzmd/1JIj8HYzqfbu86beTuNgXDzPknWk0n0uARlyewZo4s++ES36Ow==
   dependencies:
     minimist "^1.2.0"
+
+jsondiffpatch@^0.3.11:
+  version "0.3.11"
+  resolved "https://registry.yarnpkg.com/jsondiffpatch/-/jsondiffpatch-0.3.11.tgz#43f9443a0d081b5f79d413fe20f302079e493201"
+  integrity sha512-Xi3Iygdt/BGhml6bdUFhgDki1TgOsp3hG3iiH3KtzP+CahtGcdPfKRLlnZbSw+3b1umZkhmKrqXUgUcKenyhtA==
+  dependencies:
+    chalk "^2.3.0"
+    diff-match-patch "^1.0.0"
 
 jsonfile@^4.0.0:
   version "4.0.0"

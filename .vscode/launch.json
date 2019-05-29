@@ -16,6 +16,14 @@
       "type": "node",
       "request": "launch",
       "console": "integratedTerminal",
+      "name": "Launch node.js diff command",
+      "program": "${workspaceFolder}/src/index.js",
+      "args": ["diff", "./backups/2019-05-27T22-19-52.026Z", "all"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
       "name": "Launch node.js elasticsearch command",
       "program": "${workspaceFolder}/src/index.js",
       "args": ["load-index", "bundles"]

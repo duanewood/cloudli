@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const admin = require('firebase-admin')
 const program = require('commander')
 const config = require('config')

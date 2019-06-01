@@ -36,6 +36,7 @@ const getHtmlStart = () => {
     <!DOCTYPE html>
     <html>
         <head>
+        <script type='text/javascript' src="https://cdn.jsdelivr.net/npm/jsondiffpatch/dist/jsondiffpatch.umd.min.js"></script>
           ${ getCss() }
         </head>
         <body>
@@ -64,6 +65,9 @@ const getAddedHtml = (title) => {
 
 const getHtmlEnd = () => {
   return `
+    <script>
+      jsondiffpatch.formatters.html.hideUnchanged()
+    </script>
         </body>
     </html>
     `

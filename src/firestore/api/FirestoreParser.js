@@ -40,7 +40,7 @@ const FirestoreParser = value => {
   else if (typeof value === 'object') {
     Object.keys(value).forEach(k => value[k] = FirestoreParser(value[k]))
   }
-  return value;
+  return value
 }
 
 module.exports = FirestoreParser

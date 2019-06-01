@@ -9,6 +9,9 @@
     "defaultMessage": "Goodnight, Moon",
     "defaultLoud": false
   },
+  "debug": {
+    "outputPath": "./debug"
+  },
   "elasticsearch": {
     "defaultIndex": "*",
     "indices": [

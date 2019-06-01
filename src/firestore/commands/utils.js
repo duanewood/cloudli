@@ -48,7 +48,7 @@ const traverseOptionsFromCommandOptions = (docSetId, options, config) => {
   let traverseOptions = {}
   if (docSetId) {  
     if (options.path || options.collectionId || options.recursive || options.shallow) { 
-      throw new Error(`The optional docset cannot be specified with any of these options: path, collectionId, recursive, shallow, filterRegex`)
+      throw new Error(`The optional docSetId cannot be specified with any of these options: path, collectionId, recursive, shallow, filterRegex`)
     }
 
     if (!config.has(`firestore.docSets.${docSetId}`)) {
@@ -90,6 +90,16 @@ const traverseOptionsFromCommandOptions = (docSetId, options, config) => {
 
   if (options.min) {
     traverseOptions.min = true
+  }
+
+  // If path is not specified, then starts with all root collections.
+  // If shallow is not specified, make recursive, which will default to all files.
+  // Also, add an indicator that allFiles are selected for informational purposes.
+  if (!traverseOptions.path && !traverseOptions.shallow) {
+    traverseOptions.recursive = true
+    traverseOptions.allFiles = true
+  } else if (!traverseOptions.path && traverseOptions.recursive) {
+    traverseOptions.allFiles = true
   }
 
   return traverseOptions

@@ -8,6 +8,14 @@
       "type": "node",
       "request": "launch",
       "console": "integratedTerminal",
+      "name": "Launch node.js restore command",
+      "program": "${workspaceFolder}/src/index.js",
+      "args": ["restore", "./backups/test"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
       "name": "Launch node.js backup command",
       "program": "${workspaceFolder}/src/index.js",
       "args": ["backup", "bundles"]
@@ -21,6 +29,13 @@
       "args": ["diff", "./backups/2019-05-27T22-19-52.026Z", "all"]
     },
     {
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "name": "Launch node.js diff html command",
+      "program": "${workspaceFolder}/src/index.js",
+      "args": ["diff", "-p", "testCollection", "-r", "./backups/test", "--html"]
+    },    {
       "type": "node",
       "request": "launch",
       "console": "integratedTerminal",

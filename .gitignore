@@ -9,7 +9,7 @@
 /.keys
 
 /backups
-
+/debug
 
 # misc
 .DS_Store

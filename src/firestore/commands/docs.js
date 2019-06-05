@@ -13,8 +13,9 @@ const getDocsAction = async (docSetId, options, config, admin) => {
 
     const path = traverseOptions.path || null
     const verbose = options.verbose || null
-    const visit = verbose => doc => showDoc(doc, verbose)
-    const traverseBatch = new TraverseBatch(client, projectId, path, traverseOptions, visit(verbose) )
+    const visit = doc => showDoc(doc, verbose)
+    const batchOptions = { visit }
+    const traverseBatch = new TraverseBatch(client, projectId, path, traverseOptions, batchOptions )
     return await traverseBatch.execute()    
 
   } catch(error) {
@@ -26,23 +27,3 @@ const getDocsAction = async (docSetId, options, config, admin) => {
 module.exports = {
   getDocsAction
 }
-
-
-// const path = null
-// const path = `bundles`
-// const path = `users/DXmnNRjncvWSO7hvsObrW7Vaq9V2`
-// const path = `users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1`
-// const path = `users`
-
-// const traverseBatch = new TraverseBatch(client, projectId, path, {   }, visit )
-// const traverseBatch = new TraverseBatch(client, projectId, path, { shallow: true }, visit )
-// const traverseOptions = {
-//   shallow: true, 
-//   // collectionId: 'users',
-//   // filterRegex: '^bundles\/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
-//   // filterRegex: '^bundles\/[^/]+$' // note: [^/]+ matches one or more characters that are not forward slash
-//   // filterRegex: '^users\/[^/]+\/bundles\/[^/]+$'
-//   filterRegex: '^users\/[^/]+$'
-//   // filterRegex: '^users\/DXmnNRjncvWSO7hvsObrW7Vaq9V2$'
-// }
-

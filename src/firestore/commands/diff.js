@@ -59,7 +59,8 @@ const diffAction = async (basePath, docSetId, options, config, admin) => {
       // const visit = doc => diff(doc, basePath, htmlFilename)
       const visitor = new DiffVisitor(basePath, htmlFilename)
       const visit = doc => visitor.visit(doc)
-      const traverseBatch = new TraverseBatch(client, projectId, path, traverseOptions, visit)
+      const batchOptions = { visit }
+      const traverseBatch = new TraverseBatch(client, projectId, path, traverseOptions, batchOptions)
       await traverseBatch.execute()
       await visitor.visitFileSystem()
       visitor.close()

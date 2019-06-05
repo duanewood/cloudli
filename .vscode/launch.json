@@ -16,6 +16,14 @@
       "type": "node",
       "request": "launch",
       "console": "integratedTerminal",
+      "name": "Launch node.js get all document ids",
+      "program": "${workspaceFolder}/src/index.js",
+      "args": ["firestore-docs"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
       "name": "Launch node.js backup command",
       "program": "${workspaceFolder}/src/index.js",
       "args": ["backup", "bundles"]

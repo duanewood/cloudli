@@ -20,9 +20,10 @@ const backupAction = async (docSetId, options, config, admin) => {
     const dateDirName = new Date().toISOString().replace(/\:/g, '-')
     const backupPath = path.join(backupBasePath, dateDirName)
 
-    const confirmed = await commonutils.confirm(`About to backup documents to ${backupPath}.`
+    const confirmed = options.bypassConfirm || await commonutils.confirm(`About to backup documents to ${backupPath}.`
                                     + ` Are you sure?`)
     if (confirmed) {
+  
       const client = utils.getClient(config)
       const projectId = await client.getProjectId()
   
@@ -30,9 +31,13 @@ const backupAction = async (docSetId, options, config, admin) => {
         fs.mkdirSync(backupPath)
       }
   
-      const path = traverseOptions.path || null
       const visit = doc => backup(doc, backupPath)
-      const traverseBatch = new TraverseBatch(client, projectId, path, traverseOptions, visit)
+      const batchOptions = {
+        visit
+      }
+      
+      const path = traverseOptions.path || null
+      const traverseBatch = new TraverseBatch(client, projectId, path, traverseOptions, batchOptions)
       return await traverseBatch.execute()    
     }
   } catch(error) {

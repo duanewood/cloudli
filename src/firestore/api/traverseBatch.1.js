@@ -5,7 +5,6 @@ const chalk = require("chalk")
 const ProgressBar = require("progress")
 const Snapshot = require("./snapshot")
 const moment = require('moment')
-const defaultVisitBatch = require('../visitors/visitBatch')
 
 /**
  * TraverseBatch allows batch processing of documents in a Firestore database.
@@ -55,23 +54,13 @@ const defaultVisitBatch = require('../visitors/visitBatch')
  *                 WARNING: This filter is applied after receiving the results from the query
  *                          before calling visit function so consider performance / load considerations.
  *                          Use path and collectionId to filter the query and then apply filterRegex.
- * @param {function(doc)} batchConfig.visit async function called for each document.  
+ * @param {function(doc)} visit async function called for each document.  
  *                        The doc parameter to the function is a simulation of DocumentSnapshot
- *                        but only contains id, name, and ref.path properties, and data() function.
- *                        NOTE: cannot be used if visitBatch is specified. 
- * @param {function(docs, tick)} batchConfig.visitBatch async function called for a batch of documents.  
- *                        The docs parameter to the function is an array of simulations of DocumentSnapshot
- *                        but only contains id, name, and ref.path properties, and data() function.
- *                        Tick is a function to call as items are processed - eg tick(1) for each file 
- *                        or tick(10) for all 10 files processed.
- *                        NOTE: cannot be used if visit is specified. 
- * @param {number} batchConfig.readBatchSize (optional) the number of files to read at a time
- * @param {number} batchConfig.visitBatchSize (optional) the number of files to visit in one batch
- * @param {number} batchConfig.maxPendingVisits (optional) the maximum number of concurrent batch visits
- * @param {number} batchConfig.maxQueueSize (optional) the maximum number of documents to hold in the queue for processing
+ *                        but only contains id, name, and ref.path properties, and data() funciton.
  */
-function TraverseBatch(client, project, path, options, batchConfig) {
+function TraverseBatch(client, project, path, options, visit) {
   this.client = client
+  this.visit = visit
   this.project = project
   this.path = path
   this.recursive = Boolean(options.recursive)
@@ -90,29 +79,6 @@ function TraverseBatch(client, project, path, options, batchConfig) {
 
   this.allDescendants = this.recursive
   this.parent = "projects/" + project + "/databases/(default)/documents"
-
-  // process batchConfig
-  this.batchConfig = batchConfig
-  if (!batchConfig.visit && !batchConfig.visitBatch) {
-    throw new Error('BatchTraverse: visit or visitBatch must be specified in batchConfig')
-  } else if (batchConfig.visit && batchConfig.visitBatch) {
-    throw new Error('BatchTraverse: Only one of visit or visitBatch may be specified in batchConfig')
-  } else if (batchConfig.visit) {
-    const visitBatch = async (toVisitDocs, tick) => defaultVisitBatch(toVisitDocs, batchConfig.visit, tick)
-    this.visitBatch = visitBatch
-  } else {
-    this.visitBatch = batchConfig.visitBatch
-  }
-
-  /** Tunable visit parameters */
-  /** number to read in each iteration of the query */
-  this.readBatchSize = batchConfig.readBatchSize || 1000      // delete was 7500
-  /** number to visit in one batch */
-  this.visitBatchSize = batchConfig.visitBatchSize || 100     // delete was 250 
-  /** max number of concurrent visit batches */
-  this.maxPendingVisits = batchConfig.maxPendingVisits || 1   // delete was 15
-  /** max number of records to keep in work queue */
-  this.maxQueueSize = batchConfig.maxQueueSize || (this.visitBatchSize * this.maxPendingVisits * 2)
 }
 
 /**
@@ -408,27 +374,18 @@ TraverseBatch.progressBar = new ProgressBar(
 TraverseBatch.prototype._recursiveBatchVisit = function() {
   var self = this
 
-  // /** Tunable visit parameters */
-  // /** number to read in each iteration of the query */
-  // var readBatchSize = 1000  // delete was 7500
-  // /** number to visit in one batch */
-  // var visitBatchSize = 100  // delete was 250 
-  // /** max number of concurrent visit batches */
-  // var maxPendingVisits = 1  // delete was 15
-  // /** max number of records to keep in work queue */
-  // var maxQueueSize = visitBatchSize * maxPendingVisits * 2
-
-  var readBatchSize = this.readBatchSize
-  var visitBatchSize = this.visitBatchSize
-  var maxPendingVisits = this.maxPendingVisits
-  var maxQueueSize = this.maxQueueSize
+  // Tunable visit parameters
+  var readBatchSize = 1000  // delete was 7500
+  var visitBatchSize = 100  // delete was 250 
+  var maxPendingVisits = 1  // delete was 15
+  var maxQueueSize = visitBatchSize * maxPendingVisits * 2
 
   // All temporary variables for the visit queue.
   var queue = []
-  var numPendingVisits = 0    // number of concurrent visit batches 
-  var pagesRemaining = true   // true until a query returns 0 results
-  var pageIncoming = false    // true when query promise is active
-  var lastDocName             // used as start point for next iteration of query
+  var numPendingVisits = 0
+  var pagesRemaining = true
+  var pageIncoming = false
+  var lastDocName
 
   var failures = []
   var retried = {}
@@ -487,19 +444,20 @@ TraverseBatch.prototype._recursiveBatchVisit = function() {
 
     numPendingVisits++
 
+    // Call the visit function in batches (toVisit array)
+    //
+    // TODO: consider having a configurable batchVisitor with this Promise.all - toVisit
+    //       - could provide efficiencies for operations that could be processed in batches
+    //       - default would do what is here
+    //       - batchVisitor could take the visit function and could have default
+    //       - Note: also update the call to visit for the top level document
     // TODO: consider sync, async options
     //      - could be more efficient for sync operations
-
-    // Promise.all(toVisit.map(async doc => {
-    //   return self.visit(new Snapshot(doc, self.parent)).then(() => {
-    //     TraverseBatch.progressBar.tick(1)
-    //   })
-    // })).then(() =>  {
-
-    const snapshots = toVisit.map(doc => new Snapshot(doc, self.parent))
-
-    self.visitBatch(snapshots, count => TraverseBatch.progressBar.tick(count))
-    .then(() =>  {
+    Promise.all(toVisit.map(async doc => {
+      return self.visit(new Snapshot(doc, self.parent)).then(() => {
+        TraverseBatch.progressBar.tick(1)
+      })
+    })).then(() =>  {
         numPendingVisits--
     }).catch(error => {
       console.error("Fatal error processing docs ")
@@ -557,13 +515,13 @@ TraverseBatch.prototype._visitPath = function() {
 
           // if there is a filterRegex, only visit if matches
           if (self._filterDoc(doc)) {
-            const snapshots = [new Snapshot(doc, self.parent)]
-            return self.visitBatch(snapshots, count => TraverseBatch.progressBar.tick(count))  
+            return self.visit(new Snapshot(doc, self.parent)).then(() => {
+              TraverseBatch.progressBar.tick(1)
+            })  
           } else {
             return Promise.resolve()
           }
         }).catch(err => {
-          
           console.log("visitPath:initialVisit:error", err)
           if (self.allDescendants) {
             // On a recursive visit, we are insensitive to
@@ -625,7 +583,7 @@ TraverseBatch.prototype.visitDatabase = function() {
           options.collectionId = self.collectionId
         }
 
-        var visitOp = new TraverseBatch(self.client, self.project, collectionId, options, self.batchConfig)
+        var visitOp = new TraverseBatch(self.client, self.project, collectionId, options, self.visit)
 
         promises.push(visitOp.execute())
       }

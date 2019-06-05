@@ -40,11 +40,16 @@ async function loadIndex(indexConfig, config, admin, client) {
     throw new Error(`Missing path in docSet for elasticsearch.indices.${indexConfig.name}`)
   }
 
+  // TODO: consider using visitBatch to index multiple documents in one call
+  const batchOptions = {
+    visit: visitIndexer(indexConfig)
+  }
+
   console.log(chalk.blue(`loadIndex(${index})`))
   // return traverse.traverse(db, null, indexConfig.path, visitIndexer(indexConfig))
   const projectId = await client.getProjectId()
   const traverseBatch = new TraverseBatch(client, projectId, traverseOptions.path, 
-                                          traverseOptions, visitIndexer(indexConfig))
+                                          traverseOptions, batchOptions)
   return await traverseBatch.execute()
 }
 

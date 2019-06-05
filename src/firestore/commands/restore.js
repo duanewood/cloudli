@@ -5,7 +5,6 @@ const backup = require('../visitors/backup')
 const utils = require('./utils')
 const commonutils = require('../../commonutils')
 const FirestoreMapper = require('../api/FirestoreMapper')
-const traverseDirBatch = require('../api/traverseDirBatch')
 const { Subject, Observable, empty, from, of } = require('rxjs')
 const { bufferTime, catchError, mergeMap, scan, tap } = require('rxjs/operators')
 
@@ -24,16 +23,6 @@ const restoreAction = async (basePath, options, config, admin) => {
         batchWriteConcurrency: 2,
       }
 
-      // return await restoreDir(db, basePath, null)
-
-      // const file$ = new Subject()
-      // const filesPromise = file$.pipe(tap(file => console.log(chalk.cyan(file)))).toPromise()
-      // const visitFile = file => { file$.next(file) }
-      // await traverseDirBatch(basePath, visitFile)
-      // file$.complete()
-      // await filesPromise
-
-      // await files(basePath).pipe(tap(file => console.log(chalk.cyan(file)))).toPromise()
       const normalizedBasePath = path.normalize(basePath)
       const file$ = files(normalizedBasePath).pipe(
 

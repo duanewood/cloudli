@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://planbundle.com/schemas/timestamp.schema.json",
+  "definitions": {
+    "timestamp": {
+      "type": "object",
+      "title": "Timestamp Schema",
+      "description": "Object representing a Firestore Timestamp",
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer",
+          "title": "Seconds based on Unix timestamps",
+          "examples": [
+            1547411908
+          ]
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "title": "Number of nanoseconds (fractional part of the second)",
+          "examples": [
+            254000000
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

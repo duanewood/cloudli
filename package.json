@@ -16,6 +16,7 @@
   "dependencies": {
     "@firebase/app-types": "^0.4.0",
     "@google-cloud/firestore": "^2.0.0",
+    "ajv": "^6.10.0",
     "aws-sdk": "^2.458.0",
     "backpack-core": "^0.4.3",
     "chalk": "^2.4.2",

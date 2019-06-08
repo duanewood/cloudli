@@ -4,6 +4,7 @@ const backup = require('./backup')
 const restore = require('./restore')
 const deleteDocs = require('./deleteDocs')
 const diff = require('./diff')
+const validate = require('./validate')
 
 /**
  * Firestore commands
@@ -74,4 +75,14 @@ exports.addCommand = (program, config, admin) => {
   .option('-h, --html [htmlFilename]', 'Produce html and css file for difference.  Uses debug.outputPath from config for default directory. Default filename is timestamp.html')
   .action((basePath, docSetId, options) => diff.diffAction(basePath, docSetId, options, config, admin))
 
+  program
+  .command('validate [docSetId]')
+  .description(`Validates firestore documents using a batch query with an optional docSet. If docSetId is not specified, includes all documents in the database. The specified docSetId must be defined in config.`)
+  .option('-p, --path <path>', 'The path of the documents.  May be a collection or document.')
+  .option('-c, --collectionId <id>', 'If specified, will only include docuements from collections with id.')
+  .option('-r, --recursive', 'Include all sub-collections')
+  .option('-s, --shallow', 'Only include immediate sub-collections')
+  .option('-f, --filter <regex>', 'Filter results using the supplied regular expression regex')
+  .option('-i, --idfilter <id>', 'Filter results to documents with id.  Cannot be used with --filter')
+  .action((docSetId, options) => validate.validateAction(docSetId, options, config, admin))
 }

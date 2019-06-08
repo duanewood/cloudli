@@ -57,6 +57,33 @@
         "collectionId": "images",
         "recursive": true
       }
-    } 
+    },
+    "types": [
+      { "path": "^bundles\/[^/]+$", "type": "bundle" },
+      { "path": "^users\/[^/]+\/bundles\/[^/]+$", "type": "bundle" }
+    ]
+  },
+  "schemas": {
+    "bundle": {
+      "schemaId": "http://planbundle.com/schemas/bundle.schema.json",
+      "schemaFiles": [
+        "./schemas/bundle.schema.json",
+        "./schemas/contact-item.schema.json",
+        "./schemas/event-item.schema.json",
+        "./schemas/image-item.schema.json",
+        "./schemas/image.schema.json",
+        "./schemas/link-item.schema.json",
+        "./schemas/note-item.schema.json",
+        "./schemas/reminder-item.schema.json",
+        "./schemas/timestamp.schema.json",
+        "./schemas/contact/date.schema.json",
+        "./schemas/contact/email-address.schema.json",
+        "./schemas/contact/im-address.schema.json",
+        "./schemas/contact/phone-number.schema.json",
+        "./schemas/contact/postal-address.schema.json",
+        "./schemas/contact/social-profile.schema.json",
+        "./schemas/contact/url-address.schema.json"
+      ]
+    }
   }
 }

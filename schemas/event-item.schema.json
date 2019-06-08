@@ -1,0 +1,290 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://planbundle.com/schemas/event-item.schema.json",
+  "definitions": {
+    "event_item": {
+      "type": "object",
+      "title": "Event Bundle Item",
+      "description": "A calendar event",
+      "required": [
+        "id",
+        "adjustStartDate",
+        "title",
+        "startDate",
+        "endDate",
+        "isAllDay"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Event Id",
+          "examples": [
+            "b25c5c1d-feab-45b9-81a0-07a6cf9776b1"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "eventIdentifier": {
+          "type": "string",
+          "title": "External Event Id",
+          "description": "Reference id for event in external calendar",
+          "examples": [
+            "7ED93E7B-EA90-443D-A713-A04DEFABB6D6:A44AD176-8023-4713-9089-CC842E075803"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "name": {
+          "type": ["string","null"],
+          "title": "Event Name",
+          "examples": [
+            "Christmas Eve"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "adjustStartDate": {
+          "type": "boolean",
+          "title": "Indicates whether to adjust the start date to the current date when installed"
+        },
+        "location": {
+          "type": ["string","null"],
+          "title": "The event location",
+          "examples": [
+            "101 Elm St, St. Augustine, FL 32092"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "alert2RelativeOffset": {
+          "type": ["string","null"],
+          "title": "Alert 1 Relative Offset",
+          "description": "The relative offset of alert 2 to the start date (in seconds)",
+          "examples": [
+            "-172800"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "daysOfTheWeek": {
+          "type": ["array","null"],
+          "title": "Array of days of the week",
+          "description": "Array of days of the week for a recurring event. Sunday is 1.",
+          "items": {
+            "type": "string",
+            "title": "Day of the Tweek",
+            "description": "Day of the week as a string. Sunday is \"1\". (\"1\", \"2\", ... \"7\")",
+            "examples": [
+              "2",
+              "3"
+            ],
+            "pattern": "^[1-7]$"
+          }
+        },
+        "title": {
+          "type": "string",
+          "title": "Event Title",
+          "examples": [
+            "Christmas Eve Dinner"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "daysOfTheMonth": {
+          "type": ["array","null"],
+          "title": "Array of days of the month for a recurring event",
+          "items": {
+            "type": "string",
+            "title": "Day of the Month",
+            "description": "Day of the month as a string (\"1\", \"2\", ... \"31\")",
+            "examples": [
+              "21",
+              "30"
+            ],
+            "pattern": "^([1-9]|[12][0-9]|3[01])$"
+          }
+        },
+        "daysOfTheYear": {
+          "type": ["array","null"],
+          "title": "Array of days of the year for a recurring event",
+          "items": {
+            "type": "string",
+            "title": "Day of the Year",
+            "description": "Day of the year as a string (\"1\", \"2\", ... \"366\")",
+            "examples": [
+              "121",
+              "300"
+            ],
+            "pattern": "^[0-9]{1,3}$"
+          }
+        },
+        "startDate": {
+          "oneOf": [
+            {
+              "type": "string",
+              "title": "The start date/time",
+              "examples": [
+                "2018-12-24T17:00:00.000-06:00"
+              ],
+              "format": "date-time"
+            },
+            {
+              "type": "string",
+              "title": "The start date",
+              "examples": [
+                "2018-12-24"
+              ],
+              "format": "date"
+            }
+          ]
+        },
+        "interval": {
+          "type": ["string","null"],
+          "title": "Inteval for Recurring Event",
+          "description": "The recurrence interval for a recurring event as a string. For example, for weekly, interval of 2 = 'Every 2 weeks'",
+          "examples": [
+            "1"
+          ],
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "recurrenceEndDate": {
+          "type": ["string","null"],
+          "title": "Recurrence End Date",
+          "description": "The recurrence end date for a recurring event.  Cannot be used with occurrenceCount",
+          "examples": [
+            "2018-12-24T17:00:00.000-06:00"
+          ],
+          "format": "date-time"
+        },
+        "weeksOfTheYear": {
+          "type": ["array","null"],
+          "title": "Weeks of the Year",
+          "description": "Array of weeks of the year for a recurring event",
+          "items": {
+            "type": "string",
+            "title": "Week of the Year",
+            "description": "Weeks of the year as a string (\"1\", \"2\", ... \"52\")",
+            "examples": [
+              "2",
+              "25"
+            ],
+            "pattern": "^[1-9][0-9]$"
+          }
+        },
+        "itemDescription": {
+          "type": ["string","null"],
+          "title": "Description of the event",
+          "examples": [
+            "A family dinner to celebrate Christmas"
+          ]
+        },
+        "monthsOfTheYear": {
+          "type": ["array","null"],
+          "title": "Months of the Year",
+          "description": "Array of months of the year for a recurring event",
+          "items": {
+            "type": "string",
+            "title": "Month of the Year",
+            "description": "Months of the year as a string (\"1\", \"2\", ... \"12\")",
+            "examples": [
+              "1",
+              "11"
+            ],
+            "pattern": "^([1-9]|1[0-2])$"
+          }
+        },
+        "setPositions": {
+          "type": ["array","null"],
+          "title": "Set Positions",
+          "descriptions": "An array of ordinal numbers that filters which recurrences to include in the recurrence rule’s frequency.",
+          "items": {
+            "type": "string",
+            "title": "Set Positions",
+            "descriptions": "Ordinal number that filters which recurrences to include in the recurrence rule’s frequency",
+            "examples": [
+              "1",
+              "11"
+            ],
+            "pattern": "[0-9]+$"
+          }
+        },
+        "alert1RelativeOffset": {
+          "title": "Alert 2 Relative Offset",
+          "description": "The relative offset of alert 1 to the start date (in seconds)",
+          "examples": [
+            "-172800"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "endDate": {
+          "oneOf": [
+            {
+              "type": "string",
+              "title": "The end date/time",
+              "examples": [
+                "2018-12-24T17:00:00.000-06:00"
+              ],
+              "format": "date-time"
+            },
+            {
+              "type": "string",
+              "title": "The end date",
+              "examples": [
+                "2018-12-24"
+              ],
+              "format": "date"
+            }
+          ]
+        },
+        "isAllDay": {
+          "type": "boolean",
+          "title": "Indicator an all-day event"
+        },
+        "recurrenceType": {
+          "enum": [null, "daily","weekly","monthly","yearly"],
+          "title": "The recurrence type",
+          "examples": [
+            "yearly"
+          ]
+        },
+        "notes": {
+          "type": ["string","null"],
+          "title": "Notes about the event",
+          "examples": [
+            "We will exchange Christmas gifts"
+          ],
+          "pattern": "^[\\s\\S]*$"
+        },
+        "url": {
+          "type": ["string","null"],
+          "title": "A URL for the event",
+          "examples": [
+            "www.partyon.com"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "travelTime": {
+          "type": ["string","null"],
+          "title": "Travel Time",
+          "description": "Travel time in minutes",
+          "examples": [
+            "30"
+          ]
+        },
+        "occurrenceCount": {
+          "type": ["string","null"],
+          "title": "Occurrence Count",
+          "description": "The number of occurrences of a recurring event.  Cannot be used with recurrenceEndDate",
+          "examples": [
+            "5"
+          ],
+          "pattern": "^[0-9]+$"
+        },
+        "timeZone": {
+          "type": "string",
+          "title": "Time Zone",
+          "description": "The time zone code for dates",
+          "examples": [
+            "EST"
+          ],
+          "pattern": "^[a-zA-Z]{3}$"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

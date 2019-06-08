@@ -1,0 +1,152 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://planbundle.com/schemas/bundle.schema.json",
+  "type": "object",
+  "title": "Bundle Schema",
+  "description": "A bundle that may be published or unpublished",
+  "required": [
+    "name",
+    "modelVersion",
+    "id",
+    "createTimestamp",
+    "updateTimestamp",
+    "author",
+    "authorUser",
+    "images",
+    "links",
+    "version",
+    "contacts",
+    "events",
+    "users",
+    "reminders"
+  ],
+  "properties": {
+    "author": {
+      "type": "string",
+      "title": "The Author Id",
+      "examples": ["Q3Z2xGFNERRRnilZzM9VhY4LlNh1"]
+    },
+    "notes": {
+      "type": "array",
+      "title": "Array of Note Items",
+      "items": {
+        "$ref": "note-item.schema.json#/definitions/note_item"
+      }
+    },
+    "image": {
+      "description": "The bundle image reference",
+      "$ref": "image.schema.json#/definitions/image"
+    },
+    "name": {
+      "type": "string",
+      "title": "The name of the bundle",
+      "examples": ["A Christmas Bundle"]
+    },
+    "modelVersion": {
+      "type": "integer",
+      "title": "The version of the bundle document model/schema",
+      "examples": [1]
+    },
+    "publishVersion": {
+      "type": ["integer", "null"],
+      "title": "The version of the published bundle, starting with 1",
+      "examples": [13]
+    },
+    "id": {
+      "type": "string",
+      "title": "The bundle id",
+      "examples": ["e4967218-638f-4d84-bc80-f17d5671369d"],
+      "pattern": "^(.*)$"
+    },
+    "createTimestamp": {
+      "description": "Create Timestamp.  This is a Firestore Timestamp",
+      "$ref": "timestamp.schema.json#/definitions/timestamp"
+    },
+    "updateTimestamp": {
+      "description": "Update Timestamp.  This is a Firestore Timestamp",
+      "$ref": "timestamp.schema.json#/definitions/timestamp"
+    },
+    "authorUser": {
+      "type": "object",
+      "title": "The Author User",
+      "required": ["displayName"],
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "title": "The full name of the user",
+          "examples": ["Duane Wood"]
+        },
+        "photoURL": {
+          "type": ["string", "null"],
+          "title": "The URL of the autho's photor",
+          "examples": [
+            "https://lh4.googleusercontent.com/-8llJV_QwShI/AAAAAAAAAAI/AAAAAAAAASE/y2r45brhIE8/photo.jpg"
+          ],
+          "pattern": "^(.*)$"
+        }
+      }
+    },
+    "images": {
+      "type": "array",
+      "title": "Array of Image Items",
+      "items": {
+        "description": "The image item",
+        "$ref": "image-item.schema.json#/definitions/image_item"
+      }
+    },
+    "links": {
+      "type": "array",
+      "title": "Array of Link Items",
+      "items": {
+        "description": "The Link Item",
+        "$ref": "link-item.schema.json#/definitions/link_item"
+      }
+    },
+    "version": {
+      "type": "integer",
+      "title": "The version of the bundle starting with 1",
+      "examples": [13]
+    },
+    "publishTimestamp": {
+      "description": "Publish Timestamp.  This is a Firestore Timestamp",
+      "$ref": "timestamp.schema.json#/definitions/timestamp"
+    },
+    "contacts": {
+      "type": "array",
+      "title": "Array of Contact Items",
+      "items": {
+        "$ref": "contact-item.schema.json#/definitions/contact_item"
+      }
+    },
+    "events": {
+      "type": "array",
+      "title": "Array of Event Items",
+      "items": {
+        "$ref": "event-item.schema.json#/definitions/event_item"
+      }
+    },
+    "description": {
+      "type": ["string", "null"],
+      "title": "The Bundle Description",
+      "examples": ["A bundle descriptions"]
+    },
+    "users": {
+      "type": "array",
+      "title": "The array of user id's for publish or an array containing '*' for public (all users)",
+      "items": {
+        "type": "string",
+        "title": "User Id's for access to the bundle",
+        "examples": ["*"],
+        "pattern": "^(.*)$"
+      }
+    },
+    "reminders": {
+      "type": "array",
+      "title": "Array of Reminder Items",
+      "items": {
+        "$ref": "reminder-item.schema.json#/definitions/reminder_item"
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -8,6 +8,14 @@
       "type": "node",
       "request": "launch",
       "console": "integratedTerminal",
+      "name": "Launch node.js validate command",
+      "program": "${workspaceFolder}/src/index.js",
+      "args": ["validate", "bundles"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
       "name": "Launch node.js restore command",
       "program": "${workspaceFolder}/src/index.js",
       "args": ["restore", "./backups/test"]

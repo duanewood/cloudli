@@ -1,0 +1,170 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://planbundle.com/schemas/contact-item.schema.json",
+  "definitions": {
+    "contact_item": {
+      "type": "object",
+      "title": "Contact Bundle Item Schema",
+      "description": "A contact bundle item",
+      "required": [
+        "emailAddresses",
+        "phoneNumbers",
+        "postalAddresses",
+        "id",
+        "urlAddresses",
+        "dates",
+        "instantMessageAddresses"
+      ],
+      "properties": {
+        "emailAddresses": {
+          "type": "array",
+          "title": "Array of email_address items",
+          "items": {
+            "$ref": "contact/email-address.schema.json#/definitions/email_address"
+          }
+        },
+        "phoneNumbers": {
+          "type": "array",
+          "title": "Array of phone_number items",
+          "items": {
+            "$ref": "contact/phone-number.schema.json#/definitions/phone_number"
+          }
+        },
+        "postalAddresses": {
+          "type": "array",
+          "title": "Array of postal_address items",
+          "items": {
+            "$ref": "contact/postal-address.schema.json#/definitions/postal_address"
+          }
+        },
+        "middleName": {
+          "type": ["string","null"],
+          "title": "Middle Name",
+          "examples": [
+            "Stephen"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "givenName": {
+          "type": ["string","null"],
+          "title": "Given / First Name",
+          "examples": [
+            "Bob"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "socialProfiles": {
+          "type": "array",
+          "title": "Array of social_profile items",
+          "items": {
+            "$ref": "contact/social-profile.schema.json#/definitions/social_profile"
+          }
+        },
+        "departmentName": {
+          "type": ["string","null"],
+          "title": "Department Name",
+          "examples": [
+            "Marketing"
+          ]
+        },
+        "nameSuffix": {
+          "type": ["string","null"],
+          "title": "Name Suffix",
+          "examples": [
+            "Jr"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "familyName": {
+          "type": ["string","null"],
+          "title": "Family / Last Name",
+          "examples": [
+            "Smith"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "title": "Contact Id",
+          "examples": [
+            "b79227cb-23ac-4d43-ad59-8f3e18af32a6"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "urlAddresses": {
+          "type": "array",
+          "title": "Array of url_address items",
+          "items": {
+            "$ref": "contact/url-address.schema.json#/definitions/url_address"
+          }
+        },
+        "dates": {
+          "type": "array",
+          "title": "Array of date items",
+          "items": {
+            "$ref": "contact/date.schema.json#/definitions/date"
+          }
+        },
+        "organizationName": {
+          "type": ["string","null"],
+          "title": "Organization Name",
+          "examples": [
+            "Plan Bundle Inc"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "imageData": {
+          "type": ["string","null"],
+          "title": "URL to image for contact",
+          "examples": [
+            "https://www.example.com/bob.jpeg"
+          ],
+          "pattern": "^https?:\/\/.*$"
+        },
+        "imageId": {
+          "type": "string",
+          "title": "Id of Image File in Cloud Storage",
+          "examples": [
+            "qlbIux6lfW79GxEh9P79"
+          ]
+        },
+        "imageType": {
+          "enum": ["cloud"],
+          "title": "Image Type.",
+          "description": "Only Cloud is Currently Supported"
+        },
+        "namePrefix": {
+          "type": ["string","null"],
+          "title": "Name Prefix",
+          "examples": [
+            "Mr"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "instantMessageAddresses": {
+          "type": "array",
+          "title": "Array of im_address items",
+          "items": {
+            "$ref": "contact/im-address.schema.json#/definitions/im_address"
+          }
+        },
+        "birthday": {
+          "type": ["string","null"],
+          "title": "Birthday",
+          "examples": [
+            "1967-05-03"
+          ],
+          "format": "date"
+        },
+        "path_name": {
+          "type": "string",
+          "title": "Name of VCF File for Mobile App",
+          "examples": [
+            "06E2D07E-1B6B-4A31-882E-03D41AEC1093.vcf"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  }  
+}  
+

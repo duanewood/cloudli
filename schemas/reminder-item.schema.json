@@ -1,0 +1,212 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://planbundle.com/schemas/reminder-item.schema.json",
+  "definitions": {
+    "reminder_item": {
+      "type": "object",
+      "title": "Reminder Bundle Item Schema",
+      "description": "A reminder bundle item",
+      "required": [
+        "id",
+        "adjustStartDate",
+        "title"
+      ],
+      "properties": {
+        "notes": {
+          "type": ["string","null"],
+          "title": "Notes About the Reminder",
+          "examples": [
+            "Try a Bible app"
+          ],
+          "pattern": "^[\\s\\S]*$"
+        },
+        "occurrenceCount": {
+          "type": ["string","null"],
+          "title": "Occurrence Count",
+          "description": "The number of occurrences of a recurring reminder.  Cannot be used with recurrenceEndDate",
+          "examples": [
+            "5"
+          ],
+          "pattern": "^[0-9]+$"
+        },
+        "id": {
+          "type": "string",
+          "title": "Reminder Id",
+          "examples": [
+            "b76b74e4-8f7c-446b-8209-64ef07ce5a38"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "adjustStartDate": {
+          "type": "boolean",
+          "title": "Indicates whether to adjust the start date to the current date when installed"
+        },
+        "adjustAlertDate": {
+          "type": "boolean",
+          "title": "Indicates whether to adjust the alert date relative to the alert date when installed"
+        },
+        "title": {
+          "type": "string",
+          "title": "Reminder Title",
+          "examples": [
+            "Pray Every Day"
+          ]
+        },
+        "daysOfTheWeek": {
+          "type": ["array","null"],
+          "title": "Array of days of the week",
+          "description": "Array of days of the week for a recurring reminder. Sunday is 1.",
+          "items": {
+            "type": "string",
+            "title": "Day of the Tweek",
+            "description": "Day of the week as a string. Sunday is \"1\". (\"1\", \"2\", ... \"7\")",
+            "examples": [
+              "2",
+              "3"
+            ],
+            "pattern": "^[1-7]$"
+          }
+        },
+        "daysOfTheMonth": {
+          "type": ["array","null"],
+          "title": "Array of days of the month for a recurring reminder",
+          "items": {
+            "type": "string",
+            "title": "Day of the Month",
+            "description": "Day of the month as a string (\"1\", \"2\", ... \"31\")",
+            "examples": [
+              "21",
+              "30"
+            ],
+            "pattern": "^([1-9]|[12][0-9]|3[01])$"
+          }
+        },
+        "alertDate": {
+          "type": ["string","null"],
+          "title": "Reminder Date/Time",
+          "examples": [
+            "2018-11-02T05:30:00.000-05:00"
+          ],
+          "format": "date-time"
+        },
+        "daysOfTheYear": {
+          "type": ["array","null"],
+          "title": "Array of days of the year for a recurring reminder",
+          "items": {
+            "type": "string",
+            "title": "Day of the Year",
+            "description": "Day of the year as a string (\"1\", \"2\", ... \"366\")",
+            "examples": [
+              "121",
+              "300"
+            ],
+            "pattern": "^[0-9]{1,3}$"
+          }
+        },
+        "interval": {
+          "type": ["string","null"],
+          "title": "Inteval for Recurring Reminder",
+          "description": "The recurrence interval for a recurring reminder as a string. For example, for weekly, interval of 2 = 'Every 2 weeks'",
+          "examples": [
+            "1"
+          ],
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "recurrenceEndDate": {
+          "type": ["string","null"],
+          "title": "Recurrence End Date",
+          "description": "The recurrence end date for a recurring reminder.  Cannot be used with occurrenceCount",
+          "examples": [
+            "2018-12-24T17:00:00.000-06:00"
+          ],
+          "format": "date-time"
+        },
+        "weeksOfTheYear": {
+          "type": ["array","null"],
+          "title": "Weeks of the Year",
+          "description": "Array of weeks of the year for a recurring reminder",
+          "items": {
+            "type": "string",
+            "title": "Week of the Year",
+            "description": "Weeks of the year as a string (\"1\", \"2\", ... \"52\")",
+            "examples": [
+              "2",
+              "25"
+            ],
+            "pattern": "^[1-9][0-9]$"
+          }
+        },
+        "itemDescription": {
+          "type": ["string","null"],
+          "title": "Description of the event",
+          "examples": [
+            "Connect with the Lord"
+          ]
+        },
+        "monthsOfTheYear": {
+          "type": ["array","null"],
+          "title": "Months of the Year",
+          "description": "Array of months of the year for a recurring reminder",
+          "items": {
+            "type": "string",
+            "title": "Month of the Year",
+            "description": "Months of the year as a string (\"1\", \"2\", ... \"12\")",
+            "examples": [
+              "1",
+              "11"
+            ],
+            "pattern": "^([1-9]|1[0-2])$"
+          }
+        },
+        "setPositions": {
+          "type": ["array","null"],
+          "title": "Set Positions",
+          "descriptions": "An array of ordinal numbers that filters which recurrences to include in the recurrence rule’s frequency.",
+          "items": {
+            "type": "string",
+            "title": "Set Positions",
+            "descriptions": "Ordinal number that filters which recurrences to include in the recurrence rule’s frequency",
+            "examples": [
+              "1",
+              "11"
+            ],
+            "pattern": "[0-9]+$"
+          }
+        },
+        "priority": {
+          "enum": ["0","1","2","3"]
+        },
+        "recurrenceType": {
+          "enum": [null, "daily","weekly","monthly","yearly"],
+          "title": "The recurrence type",
+          "examples": [
+            "yearly"
+          ]
+        },
+        "timeZone": {
+          "type": "string",
+          "title": "Time Zone",
+          "description": "The time zone code for dates",
+          "examples": [
+            "EST"
+          ],
+          "pattern": "^[a-zA-Z]{3}$"
+        },
+        "name": {
+          "type": ["string","null"],
+          "title": "Reminder Name",
+          "examples": [
+            "A Reminder"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "isCompleted": {
+          "type": "boolean",
+          "title": "Is Completed",
+          "description": "Indicator of whether the reminder is marked complete"
+        }
+      },
+      "additionalProperties": false    
+    }
+  }
+}

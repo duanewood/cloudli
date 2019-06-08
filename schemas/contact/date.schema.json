@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://planbundle.com/schemas/contact/date.schema.json",
+  "definitions": {
+    "date": {
+      "$id": "#/properties/contacts/items/properties/dates/items",
+      "type": "object",
+      "title": "Date for a Contact",
+      "required": [
+        "type",
+        "value"
+      ],
+      "properties": {
+        "groupLabel": {
+          "type": ["string","null"],
+          "title": "Group Label",
+          "examples": [
+            "Anniversary"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "label": {
+          "type": "string",
+          "title": "Item Label",
+          "examples": [
+            "Anniversary"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "omitYear": {
+          "type": "boolean",
+          "title": "Indicator to omit the year (month/day only)",
+          "examples": [
+            false
+          ]
+        },
+        "value": {
+          "type": "string",
+          "title": "The date",
+          "examples": [
+            "2014-11-29"
+          ],
+          "format": "date"
+        },
+        "otherTypes": {
+          "type": "array",
+          "title": "Array on non-standard types",
+          "items": {
+            "type": "string",
+            "title": "A non-standard type name",
+            "examples": [
+              "internet"
+            ],
+            "pattern": "^(.*)$"
+          }
+        },
+        "type": {
+          "type": ["array","string"],
+          "title": "Array of standard types",
+          "items": {
+            "type": "string",
+            "title": "The name of the standard type",
+            "examples": [
+              "home"
+            ],
+            "pattern": "^(.*)$"
+          }
+        },
+        "preferred": {
+          "type": "boolean",
+          "title": "Preferred item indicator",
+          "examples": [
+            false
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

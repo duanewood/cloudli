@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://planbundle.com/schemas/note-item.schema.json",
+  "definitions": {
+    "note_item": {
+      "type": "object",
+      "title": "Note Bundle Item Schema",
+      "description": "A note bundle item",
+      "required": [
+        "id",
+        "title",
+        "note"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "The note id",
+          "examples": [
+            "1b9a134a-8cb1-4cd8-a3fd-6298c025c62a"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "title": "Title",
+          "examples": [
+            "Duane's Christmas List"
+          ]
+        },
+        "note": {
+          "type": "string",
+          "title": "The note text.  May contain carriage returns.",
+          "examples": [
+            "Laptop backpack\nPajamas\nApple TV\n\n"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

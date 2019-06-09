@@ -2,6 +2,7 @@ const loadIndex = require('./loadIndex')
 const getAliasIndex = require('./getAliasIndex')
 const createIndex = require('./createIndex')
 const updateIndex = require('./updateIndex')
+const searchIndex = require('./searchIndex')
 
 /**
  * Elasticsearch indexing commands
@@ -31,4 +32,9 @@ exports.addCommand = (program, config, admin) => {
   program.command('reindex [index]')
   .description('Creates a new index using the defined mapping and reindexes all documents for the index')
   .action((index, options) => updateIndex.reindexAction(index, options, config, admin))
+
+  program.command('search <text> [index]')
+  .description('Searches elasticsearch for text for an index or all indexes')
+  .option('-v, --verbose', 'Displays matching content in results.')
+  .action((text, index, options) => searchIndex.searchIndexAction(text, index, options, config, admin))  
 }

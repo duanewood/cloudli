@@ -82,6 +82,28 @@ const reindex = async (fromIndex, toIndex) => {
 
 }
 
+const search = async (text, indexOrAlias) => {
+  const body = `{
+    "query": {
+      "bool": {
+        "must": {
+          "multi_match" : {
+            "query" : "${text}" 
+          }
+        }
+      }      
+    },
+    "_source": ["id", "author", "authorUser.displayName", "name", "users"],  
+    "highlight" : {
+      "fields" : {
+        "*" : {}
+      }
+    }
+  }`
+
+  return awsApi('POST', indexOrAlias + '/_search', body)
+}
+
 const awsApi = async (method, path, body, contentType) => {
   return new Promise((resolve, reject) => {
     const endpoint = new AWS.Endpoint(domain)
@@ -135,5 +157,6 @@ const awsApi = async (method, path, body, contentType) => {
   getReadAliasIndices: getReadAliasIndices,
   getWriteAliasIndices: getWriteAliasIndices,
   changeAlias: changeAlias,
-  reindex: reindex
+  reindex: reindex,
+  search
  }

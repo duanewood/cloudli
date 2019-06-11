@@ -1,11 +1,12 @@
 const fs = require('fs-extra')
 const path = require('path')
 const chalk = require('chalk')
-const jsome = require('jsome')
+const { logger } = require('../../commonutils')
 
-const visit = async (doc, basePath) => {
-  console.log()
-  console.log(chalk.yellow(doc.ref.path))
+const visit = async (doc, basePath, verbose) => {
+  if (verbose) {
+    logger.info(chalk.green(doc.ref.path))  
+  }
 
   const filename = `${doc.id}.json`
   const docDir = doc.ref.path.slice(0, doc.ref.path.lastIndexOf('/'))
@@ -14,7 +15,6 @@ const visit = async (doc, basePath) => {
 
   fs.ensureDirSync(fullDir)
   fs.writeJsonSync(fullName, doc.data(), { spaces: 2 })
-  // jsome(doc.data())
 }
 
 module.exports = visit

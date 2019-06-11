@@ -1,11 +1,13 @@
 "use strict"
 
+const debug = require('debug')('bundle:traverseBatch')
 const admin = require('firebase-admin')
 const chalk = require("chalk")
-const ProgressBar = require("progress")
-const Snapshot = require("./snapshot")
 const moment = require('moment')
+const TraverseBatchProgress = require('./TraverseBatchProgress')
+const Snapshot = require("./snapshot")
 const defaultVisitBatch = require('../visitors/visitBatch')
+const { logger } = require('../../commonutils')
 
 /**
  * TraverseBatch allows batch processing of documents in a Firestore database.
@@ -14,7 +16,7 @@ const defaultVisitBatch = require('../visitors/visitBatch')
  * 
  * The supplied visit function is called for each selected document with a doc object.
  * The doc parameter to the function is a simulation of DocumentSnapshot
- * but only contains id, name, and ref.path properties, and data() funciton.
+ * but only contains id, name, and ref.path properties, and data() function.
  * 
  * This code was adapted from the FirestoreDelete class in the google firebase-tools 
  * project on github.  
@@ -22,17 +24,7 @@ const defaultVisitBatch = require('../visitors/visitBatch')
  * The approach is to use the runQuery api that takes a StructuredQuery and then iterate 
  * over the result in batches using a queueLoop (@see #_recursiveBatchVisit).  
  * 
- * Note that there are tunable parameters in _recursiveBatchVisit:
- * 
- *    readBatchSize - limit for query (1000)
- *    visitBatchSize - number to visit at one time (100)
- *    maxPendingVisits - max number of visit batches to run concurrently (original: 1)
- * 
- *    Note: Each visitBatch is a Promise.all of async visit calls so the potential promise count
- *          for visit calls can be up to visitBatchSize * maxPendingVisits.  These parameters
- *          were originally selected because the visitBatches were one call to delete a collection
- *          of document id's in the FirestoreDelete code.  Since each document is now visited 
- *          separately, the number of promises is higher.
+ * Enable debug logging with DEBUG=bundle:traverseBatch
  * 
  * @see https://github.com/firebase/firebase-tools/blob/master/src/firestore/delete.js
  * @see https://cloud.google.com/nodejs/docs/reference/firestore/1.3.x/v1.FirestoreClient#runQuery
@@ -79,7 +71,8 @@ function TraverseBatch(client, project, path, options, batchConfig) {
   this.min = Boolean(options.min)
   this.collectionId = options.collectionId
   this.filterRegex = options.filterRegex ? RegExp(options.filterRegex) : null
-  
+  this.progressBar = new TraverseBatchProgress()
+
   // Remove any leading or trailing slashes from the path
   if (this.path) {
     this.path = this.path.replace(/(^\/+|\/+$)/g, "")
@@ -245,17 +238,6 @@ TraverseBatch.prototype._collectionDescendantsQuery = function(
             }
           }
         }
-        // , {
-        //   fieldFilter: {
-        //     field: {
-        //       fieldPath: "updateTimestamp"
-        //     },
-        //     op: "GREATER_THAN_OR_EQUAL",
-        //     value: {              
-        //       timestampValue: startOfToday
-        //     }
-        //   }
-        // }
       ]
     }
   }
@@ -389,18 +371,6 @@ TraverseBatch.prototype._getDescendantBatch = function(
 }
 
 /**
- * Progress bar shared by the class.
- * 
- * TODO: consider generalizing for callback (in visitor)
- */
-TraverseBatch.progressBar = new ProgressBar(
-  "Processed :current docs (:rate docs/s)",
-  {
-    total: Number.MAX_SAFE_INTEGER
-  }
-)
-
-/**
  * Repeatedly query for descendants of a path and process them in batches
  *
  * @return {Promise} a promise for the entire operation.
@@ -439,7 +409,7 @@ TraverseBatch.prototype._recursiveBatchVisit = function() {
     }
 
     if (failures.length > 0) {
-      console.error("Found " + failures.length + " failed visits, failing.")
+      debug("Found " + failures.length + " failed visits, failing.")
       return true
     }
 
@@ -465,7 +435,7 @@ TraverseBatch.prototype._recursiveBatchVisit = function() {
           lastDocName = docs[docs.length - 1].name
         })
         .catch(function(e) {
-          console.error("Failed to fetch page after " + lastDocName, e)
+          debug("Failed to fetch page after " + lastDocName, e.message)
           pageIncoming = false
         })
     }
@@ -487,22 +457,13 @@ TraverseBatch.prototype._recursiveBatchVisit = function() {
 
     numPendingVisits++
 
-    // TODO: consider sync, async options
-    //      - could be more efficient for sync operations
-
-    // Promise.all(toVisit.map(async doc => {
-    //   return self.visit(new Snapshot(doc, self.parent)).then(() => {
-    //     TraverseBatch.progressBar.tick(1)
-    //   })
-    // })).then(() =>  {
-
     const snapshots = toVisit.map(doc => new Snapshot(doc, self.parent))
 
-    self.visitBatch(snapshots, count => TraverseBatch.progressBar.tick(count))
+    self.visitBatch(snapshots, count => self.progressBar.tick(count))
     .then(() =>  {
         numPendingVisits--
     }).catch(error => {
-      console.error("Fatal error processing docs ")
+      debug("Fatal error processing docs ", error.message)
       failures = failures.concat(toVisit)
       numPendingVisits--
     })
@@ -558,13 +519,12 @@ TraverseBatch.prototype._visitPath = function() {
           // if there is a filterRegex, only visit if matches
           if (self._filterDoc(doc)) {
             const snapshots = [new Snapshot(doc, self.parent)]
-            return self.visitBatch(snapshots, count => TraverseBatch.progressBar.tick(count))  
+            return self.visitBatch(snapshots, count => self.progressBar.tick(count))  
           } else {
             return Promise.resolve()
           }
-        }).catch(err => {
-          
-          console.log("visitPath:initialVisit:error", err)
+        }).catch(err => {          
+          debug('visitPath:initialVisit:error', err.message)
           if (self.allDescendants) {
             // On a recursive visit, we are insensitive to
             // failures of the initial visit
@@ -597,22 +557,18 @@ TraverseBatch.prototype.visitDatabase = function() {
   var self = this
   return this.client.listCollectionIds({ parent: this.parent })
     .catch(function(err) {
-      console.error("visitDatabase:listCollectionIds:error")
+      debug("visitDatabase:listCollectionIds:error", err.message)
       return Promise.reject(new Error("Unable to list collection IDs"))
     })
     .then(function([collectionIds]) {
       var promises = []
 
-      console.info(
+      logger.info(chalk.green(
         "Visiting the following collections: " +
-          collectionIds.join(", ")
-      )
+          collectionIds.join(", ")))
 
       for (var i = 0; i < collectionIds.length; i++) {
         var collectionId = collectionIds[i]
-        // var visitOp = new TraverseBatch(self.client, self.project, collectionId, {
-        //   recursive: true
-        // }, self.visit)
 
         const options = {
           shallow: self.shallow,
@@ -654,8 +610,7 @@ TraverseBatch.prototype.execute = function() {
   var self = this
   if (self.path) {
     return self._visitPath().then(() => {
-      TraverseBatch.progressBar.render(undefined, true) // force update of progress bar
-      console.log()
+      self.progressBar.forceRender()
     })
   } else {
     return self.visitDatabase()

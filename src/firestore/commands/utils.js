@@ -1,5 +1,6 @@
 const firestore = require('@google-cloud/firestore')
 const chalk = require('chalk')
+const { isDocumentPath } = require('../api/apiutils')
 
 const getClient = config => {
   if (!config.has('firebase.keyFilename')) {
@@ -48,7 +49,7 @@ const traverseOptionsFromCommandOptions = (docSetId, options, config) => {
   let traverseOptions = {}
   if (docSetId) {  
     if (options.path || options.collectionId || options.recursive || options.shallow) { 
-      throw new Error(`The optional docSetId cannot be specified with any of these options: path, collectionId, recursive, shallow, filterRegex`)
+      throw new Error(`The optional docSetId cannot be specified with any of these options: path, collectionId, recursive, shallow`)
     }
 
     if (!config.has(`firestore.docSets.${docSetId}`)) {
@@ -105,8 +106,49 @@ const traverseOptionsFromCommandOptions = (docSetId, options, config) => {
   return traverseOptions
 }
 
+const traverseOptionsSummary = (traverseOptions) => {
+  let summary = ''
+  if (traverseOptions.allFiles) {
+    summary = `All documents in the database`
+  } else if (traverseOptions.path) {
+    if (isDocumentPath(traverseOptions.path)) {
+      summary += `The document '${traverseOptions.path}'`
+      if (traverseOptions.recursive) {
+        summary += ' and all documents in all collections under the document (recursive).'
+      } else if (traverseOptions.shallow) {
+        summary += ' and all documents in the collections directly under the document (shallow).'
+      } else {
+        summary += '.'
+      }
+    } else {
+      summary += `All documents in the collection '${traverseOptions.path}'`
+      if (traverseOptions.recursive) {
+        summary += ' and all documents in all collections under the collection (recursive).'
+      } else if (traverseOptions.shallow) {
+        summary += ' and all documents in the collections directly under the document (shallow).'
+      }
+    }
+  }
+
+  if (traverseOptions.collectionId) {
+    if (traverseOptions.filterRegex) {
+      summary += ` Only documents with collection id '${traverseOptions.collectionId}' and matching regex '${traverseOptions.filterRegex}' will be included.`
+    } else {
+      summary += ` Only documents with collection id '${traverseOptions.collectionId}'.`
+    }
+  } else if (traverseOptions.filterRegex) {
+    summary += ` Only documents with a path matching regex '${traverseOptions.filterRegex}' will be included.`
+  }
+  if (traverseOptions.min) {
+    summary += ' Only path and id are returned.'
+  }
+
+  return summary
+}
+
 module.exports = {
   getClient,
   getRefProp,
-  traverseOptionsFromCommandOptions
+  traverseOptionsFromCommandOptions,
+  traverseOptionsSummary
 }

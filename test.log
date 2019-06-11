@@ -1,0 +1,5 @@
+Test Action Start
+[2019-06-09T14:48:03.755Z] INFO (35057 on Duanes-MacBook-Pro.local): Info msg
+[2019-06-09T14:48:03.757Z] WARN (35057 on Duanes-MacBook-Pro.local): Warn msg
+[2019-06-09T14:48:03.758Z] ERROR (35057 on Duanes-MacBook-Pro.local): Error msg
+Test Action End

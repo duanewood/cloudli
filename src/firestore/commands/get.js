@@ -1,6 +1,7 @@
 const chalk = require('chalk')
 const showDoc = require('../visitors/showDoc')
 const apiutils = require('../api/apiutils')
+const { logger } = require('../../commonutils')
 
 const getAction = async (path, options, config, admin) => {
 
@@ -22,7 +23,7 @@ const getAction = async (path, options, config, admin) => {
       })
     }
   } catch(error) {
-    console.error(chalk.red(`Error: ${error.message}`))
+    logger.error(chalk.red(`Error: ${error.message}`))
     process.exit(1)
   }
 }

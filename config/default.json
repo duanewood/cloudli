@@ -12,6 +12,9 @@
   "debug": {
     "outputPath": "./debug"
   },
+  "logger": {
+    "prettyPrint": true
+  },
   "elasticsearch": {
     "defaultIndex": "*",
     "indices": [

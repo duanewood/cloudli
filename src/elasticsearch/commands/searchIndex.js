@@ -70,11 +70,6 @@ function highlightToConsole(key, highlight) {
   console.log(chalk.yellowBright.underline(key))
   const chalkString = highlight.replace(/<em>([\s\S]*)<\/em>/g, (match, p1) => chalk.black.bgYellow(p1))
   console.log(chalkString)
-  // const emSplits = highlight.split('<em>')
-  // emSplits.forEach(split => {
-  //   emEndSplits = split.split('</em>')
-  //   console.log(chalk`{black.bgYellow ${emSplits[0]}}{blue ${emSplits.length > 1 ? emSplits[1] : '' }}`)
-  // })
 }
 
 module.exports = {

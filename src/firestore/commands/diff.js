@@ -4,7 +4,8 @@ const chalk = require('chalk')
 const TraverseBatch = require('../api/traverseBatch')
 const DiffVisitor = require('../visitors/diff')
 const utils = require('./utils')
-const commonutils = require('../../commonutils')
+const { logger, confirm } = require('../../commonutils')
+
 
 const diffAction = async (basePath, docSetId, options, config, admin) => {
 
@@ -49,9 +50,12 @@ const diffAction = async (basePath, docSetId, options, config, admin) => {
 
     const traverseOptions = utils.traverseOptionsFromCommandOptions(docSetId, options, config)
 
-    const confirmed = await commonutils.confirm(`About to diff firestore documents with files under ${basePath}.`
-                                    + ` Are you sure?`)
+    const confirmed = await confirm(`\nAbout to diff firestore documents with files under ${basePath}.`
+                                    + ` Are you sure?\n`)
     if (confirmed) {
+      console.log('')
+      logger.info(chalk.green(`Starting diff of documents in ${basePath}`))
+
       const client = utils.getClient(config)
       const projectId = await client.getProjectId()
   
@@ -65,11 +69,12 @@ const diffAction = async (basePath, docSetId, options, config, admin) => {
       await visitor.visitFileSystem()
       visitor.close()
       if (htmlFilename) {
-        console.log(chalk.yellow(`HTML diff results written to: ${htmlFilename}`))
+        logger.info(chalk.yellow(`HTML diff results written to: ${htmlFilename}`))
       }
+      logger.info(chalk.green(`Completed diff`))
     }
   } catch(error) {
-    console.error(chalk.red(`Error: ${error.message}`))
+    logger.error(chalk.red(`Error: ${error.message}`))
     process.exit(1)
   }
 }

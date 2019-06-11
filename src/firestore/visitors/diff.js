@@ -3,6 +3,7 @@ const path = require('path')
 const chalk = require('chalk')
 const jsome = require('jsome')
 const jsondiffpatch = require('jsondiffpatch')
+const { logger } = require('../../commonutils')
 
 let css
 
@@ -95,10 +96,13 @@ class DiffVisitor {
   
     this.visited.push(doc.ref.path)
     if (!fs.existsSync(fullName)) {
-      const addedMsg = `ADDED: '${doc.ref.path}'<br/>(File '${fullName}' not found)`
-      console.log(chalk.green(addedMsg))
+
+      const addedMsg1 = `ADDED: '${doc.ref.path}'`
+      const addedMsg2 = `(File '${fullName}' not found)`
+      logger.info(chalk.green(addedMsg1))
+      logger.info(chalk.green(addedMsg2))
       if (this.htmlFilename) {
-        this.writeStream.write(getAddedHtml(addedMsg))
+        this.writeStream.write(getAddedHtml(addedMsg1 + '<br/' + addedMsg2))
       } 
     } else {
       const fileDoc = fs.readJsonSync(fullName)
@@ -107,19 +111,21 @@ class DiffVisitor {
       try {
         const delta = jsondiffpatch.diff(fileDoc, doc.data())
         if (delta) {
-          console.log(chalk.yellow(`Changed: ${doc.ref.path}`))
+          logger.info(chalk.yellow(`Changed: ${doc.ref.path}`))
           if (this.htmlFilename) {
             const visualDiff = jsondiffpatch.formatters.html.format(delta, fileDoc)
             // const annotatedDiff = jsondiffpatch.formatters.annotated.format(delta, fileDoc)
             const msg = `CHANGED: ${doc.ref.path}`
             this.writeStream.write(getDiffHtml(msg, visualDiff, null))
           } 
-          jsondiffpatch.console.log(delta)  
+          // jsondiffpatch.console.log(delta)  
+          const output = jsondiffpatch.formatters.console.format(delta)
+          logger.info(output)
         } else {
-          console.log(chalk.cyan(`Match: ${doc.ref.path}`))
+          logger.info(chalk.cyan(`Match: ${doc.ref.path}`))
         }
       } catch (error) {
-        console.log(chalk.red(error.message))
+        logger.error(chalk.red(error.message))
         throw error
       }
     }
@@ -128,10 +134,12 @@ class DiffVisitor {
   writeDeleteMsg(deletedPath) {
     const fullName = path.join(this.basePath, deletedPath)
 
-    const msg = `DELETED: '${deletedPath}'<br/>(Firestore doc for '${fullName}' not found)`
-    console.log(chalk.red(msg))
+    const msg1 = `DELETED: '${deletedPath}'`
+    const msg2 = `(Firestore doc for '${fullName}' not found)`
+    logger.info(chalk.red(msg1))
+    logger.info(chalk.red(msg2))
     if (this.htmlFilename) {
-      this.writeStream.write(getDeletedHtml(msg))
+      this.writeStream.write(getDeletedHtml(msg1 + '<br/>' + msg2))
     } 
   }
   

@@ -43,6 +43,8 @@ exports.addCommand = (program, config, admin) => {
   .option('-f, --filter <regex>', 'Filter results using the supplied regular expression regex')
   .option('-i, --idfilter <id>', 'Filter results to documents with id.  Cannot be used with --filter')
   .option('-b, --basePath <basePath>', 'Specifies the base backup path.  Overrides firestore.backupBasePath in config.')
+  .option('-y, --bypassConfirm', 'Bypasses confirmation prompt. Required when non-interactive stdout.')
+  .option('-v, --verbose', 'Displays document paths during backup.')
   .action((docSetId, options) => backup.backupAction(docSetId, options, config, admin))
 
   program
@@ -61,6 +63,8 @@ exports.addCommand = (program, config, admin) => {
   .option('-f, --filter <regex>', 'Filter results using the supplied regular expression regex')
   .option('-i, --idfilter <id>', 'Filter results to documents with id.  Cannot be used with --filter')
   .option('-b, --basePath <basePath>', 'Specifies the base backup path.  Overrides firestore.backupBasePath in config.')
+  .option('-y, --bypassConfirm', 'Bypasses confirmation prompt. Required when non-interactive stdout.')
+  .option('-v, --verbose', 'Displays document paths during delete.')
   .action((docSetId, options) => deleteDocs.deleteAction(docSetId, options, config, admin))
 
   program

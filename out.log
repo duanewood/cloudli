@@ -1,0 +1,74 @@
+? 
+About to diff firestore documents with files under backups/2019-06-09T22-33-21.2
+19Z. Are you sure?
+ (y/N) [7D[7C[2K[1A[2K[1A[2K[1A[2K[G? 
+About to diff firestore documents with files under backups/2019-06-09T22-33-21.2
+19Z. Are you sure?
+ (y/N) y[8D[8C[2K[1A[2K[1A[2K[1A[2K[G? 
+About to diff firestore documents with files under backups/2019-06-09T22-33-21.2
+19Z. Are you sure?
+ Yes[4D[4C
+
+{"level":30,"time":1560120674970,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Starting diff of documents in backups/2019-06-09T22-33-21.219Z"}
+{"level":30,"time":1560120677062,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"ADDED: 'testCollection/docAddede2'"}
+{"level":30,"time":1560120677063,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"(File 'backups/2019-06-09T22-33-21.219Z/testCollection/docAddede2.json' not found)"}
+{"level":30,"time":1560120677070,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/bundles/0d6ef812-37c6-457c-b1ea-faa6d1e7aa12"}
+{"level":30,"time":1560120677072,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/bundles/0e5fea1b-f2a7-414c-b049-d8a2bd679c2d"}
+{"level":30,"time":1560120677073,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/bundles/1254e18c-6541-46f3-a0c1-1af908d603ca"}
+{"level":30,"time":1560120677076,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/bundles/418808a2-7454-47e2-967d-b8c4047ad9ef"}
+{"level":30,"time":1560120677077,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/bundles/44ED5985-B0E9-494B-8DFF-B838FF2E7F13"}
+{"level":30,"time":1560120677079,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/bundles/56c962cd-53d3-4503-a76a-54b45026b1ef"}
+{"level":30,"time":1560120677080,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/bundles/57e5c060-b921-4960-bd7f-57d75f2bf136"}
+{"level":30,"time":1560120677081,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/bundles/622d7399-1c28-4a4b-ab5e-c4fb5f7aaea9"}
+{"level":30,"time":1560120677083,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/bundles/86be80dc-a03b-4506-82c8-6b6618caf94b"}
+{"level":30,"time":1560120677085,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/bundles/8a63c31e-fd4b-4ae4-a59f-2092d4f00339"}
+{"level":30,"time":1560120677088,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/bundles/ACE564BF-EDFB-42D4-B61B-10B10E3D1566"}
+{"level":30,"time":1560120677089,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/bundles/ab4a95a8-643c-4ecd-b4b4-0faa7a30577c"}
+{"level":30,"time":1560120677090,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/bundles/b5cd43e4-5fc7-4bdd-895e-affc27a459fc"}
+{"level":30,"time":1560120677093,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/bundles/e4967218-638f-4d84-bc80-f17d5671369d"}
+{"level":30,"time":1560120677094,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/bundles/ed18d036-7d95-4f95-86b1-d8679b520a5f"}
+{"level":30,"time":1560120677095,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/bundles/f0a0e61d-0c7b-4cd8-8b5f-e2ac32e0bef3"}
+{"level":30,"time":1560120677095,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/summaries/44ED5985-B0E9-494B-8DFF-B838FF2E7F13"}
+{"level":30,"time":1560120677096,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/summaries/57e5c060-b921-4960-bd7f-57d75f2bf136"}
+{"level":30,"time":1560120677097,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/summaries/86be80dc-a03b-4506-82c8-6b6618caf94b"}
+{"level":30,"time":1560120677097,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Changed: testCollection/testDoc/summaries/ab4a95a8-643c-4ecd-b4b4-0faa7a30577c"}
+{"level":30,"time":1560120677100,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"{\n  authorUser: {\n    displayName: \"Duane Wood\" => \"Duane Wood Edited\"\n  }\n}"}
+{"level":30,"time":1560120677100,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/summaries/b5cd43e4-5fc7-4bdd-895e-affc27a459fc"}
+{"level":30,"time":1560120677101,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/summaries/e4967218-638f-4d84-bc80-f17d5671369d"}
+{"level":30,"time":1560120677102,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/summaries/ed18d036-7d95-4f95-86b1-d8679b520a5f"}
+{"level":30,"time":1560120677102,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/DXmnNRjncvWSO7hvsObrW7Vaq9V2"}
+{"level":30,"time":1560120677103,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/DXmnNRjncvWSO7hvsObrW7Vaq9V2/bundles/0d6a38b2-76df-4ec2-bdea-cab36c56c6c8"}
+{"level":30,"time":1560120677105,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/DXmnNRjncvWSO7hvsObrW7Vaq9V2/bundles/418808a2-7454-47e2-967d-b8c4047ad9ef"}
+{"level":30,"time":1560120677107,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/DXmnNRjncvWSO7hvsObrW7Vaq9V2/bundles/8a63c31e-fd4b-4ae4-a59f-2092d4f00339"}
+{"level":30,"time":1560120677108,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/DXmnNRjncvWSO7hvsObrW7Vaq9V2/bundles/f0a0e61d-0c7b-4cd8-8b5f-e2ac32e0bef3"}
+{"level":30,"time":1560120677109,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1"}
+{"level":30,"time":1560120677110,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1/bundles/0e5fea1b-f2a7-414c-b049-d8a2bd679c2d"}
+{"level":30,"time":1560120677111,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1/bundles/1254e18c-6541-46f3-a0c1-1af908d603ca"}
+{"level":30,"time":1560120677113,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1/bundles/44ED5985-B0E9-494B-8DFF-B838FF2E7F13"}
+{"level":30,"time":1560120677116,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1/bundles/56c962cd-53d3-4503-a76a-54b45026b1ef"}
+{"level":30,"time":1560120677117,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1/bundles/622d7399-1c28-4a4b-ab5e-c4fb5f7aaea9"}
+{"level":30,"time":1560120677119,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1/bundles/86be80dc-a03b-4506-82c8-6b6618caf94b"}
+{"level":30,"time":1560120677120,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1/bundles/9f229551-58ec-43a9-a24c-7585014976e4"}
+{"level":30,"time":1560120677120,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1/bundles/9f262878-d61d-4468-b86b-c08b696c3073"}
+{"level":30,"time":1560120677123,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1/bundles/ACE564BF-EDFB-42D4-B61B-10B10E3D1566"}
+{"level":30,"time":1560120677129,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1/bundles/E2462586-5CE6-4E91-8E4B-EEFF205714F9"}
+{"level":30,"time":1560120677130,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1/bundles/ab4a95a8-643c-4ecd-b4b4-0faa7a30577c"}
+{"level":30,"time":1560120677131,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1/bundles/b5cd43e4-5fc7-4bdd-895e-affc27a459fc"}
+{"level":30,"time":1560120677133,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1/bundles/e4967218-638f-4d84-bc80-f17d5671369d"}
+{"level":30,"time":1560120677134,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1/bundles/ed18d036-7d95-4f95-86b1-d8679b520a5f"}
+{"level":30,"time":1560120677135,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1/images/1znER9UFrSLDIEVnbJ9w"}
+{"level":30,"time":1560120677135,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1/images/5DYID9iAyyWVhdCSXvWB"}
+{"level":30,"time":1560120677136,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1/images/IPtTKl3XsWaEAFotGyDW"}
+{"level":30,"time":1560120677136,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1/images/YbrwatN7k5VIHucMUcXB"}
+{"level":30,"time":1560120677136,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1/images/dqhGn5NyU216E4Y9RAvy"}
+{"level":30,"time":1560120677137,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1/images/iNPcWHF9EgcRoX8XFzCQ"}
+{"level":30,"time":1560120677137,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1/images/n8dckhcaj9NWO7QiO3HR"}
+{"level":30,"time":1560120677138,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/Q3Z2xGFNERRRnilZzM9VhY4LlNh1/images/sEvFsKfN6mok0jBwdO8Z"}
+{"level":30,"time":1560120677138,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/VbDZgdYXzSRd5s6d3lrKMXtvV8y2"}
+{"level":30,"time":1560120677139,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/VbDZgdYXzSRd5s6d3lrKMXtvV8y2/bundles/0d6ef812-37c6-457c-b1ea-faa6d1e7aa12"}
+{"level":30,"time":1560120677140,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDoc/users/VbDZgdYXzSRd5s6d3lrKMXtvV8y2/bundles/57e5c060-b921-4960-bd7f-57d75f2bf136"}
+{"level":30,"time":1560120677143,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Match: testCollection/testDocAddded"}
+
+{"level":30,"time":1560120677290,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"DELETED: 'testCollection/testDoc/summaries/ACE564BF-EDFB-42D4-B61B-10B10E3D1566'"}
+{"level":30,"time":1560120677290,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"(Firestore doc for 'backups/2019-06-09T22-33-21.219Z/testCollection/testDoc/summaries/ACE564BF-EDFB-42D4-B61B-10B10E3D1566' not found)"}
+{"level":30,"time":1560120677293,"v":1,"pid":38954,"hostname":"Duanes-MacBook-Pro.local","msg":"Completed diff"}

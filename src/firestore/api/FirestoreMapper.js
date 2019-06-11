@@ -21,7 +21,7 @@ const FirestoreMapper = value => {
   if (value && typeof value === 'object') {
     if (only(value, ['_seconds', '_nanoseconds'])) {
       value = new admin.firestore.Timestamp(Number(value._seconds), Number(value._nanoseconds))
-    } else if (only(value, ['latitude', 'logitude'])) {
+    } else if (only(value, ['latitude', 'longitude'])) {
       value = new admin.firestore.GeoPoint(value.latitude, value.longitude)
     } else {
       const keys = Object.keys(value)

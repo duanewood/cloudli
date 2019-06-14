@@ -1,7 +1,6 @@
 const fs = require('fs-extra')
 const path = require('path')
-const chalk = require('chalk')
-const jsome = require('jsome')
+const Colors = require('../../Colors')
 const jsondiffpatch = require('jsondiffpatch')
 const { logger } = require('../../commonutils')
 
@@ -99,8 +98,8 @@ class DiffVisitor {
 
       const addedMsg1 = `ADDED: '${doc.ref.path}'`
       const addedMsg2 = `(File '${fullName}' not found)`
-      logger.info(chalk.green(addedMsg1))
-      logger.info(chalk.green(addedMsg2))
+      logger.info(Colors.addItem(addedMsg1))
+      logger.info(Colors.addItem(addedMsg2))
       if (this.htmlFilename) {
         this.writeStream.write(getAddedHtml(addedMsg1 + '<br/' + addedMsg2))
       } 
@@ -111,21 +110,19 @@ class DiffVisitor {
       try {
         const delta = jsondiffpatch.diff(fileDoc, doc.data())
         if (delta) {
-          logger.info(chalk.yellow(`Changed: ${doc.ref.path}`))
+          logger.info(Colors.changeItem(`Changed: ${doc.ref.path}`))
           if (this.htmlFilename) {
             const visualDiff = jsondiffpatch.formatters.html.format(delta, fileDoc)
-            // const annotatedDiff = jsondiffpatch.formatters.annotated.format(delta, fileDoc)
             const msg = `CHANGED: ${doc.ref.path}`
             this.writeStream.write(getDiffHtml(msg, visualDiff, null))
           } 
-          // jsondiffpatch.console.log(delta)  
           const output = jsondiffpatch.formatters.console.format(delta)
           logger.info(output)
         } else {
-          logger.info(chalk.cyan(`Match: ${doc.ref.path}`))
+          logger.info(Colors.matchItem(`Match: ${doc.ref.path}`))
         }
       } catch (error) {
-        logger.error(chalk.red(error.message))
+        logger.error(Colors.error(error.message))
         throw error
       }
     }
@@ -136,8 +133,8 @@ class DiffVisitor {
 
     const msg1 = `DELETED: '${deletedPath}'`
     const msg2 = `(Firestore doc for '${fullName}' not found)`
-    logger.info(chalk.red(msg1))
-    logger.info(chalk.red(msg2))
+    logger.info(Colors.deleteItem(msg1))
+    logger.info(Colors.deleteItem(msg2))
     if (this.htmlFilename) {
       this.writeStream.write(getDeletedHtml(msg1 + '<br/>' + msg2))
     } 

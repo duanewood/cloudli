@@ -1,6 +1,6 @@
 const chalk = require('chalk')
 // const traverse = require('../../firestore/api/traverse')
-const TraverseBatch = require('../../firestore/api/traverseBatch')
+const TraverseBatch = require('../../firestore/api/TraverseBatch')
 const esapi = require('../api/esapi')
 const commonutils = require('../../commonutils')
 const firestoreUtils = require('../../firestore/commands/utils')

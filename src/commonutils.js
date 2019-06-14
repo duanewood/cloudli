@@ -28,8 +28,8 @@ module.exports.initLogger = function initLogger(pinoDebug, pretty) {
   const logger = pino({ prettyPrint, prettifier, level: process.env.LEVEL || 'info' })
   pinoDebug(logger)
 
-  // Note: To map debug messages to pino levels
-  
+  // Note: To map debug messages to pino levels:
+  //
   // pinoDebug(logger, {
   //   auto: true, // default
   //   map: {

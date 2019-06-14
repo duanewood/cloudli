@@ -48,6 +48,14 @@
       "type": "node",
       "request": "launch",
       "console": "integratedTerminal",
+      "name": "Launch node.js firestore-get command",
+      "program": "${workspaceFolder}/src/index.js",
+      "args": ["firestore-get", "col1/doc1", "-v"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
       "name": "Launch node.js backup command",
       "program": "${workspaceFolder}/src/index.js",
       "args": ["backup", "bundles"]
@@ -79,9 +87,9 @@
       "type": "node",
       "request": "launch",
       "console": "integratedTerminal",
-      "name": "Launch node.js firestore command",
+      "name": "Launch node.js firestore-docs command",
       "program": "${workspaceFolder}/src/index.js",
-      "args": ["firestore-docs", "-p", "bundles/f0a0e61d-0c7b-4cd8-8b5f-e2ac32e0bef3"]
+      "args": ["firestore-docs", "-p", "testCollection/testDoc/users", "-s"]
     },
     {
       "name": "Chrome",

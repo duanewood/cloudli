@@ -1,4 +1,5 @@
 const chalk = require('chalk')
+const debug = require('debug')('bundle:deleteVisitBatch')
 const { logger } = require('../../commonutils')
 
 const deleteVisitBatch = (db, verbose) => async (docRefs, tick) => {
@@ -11,8 +12,10 @@ const deleteVisitBatch = (db, verbose) => async (docRefs, tick) => {
     batch.delete(ref, docRef.doc)
   })
 
-  logger.debug(chalk.cyan(`Deleting ${docRefs.length} files`))
-  return batch.commit()
+  debug(chalk.green(`Deleting ${docRefs.length} files`))
+  return batch.commit().then(() => {
+    tick(docRefs.length)
+  })
 }
 
 module.exports = deleteVisitBatch

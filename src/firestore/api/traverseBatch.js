@@ -9,6 +9,8 @@ const Snapshot = require("./snapshot")
 const defaultVisitBatch = require('../visitors/visitBatch')
 const { logger } = require('../../commonutils')
 
+const MIN_ID = "__id-9223372036854775808__"
+
 /**
  * TraverseBatch allows batch processing of documents in a Firestore database.
  * The path can be a document or a collection and allows shallow or recursive traversal 
@@ -106,6 +108,8 @@ function TraverseBatch(client, project, path, options, batchConfig) {
   this.maxPendingVisits = batchConfig.maxPendingVisits || 1   // delete was 15
   /** max number of records to keep in work queue */
   this.maxQueueSize = batchConfig.maxQueueSize || (this.visitBatchSize * this.maxPendingVisits * 2)
+
+  this._validateOptions()
 }
 
 /**
@@ -207,10 +211,13 @@ TraverseBatch.prototype._collectionDescendantsQuery = function(
 ) {
   var nullChar = String.fromCharCode(0)
 
-  let startAt = this.parent + "/" + this.path + "/" + nullChar
-  let endAt = this.parent + "/" + this.path + nullChar + "/" + nullChar  
+  // TODO: Handle case for shallow root collection and shallow non-root collection behavior differences
+  //       For non-root shallow, use path = parent document of path with collectionId set to collectionId from path
+  //       Check to make sure collectionId not specified (if so - don't modify)
+  //       Note: shallow = !allDescendents
 
-  // const startOfToday = admin.firestore.Timestamp.fromDate(moment().startOf('day').toDate())
+  let startAt = this.parent + "/" + this.path + "/" + MIN_ID
+  let endAt = this.parent + "/" + this.path + nullChar + "/" + MIN_ID
 
   var where = {
     compositeFilter: {

@@ -1,7 +1,7 @@
 const fs = require('fs-extra')
 const path = require('path')
-const chalk = require('chalk')
-const TraverseBatch = require('../api/traverseBatch')
+const Colors = require('../../Colors')
+const TraverseBatch = require('../api/TraverseBatch')
 const backup = require('../visitors/backup')
 const utils = require('./utils')
 const { logger, confirm } = require('../../commonutils')
@@ -26,11 +26,12 @@ const backupAction = async (docSetId, options, config, admin) => {
       throw new Error('--bypassConfirm option required when redirecting output')
     }
 
-    const confirmed = options.bypassConfirm || await confirm(`About to backup documents to ${backupPath}.`
-                                    + ` Are you sure?`)
+    logger.info(Colors.prep(`About to backup documents to ${backupPath}.`))
+    logger.info(Colors.prep('Documents include: ' + utils.traverseOptionsSummary(traverseOptions)))
+    const confirmed = options.bypassConfirm || await confirm(Colors.warning(`Are you sure?`))
+
     if (confirmed) {
-      console.log('')
-      logger.info(chalk.green(`Starting backup of documents to ${backupPath}`))
+      logger.info(Colors.start(`Starting backup of documents to ${backupPath}`))
       const client = utils.getClient(config)
       const projectId = await client.getProjectId()
   
@@ -46,10 +47,10 @@ const backupAction = async (docSetId, options, config, admin) => {
       const path = traverseOptions.path || null
       const traverseBatch = new TraverseBatch(client, projectId, path, traverseOptions, batchOptions)
       await traverseBatch.execute()    
-      logger.info(chalk.green(`Completed backup of ${traverseBatch.progressBar.curr} documents`))
+      logger.info(Colors.complete(`Completed backup of ${traverseBatch.progressBar.curr} documents`))
     }
   } catch(error) {
-    logger.error(chalk.red(`Error: ${error.message}`))
+    logger.error(Colors.error(`Error: ${error.message}`))
     process.exit(1)
   }
 }

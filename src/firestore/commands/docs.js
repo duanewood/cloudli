@@ -1,5 +1,5 @@
-const chalk = require('chalk')
-const TraverseBatch = require('../api/traverseBatch')
+const Colors = require('../../Colors')
+const TraverseBatch = require('../api/TraverseBatch')
 const showDoc = require('../visitors/showDoc')
 const utils = require('./utils')
 const { logger } = require('../../commonutils')
@@ -8,7 +8,8 @@ const getDocsAction = async (docSetId, options, config, admin) => {
 
   try {
     const traverseOptions = utils.traverseOptionsFromCommandOptions(docSetId, options, config)
-    logger.info(chalk.blue(utils.traverseOptionsSummary(traverseOptions)))
+
+    logger.info(Colors.start('Getting documents including: ' + utils.traverseOptionsSummary(traverseOptions)))
     const client = utils.getClient(config)
     const projectId = await client.getProjectId()
 
@@ -17,10 +18,10 @@ const getDocsAction = async (docSetId, options, config, admin) => {
     const visit = doc => showDoc(doc, verbose)
     const batchOptions = { visit }
     const traverseBatch = new TraverseBatch(client, projectId, path, traverseOptions, batchOptions )
-    return await traverseBatch.execute()    
-
+    await traverseBatch.execute()    
+    logger.info(Colors.complete(`Completed getting ${traverseBatch.progressBar.curr} documents`))
   } catch(error) {
-    logger.error(chalk.red(`Error: ${error.message}`))
+    logger.error(Colors.error(`Error: ${error.message}`))
     process.exit(1)
   }
 }

@@ -1,11 +1,11 @@
 const fs = require('fs-extra')
 const path = require('path')
-const chalk = require('chalk')
+const Colors = require('../../Colors')
 const { logger } = require('../../commonutils')
 
 const visit = async (doc, basePath, verbose) => {
   if (verbose) {
-    logger.info(chalk.green(doc.ref.path))  
+    logger.info(Colors.info(doc.ref.path))  
   }
 
   const filename = `${doc.id}.json`

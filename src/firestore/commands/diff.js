@@ -1,7 +1,7 @@
 const fs = require('fs-extra')
 const path = require('path')
-const chalk = require('chalk')
-const TraverseBatch = require('../api/traverseBatch')
+const Colors = require('../../Colors')
+const TraverseBatch = require('../api/TraverseBatch')
 const DiffVisitor = require('../visitors/diff')
 const utils = require('./utils')
 const { logger, confirm } = require('../../commonutils')
@@ -50,11 +50,17 @@ const diffAction = async (basePath, docSetId, options, config, admin) => {
 
     const traverseOptions = utils.traverseOptionsFromCommandOptions(docSetId, options, config)
 
-    const confirmed = await confirm(`\nAbout to diff firestore documents with files under ${basePath}.`
-                                    + ` Are you sure?\n`)
+    if (!process.stdout.isTTY && !options.bypassConfirm) {
+      throw new Error('--bypassConfirm option required when redirecting output')
+    }
+
+    logger.info(Colors.prep(`About to diff firestore documents with files under ${basePath}.`))
+    logger.info(Colors.prep('Documents include: ' + utils.traverseOptionsSummary(traverseOptions)))
+    const confirmed = options.bypassConfirm || await confirm(Colors.warning(`Are you sure?`))
+
     if (confirmed) {
       console.log('')
-      logger.info(chalk.green(`Starting diff of documents in ${basePath}`))
+      logger.info(Colors.start(`Starting diff of documents in ${basePath}`))
 
       const client = utils.getClient(config)
       const projectId = await client.getProjectId()
@@ -69,12 +75,12 @@ const diffAction = async (basePath, docSetId, options, config, admin) => {
       await visitor.visitFileSystem()
       visitor.close()
       if (htmlFilename) {
-        logger.info(chalk.yellow(`HTML diff results written to: ${htmlFilename}`))
+        logger.info(Colors.result(`HTML diff results written to: ${htmlFilename}`))
       }
-      logger.info(chalk.green(`Completed diff`))
+      logger.info(Colors.complete(`Completed diff`))
     }
   } catch(error) {
-    logger.error(chalk.red(`Error: ${error.message}`))
+    logger.error(Colors.error(`Error: ${error.message}`))
     process.exit(1)
   }
 }

@@ -76,6 +76,7 @@ exports.addCommand = (program, config, admin) => {
   .option('-s, --shallow', 'Only include immediate sub-collections')
   .option('-f, --filter <regex>', 'Filter results using the supplied regular expression regex')
   .option('-i, --idfilter <id>', 'Filter results to documents with id.  Cannot be used with --filter')
+  .option('-y, --bypassConfirm', 'Bypasses confirmation prompt. Required when non-interactive stdout.')
   .option('-h, --html [htmlFilename]', 'Produce html and css file for difference.  Uses debug.outputPath from config for default directory. Default filename is timestamp.html')
   .action((basePath, docSetId, options) => diff.diffAction(basePath, docSetId, options, config, admin))
 

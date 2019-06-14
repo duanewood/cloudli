@@ -124,8 +124,9 @@ const traverseOptionsSummary = (traverseOptions) => {
       summary += `All documents in the collection '${traverseOptions.path}'`
       if (traverseOptions.recursive) {
         summary += ' and all documents in all collections under the collection (recursive).'
-      } else if (traverseOptions.shallow) {
-        summary += ' and all documents in the collections directly under the document (shallow).'
+      } else {
+        // Note: when path is a collection, it is inherently shallow if not recursive
+        summary += '.'
       }
     }
   }

@@ -1,5 +1,9 @@
 const ProgressBar = require("progress")
 
+/**
+ * Progress bar for TraverseBatch that keeps track of the number of documents processd.
+ * Only renders to console if TTY.
+ */
 class TraverseBatchProgress {
   constructor(msg) {
     this.curr = 0

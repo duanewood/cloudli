@@ -8,6 +8,10 @@ const jsonParser = input => {
   }
 }
 
+/**
+ * Used to write pino logger entries as raw messages to the console if stdout is TTY.
+ * Otherwise, entries are written as JSON.
+ */
 module.exports = function chalkPrettier(options) {
   // Deal with whatever options are supplied.
   return function prettifier (inputData) {

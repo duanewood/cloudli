@@ -19,15 +19,17 @@ const backupAction = async (docSetId, options, config, admin) => {
     const verbose = !!options.verbose
 
     // create a backup directory with timestamp under backupPath
-    const dateDirName = new Date().toISOString().replace(/\:/g, '-')
+    const datetime = new Date().toISOString()
+    const dateDirName = datetime.replace(/\:/g, '-')
     const backupPath = path.join(backupBasePath, dateDirName)
 
     if (!process.stdout.isTTY && !options.bypassConfirm) {
       throw new Error('--bypassConfirm option required when redirecting output')
     }
 
+    const summary = utils.traverseOptionsSummary(traverseOptions)
     logger.info(Colors.prep(`About to backup documents to ${backupPath}.`))
-    logger.info(Colors.prep('Documents include: ' + utils.traverseOptionsSummary(traverseOptions)))
+    logger.info(Colors.prep('Documents include: ' + summary))
     const confirmed = options.bypassConfirm || await confirm(Colors.warning(`Are you sure?`))
 
     if (confirmed) {
@@ -39,14 +41,21 @@ const backupAction = async (docSetId, options, config, admin) => {
         fs.mkdirSync(backupPath)
       }
   
-      const visit = doc => backup(doc, backupPath, verbose)
+      const files = []
+
+      const visit = doc => backup(doc, backupPath, verbose, file => files.push(file))
       const batchOptions = {
         visit
       }
       
-      const path = traverseOptions.path || null
-      const traverseBatch = new TraverseBatch(client, projectId, path, traverseOptions, batchOptions)
-      await traverseBatch.execute()    
+      const traversePath = traverseOptions.path || null
+      const traverseBatch = new TraverseBatch(client, projectId, traversePath, traverseOptions, batchOptions)
+      await traverseBatch.execute()
+      
+      const summaryFilename = path.join(backupPath, 'backup-summary.md')
+      const backupSummary = `# Backup ${datetime}\n\n**Backup includes**: ${summary}\n\n## Files\n\n${files.map(file => `- ${file}`).join('\n')}`
+      await fs.writeFile(summaryFilename, backupSummary)
+
       logger.info(Colors.complete(`Completed backup of ${traverseBatch.progressBar.curr} documents`))
     }
   } catch(error) {

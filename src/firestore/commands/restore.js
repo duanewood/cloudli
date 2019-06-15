@@ -1,38 +1,52 @@
+const debug = require('debug')('bundle:restore')
 const fs = require('fs-extra')
 const path = require('path')
-const chalk = require('chalk')
+const { Subject, Observable, empty, from, of } = require('rxjs')
+const { bufferTime, catchError, mergeMap, scan, tap, finalize } = require('rxjs/operators')
+const Colors = require('../../Colors')
 const backup = require('../visitors/backup')
 const utils = require('./utils')
-const commonutils = require('../../commonutils')
 const FirestoreMapper = require('../api/FirestoreMapper')
-const { Subject, Observable, empty, from, of } = require('rxjs')
-const { bufferTime, catchError, mergeMap, scan, tap } = require('rxjs/operators')
+const { logger, confirm } = require('../../commonutils')
 
 const restoreAction = async (basePath, options, config, admin) => {
   try {
+    const verbose = !!options.verbose
 
-    const confirmed = await commonutils.confirm(`About to restore documents from ${basePath}.`
-                                    + ` Are you sure?`)
+    if (!process.stdout.isTTY && !options.bypassConfirm) {
+      throw new Error('--bypassConfirm option required when redirecting output')
+    }
+
+    logger.info(Colors.prep(`About to restore documents from ${basePath}`))
+    const confirmed = options.bypassConfirm || await confirm(Colors.warning(`Are you sure?`))
+
     if (confirmed) {
+      logger.info(Colors.start(`Starting restore documents from ${basePath}`))
+
       const db = admin.firestore()
 
       const limits = {
         readJsonConcurrency: 5,
-        batchWrite: 12,
+        batchWrite: 100,
         waitForBatchMs: 200,
-        batchWriteConcurrency: 2,
+        batchWriteConcurrency: 5,
       }
 
       const normalizedBasePath = path.normalize(basePath)
+
+      // observable of recursive traversal of files starting with basePath
       const file$ = files(normalizedBasePath).pipe(
 
         // read json and map for storage
         mergeMap(
           async file => {
-            // strip off basePath and trailing .json
             const json = await fs.readJson(file)
+            // strip off basePath and trailing .json
             const docRefPath = file.slice(normalizedBasePath.length + 1, file.length - 5)
-            console.log(chalk.yellow(`docRefPath: ${docRefPath}`))
+            if (verbose) {
+              logger.info(Colors.info(docRefPath))
+            }
+            // FirestoreMapper handles converting things like Timestamps and GeoPoints
             return {
               file,
               docRefPath: docRefPath,
@@ -46,18 +60,13 @@ const restoreAction = async (basePath, options, config, admin) => {
         // wait for up to batchWrite docs or waitForBatchMs, whichever comes first
         bufferTime(limits.waitForBatchMs, undefined, limits.batchWrite),
 
-        /**
-         * Don't continue processing if the timer in `bufferTime` was reached and
-         *   there are no buffered docs
-         */
+        // Don't continue processing if the timer in `bufferTime` was reached and
+        // there are no buffered docs
         mergeMap(docs => {
           return docs.length > 0 ? of(docs) : empty()
         }),
 
-        /**
-         * Set the companies accumulated in `bufferTime`.
-         *   Also allow multiple batches to be set concurrently
-         */
+        //  Write the documents to firestore in batches up to batchWriteConcurrency batches at a time
         mergeMap(
           async docs => {
             writeBatch(db, docs)
@@ -66,26 +75,35 @@ const restoreAction = async (basePath, options, config, admin) => {
           undefined,
           limits.batchWriteConcurrency
         ),
+        finalize(files => {
+          logger.info(Colors.complete(`Completed restore`))
+        }),
         catchError(async err => {
-          console.log(chalk.red(`Restore Error: ${err.message}`))
+          logger.error(Colors.error(`Restore Error: ${err.message}`))
           return err
         }),
       )
-      file$.subscribe(files => console.log(chalk.blue(files)))
+      file$.subscribe(docs => {
+        debug(Colors.debug('Processed: ' + docs.map(doc => doc.docRefPath).join(', ')))
+      })
     }
   } catch(error) {
-    console.error(chalk.red(`Error: ${error.message}`))
+    logger.error(Colors.error(`Error: ${error.message}`))
     process.exit(1)
   }
 }
 
+/**
+ * Return observable of all json files in directories under dir
+ * @param {string} dir the base directory
+ */
 const files = dir => {
   return new Observable(subscriber => {
     const visitFile = file => subscriber.next(file)
     getFiles(dir, visitFile)
       .then(() => subscriber.complete())
       .catch(err => {
-        console.error(chalk.red(`Error: ${err}`))
+        logger.error(Colors.error(`Error: ${err}`))
         subscriber.error
       })
   })
@@ -106,7 +124,7 @@ const writeBatch = async (db, files) => {
     const ref = db.doc(file.docRefPath)
     batch.set(ref, file.doc)
   })
-  console.log(chalk.cyan(`writeBatch: ${files.length} files`))
+  debug(Colors.debug(`writeBatch: ${files.length} files`))
   return batch.commit()
 }
 

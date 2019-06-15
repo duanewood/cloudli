@@ -6,7 +6,6 @@ const DiffVisitor = require('../visitors/diff')
 const utils = require('./utils')
 const { logger, confirm } = require('../../commonutils')
 
-
 const diffAction = async (basePath, docSetId, options, config, admin) => {
 
   try {
@@ -59,7 +58,6 @@ const diffAction = async (basePath, docSetId, options, config, admin) => {
     const confirmed = options.bypassConfirm || await confirm(Colors.warning(`Are you sure?`))
 
     if (confirmed) {
-      console.log('')
       logger.info(Colors.start(`Starting diff of documents in ${basePath}`))
 
       const client = utils.getClient(config)

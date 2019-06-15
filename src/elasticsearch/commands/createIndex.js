@@ -1,8 +1,10 @@
 const fs = require('fs-extra')
 const chalk = require('chalk')
 const moment = require('moment')
-const esapi = require('../api/esapi')
 const utils = require('./utils')
+const esapi = require('../api/esapi')
+const Colors = require('../../Colors')
+const { logger } = require('../../commonutils')
 
 async function createIndexAction(index, options, config, admin) {
   try {
@@ -15,10 +17,12 @@ async function createIndexAction(index, options, config, admin) {
       }  
     })
 
+    const indicesMsg = `[${indices.map(indexConfig => indexConfig.name).join(', ')}]`
+    logger.info(Colors.start(`Starting create indices for ${indicesMsg}`))
     await createIndices(indices)
-    
+    logger.info(Colors.complete(`Completed create indices.`))    
   } catch(error) {
-    console.error(chalk.red(`Error: ${error.message}`))
+    logger.error(Colors.error(`Error: ${error.message}`))
     process.exit(1)
   }
 }
@@ -30,11 +34,10 @@ async function createIndices(indices) {
 }
 
 async function createIndex(index, indexMappingFile) {
-  console.log(chalk.blue(`createIndex(${index})`))
   const indexMappingJson = fs.readJsonSync(indexMappingFile)
   const indexWithDateTime = `${index}_${moment().format('YYYYMMDDHHmm')}`
   await esapi.createIndex(indexWithDateTime, indexMappingJson)
-  console.log(chalk.green(`Created index ${chalk.bold(indexWithDateTime)}`))
+  logger.info(Colors.info(`Created index ${chalk.bold(indexWithDateTime)}`))
   return indexWithDateTime
 }
 

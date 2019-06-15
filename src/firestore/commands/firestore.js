@@ -51,6 +51,8 @@ exports.addCommand = (program, config, admin) => {
   .command('restore <basePath>')
   .alias('upload')
   .description(`Restores all documents (.json files) under basePath to equivalent paths in firestore.`)
+  .option('-y, --bypassConfirm', 'Bypasses confirmation prompt. Required when non-interactive stdout.')
+  .option('-v, --verbose', 'Displays files during restore.')
   .action((basePath, options) => restore.restoreAction(basePath, options, config, admin))
 
   program
@@ -77,7 +79,7 @@ exports.addCommand = (program, config, admin) => {
   .option('-f, --filter <regex>', 'Filter results using the supplied regular expression regex')
   .option('-i, --idfilter <id>', 'Filter results to documents with id.  Cannot be used with --filter')
   .option('-y, --bypassConfirm', 'Bypasses confirmation prompt. Required when non-interactive stdout.')
-  .option('-h, --html [htmlFilename]', 'Produce html and css file for difference.  Uses debug.outputPath from config for default directory. Default filename is timestamp.html')
+  .option('-w, --html [htmlFilename]', 'Produce (web) html and css file for difference.  Uses debug.outputPath from config for default directory. Default filename is timestamp.html')
   .action((basePath, docSetId, options) => diff.diffAction(basePath, docSetId, options, config, admin))
 
   program

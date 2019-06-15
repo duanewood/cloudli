@@ -1,6 +1,8 @@
 const chalk = require('chalk')
 const esapi = require('../api/esapi')
 const utils = require('./utils')
+const Colors = require('../../Colors')
+const { logger } = require('../../commonutils')
 
 /**
  * Searches one or more indices for text.
@@ -18,7 +20,7 @@ async function searchIndexAction(text, index, options, config, admin) {
     const indices = utils.getIndexConfigsFromParams(index, options, config)
     await searchIndices(text, indices, !!options.verbose)
   } catch(error) {
-    console.error(chalk.red(`Error: ${error.message}`))
+    logger.error(Colors.error(`Error: ${error.message}`))
     process.exit(1)
   }
 }
@@ -33,7 +35,7 @@ async function searchIndexAction(text, index, options, config, admin) {
 async function searchIndices(text, indices, verbose) {
   return Promise.all(indices.map(async indexConfig => {
     const index = `${indexConfig.name}_read`
-    console.log(chalk.cyan(`Searching index '${index}' for '${text}'`))
+    logger.info(Colors.prep(`Searching index '${index}' for '${text}'`))
     const results = await esapi.search(text, index)
     displayResults(JSON.parse(results), verbose)
   }))
@@ -41,15 +43,15 @@ async function searchIndices(text, indices, verbose) {
 
 function displayResults(results, verbose) {
   if (results.hits.total === 0) {
-    console.log(chalk.yellow(`No matches`))
+    logger.info(Colors.warning(`No matches`))
   } else {
-    console.log(chalk.green(`Found ${results.hits.total} matches`))
+    logger.info(Colors.info(`Found ${results.hits.total} matches`))
     results.hits.hits.forEach(hit => {
       const bundle = hit._source
       if (verbose) {
-        console.log()
-        console.log(chalk.green.bold.underline(`Bundle: '${bundle.name || ""}' (${bundle.id})`))
-        console.log(chalk.green(`Author: ${bundle.authorUser.displayName || ""}`))
+        logger.info('')
+        logger.info(Colors.info(chalk.bold.underline(`Bundle: '${bundle.name || ""}' (${bundle.id})`)))
+        logger.info(Colors.info(`Author: ${bundle.authorUser.displayName || ""}`))
         
         if (hit.highlight) {
           for (let [key, highlightStrings] of Object.entries(hit.highlight)) {
@@ -59,17 +61,17 @@ function displayResults(results, verbose) {
           }
         }
       } else {
-        console.log(chalk.green(`Bundle: '${bundle.name || ""}' (${bundle.id})`))
+        logger.info(Colors.info(`Bundle: '${bundle.name || ""}' (${bundle.id})`))
       }
     })
   }
 }
 
 function highlightToConsole(key, highlight) {
-  console.log()
-  console.log(chalk.yellowBright.underline(key))
-  const chalkString = highlight.replace(/<em>([\s\S]*)<\/em>/g, (match, p1) => chalk.black.bgYellow(p1))
-  console.log(chalkString)
+  logger.info('')
+  logger.info(Colors.highlightKey(key))
+  const chalkString = highlight.replace(/<em>([\s\S]*)<\/em>/g, (match, p1) => Colors.highlight(p1))
+  logger.info(chalkString)
 }
 
 module.exports = {

@@ -1,12 +1,21 @@
+const debug = require('debug')('bundle:elasticsearch')
 const AWS = require('aws-sdk')
-const serviceAccount = require('../../../.keys/aws-elasticsearch.json')
+// const serviceAccount = require('../../../.keys/aws-elasticsearch.json')
 
-const region = serviceAccount.region
-const domain = serviceAccount.domain
+let serviceAccount = null
 
 /**
  * Elasticsearch APIs
+ * 
+ * Must call initApi with Service Account object before calling other APIs.
+ * Service account object must include domain, region, id, and key.
+ * 
+ * Enable debug logging with DEBUG=bundle:elasticsearch
  */
+const initApi = svcAcct => {
+  serviceAccount = svcAcct
+}
+
 const indexDocument = async (index, document, id) => {
   return awsApi('PUT', index + '/_doc/' + id, JSON.stringify(document))
 }
@@ -105,9 +114,17 @@ const search = async (text, indexOrAlias) => {
 }
 
 const awsApi = async (method, path, body, contentType) => {
+
+  if (!serviceAccount) {
+    throw new Error('AWS API is not initialized.  Call initApi before calling other APIs.')
+  } else if (!serviceAccount.domain || !serviceAccount.region 
+             || !serviceAccount.id || !serviceAccount.key) {
+    throw new Error('Invalid AWS service account')
+  }
+
   return new Promise((resolve, reject) => {
-    const endpoint = new AWS.Endpoint(domain)
-    const request = new AWS.HttpRequest(endpoint, region)
+    const endpoint = new AWS.Endpoint(serviceAccount.domain)
+    const request = new AWS.HttpRequest(endpoint, serviceAccount.region)
   
     request.method = method
     request.path += path
@@ -116,7 +133,7 @@ const awsApi = async (method, path, body, contentType) => {
       request.body = body
       request.headers['Content-Type'] = contentType || 'application/json'
     }
-    request.headers['host'] = domain
+    request.headers['host'] = serviceAccount.domain
     if (method === 'DELETE' && body) {
       // Content-Length is only needed for DELETE requests that include a request
       request.headers['Content-Length'] = request.body.length
@@ -128,7 +145,7 @@ const awsApi = async (method, path, body, contentType) => {
   
     const client = new AWS.HttpClient()
     client.handleRequest(request, null, (response) => {
-      // console.log(`${method}: ${response.statusCode} ${response.statusMessage}`)
+      debug(`awsApi ${method} ${path}: ${response.statusCode} ${response.statusMessage}`)
       if (response.statusCode != 200 && response.statusCode != 201) {
         reject(new Error(`Error from AWS Api: ${method} ${path}: ${path}, error: ${response.statusCode} ${response.statusMessage}`))
         return
@@ -139,24 +156,25 @@ const awsApi = async (method, path, body, contentType) => {
         responseBody += chunk
       })
       response.on('end', (chunk) => {
-        // console.log(`${method}: Response body: ${responseBody}`)
+        debug(`awsApi ${method} ${path}: Received 'end' of response. responseBody: ${responseBody}`)
         resolve(responseBody)
       });
     }, (error) => {
-      console.error(`${method}: Error: ${error}`)
+      debug(`awsApi: ${method} ${path}: Error: ${error}`)
       reject(error)
     })  
   })
 }
 
- module.exports = {
-  indexDocument: indexDocument,
-  deleteDocumentFromIndex: deleteDocumentFromIndex,
-  createIndex: createIndex,
-  deleteIndex: deleteIndex,
-  getReadAliasIndices: getReadAliasIndices,
-  getWriteAliasIndices: getWriteAliasIndices,
-  changeAlias: changeAlias,
-  reindex: reindex,
+module.exports = {
+  initApi,
+  indexDocument,
+  deleteDocumentFromIndex,
+  createIndex,
+  deleteIndex,
+  getReadAliasIndices,
+  getWriteAliasIndices,
+  changeAlias,
+  reindex,
   search
- }
+}

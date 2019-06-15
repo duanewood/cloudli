@@ -1,6 +1,8 @@
 const chalk = require('chalk')
 const esapi = require('../api/esapi')
 const utils = require('./utils')
+const Colors = require('../../Colors')
+const { logger } = require('../../commonutils')
 
 /**
  * Gets the current index that is tied to the 
@@ -18,9 +20,14 @@ async function getAliasIndexAction(index, options, config, admin) {
 
   try {
     const indices = utils.getIndexConfigsFromParams(index, options, config)
+    const indicesMsg = `[${indices.map(indexConfig => indexConfig.name).join(', ')}]`
+    logger.info(Colors.start(`Getting aliases for indices ${indicesMsg}`))
     await getAliasIndices(indices)
+    logger.info(Colors.complete(`Completed getting aliases for indices`))
+
+
   } catch(error) {
-    console.error(chalk.red(`Error: ${error.message}`))
+    logger.error(Colors.error(`Error: ${error.message}`))
     process.exit(1)
   }
 }
@@ -39,10 +46,10 @@ async function getAliasIndices(indices) {
     const readIndices = await esapi.getReadAliasIndices(index)
     const writeIndices = await esapi.getWriteAliasIndices(index)  
     readIndices.forEach(i => {
-      console.log(chalk.green(`Index for ${chalk.bold(index)} read alias: ${chalk.bold(i)}`))
+      logger.info(Colors.info(`Index for ${chalk.bold(index)} read alias: ${chalk.bold(i)}`))
     })
     writeIndices.forEach(i => {
-      console.log(chalk.green(`Index for ${chalk.bold(index)} write alias: ${chalk.bold(i)}`))
+      logger.info(Colors.info(`Index for ${chalk.bold(index)} write alias: ${chalk.bold(i)}`))
     })
   }))
 }

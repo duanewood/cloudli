@@ -1,10 +1,11 @@
 const firestore = require('@google-cloud/firestore')
-const chalk = require('chalk')
+const Colors = require('../../Colors')
 const { isDocumentPath } = require('../api/apiutils')
+const { logger } = require('../../commonutils')
 
 const getClient = config => {
   if (!config.has('firebase.keyFilename')) {
-    console.error(chalk.red(`Error: Missing firebase.keyFilename in config`))
+    logger.error(Colors.error(`Error: Missing firebase.keyFilename in config`))
     process.exit(1)
   }  
 

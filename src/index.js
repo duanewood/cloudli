@@ -23,7 +23,7 @@ const { initLogger, getLogger } = require('./commonutils')
  *    @param {object} admin - firebase admin api object
  * 
  * Command line uses subcommands based on command objects
- * Usage: node src/index.js [<subcommand> [<subcommand parameters> [--help]]] | --version | --help
+ * Usage: node src/index.js [<subcommand> [<subcommand options> [--help]]] | --version | --help
  * 
  * Logging uses pino:  https://github.com/pinojs/pino
  * 
@@ -34,15 +34,24 @@ const { initLogger, getLogger } = require('./commonutils')
  * The default level is info.
  * Available levels are: 'fatal', 'error', 'warn', 'info', 'debug', 'trace' or 'silent'
  * 
- * Supports debug logging using debug module (https://github.com/visionmedia/debug)
+ * Supports debug logging using debug module (https://github.com/visionmedia/debug).
  * Enable debug logging using:
  * 
  *    export DEBUG=*
  * 
- * For bundle specific modules:
+ * To filter debug modules:
  * 
  *    For all bundle module debug:  export DEBUG=bundle:*
  *    For specific bundle module debug (example):  export DEBUG=bundle:traverseBatch
+ * 
+ * Note: LEVEL must be set to 'debug' or higher for debug messages to be included.
+ * 
+ * Modules with debug:
+ * 
+ *    bundle:delete
+ *    bundle:restore
+ *    bundle:traverseBatch
+ *    bundle:elasticsearch
  */
 
 const commands = [

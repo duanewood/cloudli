@@ -16,6 +16,7 @@
     "prettyPrint": true
   },
   "elasticsearch": {
+    "serviceAccountFilename": ".keys/aws-elasticsearch.json",
     "defaultIndex": "*",
     "indices": [
       {
@@ -36,6 +37,8 @@
   },
   "firestore": {
     "backupBasePath": "./backups",
+
+    // "docSets" are shorthand references to sets of documents in firestore
     "docSets": {
       "all": {
         "path": null,
@@ -61,6 +64,8 @@
         "recursive": true
       }
     },
+    // "types" are used to map firestore reference id's / paths to types using regular expressions.
+    // Will look for matching type in "schemas" config entry.
     "types": [
       { "path": "^bundles\/[^/]+$", "type": "bundle" },
       { "path": "^users\/[^/]+\/bundles\/[^/]+$", "type": "bundle" }
@@ -69,6 +74,7 @@
   "schemas": {
     "bundle": {
       "schemaId": "http://planbundle.com/schemas/bundle.schema.json",
+      // "schemaFiles" must include the main schema file and any referenced schemas for the type
       "schemaFiles": [
         "./schemas/bundle.schema.json",
         "./schemas/contact-item.schema.json",

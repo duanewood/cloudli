@@ -1,5 +1,13 @@
 const chalk = require('chalk')
 
+/**
+ * NOTE: This is not used anymore.  It has been replaced by TraverseBatch.
+ * 
+ * Basic implementation of traverse function for firestore documents.
+ * Iterates recursively.  Does not scale - could require large memory and
+ * does not constrain processing.
+ */
+
 const traverse = async (db, basePath, path, visit) => {
   // console.log(chalk.blue(`traverse: basePath='${basePath}', path='${path}'`))
   const names = path.split('/*/')

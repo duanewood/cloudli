@@ -211,11 +211,6 @@ TraverseBatch.prototype._collectionDescendantsQuery = function(
 ) {
   var nullChar = String.fromCharCode(0)
 
-  // TODO: Handle case for shallow root collection and shallow non-root collection behavior differences
-  //       For non-root shallow, use path = parent document of path with collectionId set to collectionId from path
-  //       Check to make sure collectionId not specified (if so - don't modify)
-  //       Note: shallow = !allDescendents
-
   let startAt = this.parent + "/" + this.path + "/" + MIN_ID
   let endAt = this.parent + "/" + this.path + nullChar + "/" + MIN_ID
 
@@ -333,6 +328,72 @@ TraverseBatch.prototype._docDescendantsQuery = function(
 }
 
 /**
+ * TODO: Remove this function when have fix for query
+ * 
+ * WORKAROUND: Handle case for shallow root collection and shallow non-root collection behavior differences
+ *    For non-root shallow, use path = parent document of path with collectionId set to collectionId from path
+ *    Check to make sure collectionId not specified (if so - don't modify)
+ *    Note: shallow = !allDescendents
+ * 
+ *    *** THIS should be called with the collectionId from the path and allDescendants should be false
+ * 
+ * Construct a StructuredQuery to find descendant documents of a document.
+ * The document itself will not be included
+ * among the results.
+ *
+ * See:
+ * https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery
+ *
+ * @param {string} collectionId the collection id from the path for the workaround
+ * @param {boolean} allDescendants should be false for the workaround
+ * @param {number} batchSize maximum number of documents to target (limit).
+ * @param {string=} startAfter document name to start after (optional).
+ * @return {object} a StructuredQuery.
+ */
+TraverseBatch.prototype._docDescendantsQueryWorkaround = function(
+  collectionId,
+  allDescendants,
+  batchSize,
+  startAfter
+) {
+
+  // collectionId will be the workaround collectionId
+  // allDescendants should be null
+  var query = {
+    structuredQuery: {
+      limit: { value: batchSize },
+      from: [
+        {
+          allDescendants: allDescendants
+        }
+      ],
+      orderBy: [{ field: { fieldPath: "__name__" } }]
+    }
+  }
+
+  if (this.min) {
+    query.structuredQuery.select = {
+      fields: [{ fieldPath: "__name__" }]
+    }
+  }
+
+  // this will be the workaround collectionId
+  if (collectionId) {
+    query.structuredQuery.from[0].collectionId = collectionId
+  }
+
+  if (startAfter) {
+    query.structuredQuery.startAt = {
+      values: [{ referenceValue: startAfter }],
+      before: false
+    }
+  }
+
+  return query
+}
+
+
+/**
  * Query for a batch of 'descendants' of a given path.
  *
  * For document format see:
@@ -350,17 +411,45 @@ TraverseBatch.prototype._getDescendantBatch = function(
 ) {
   let parent
   let structuredQuery
-  if (this.isDocumentPath) {
-    parent = this.parent + "/" + this.path
-    structuredQuery = this._docDescendantsQuery(allDescendants, batchSize, startAfter).structuredQuery
+
+  /**
+   * TODO: Remove when query issue is fixed
+   * 
+   * WORKAROUND: Handle case for shallow root collection and shallow non-root collection behavior differences
+   *    For non-root shallow, use path = parent document of path with collectionId set to collectionId from path
+   *    Check to make sure collectionId not specified (if so - don't modify)
+   *    Note: shallow = !allDescendents
+   */
+
+  const colIdFromPath = this.path.includes('/') ? this.path.slice(this.path.lastIndexOf('/') + 1) : null
+
+  // Check for special case - shallow query of non-root collection
+  // and handle case where collectionId was specified (only use special case if collectionId not specifid or matches collectionId from path)
+  if (this.isCollectionPath && !allDescendants && this.path.includes('/')
+            && (!this.collectionId || this.collectionId === colIdFromPath)) { 
+    // SPECIAL CASE WORKAROUND - treat like document query of parent document and filter collectionId
+    parentDocPath = this.path.slice(0, this.path.lastIndexOf('/'))
+
+    parent = this.parent + "/" + parentDocPath
+    structuredQuery = this._docDescendantsQueryWorkaround(colIdFromPath, /* allDescendants */ false, 
+                                                          batchSize, startAfter).structuredQuery
+    /**
+     * END WORKAROUND - remove if condition and keep else block
+     */                                          
   } else {
-    parent = this.parent
-    structuredQuery = this._collectionDescendantsQuery(
-      allDescendants,
-      batchSize,
-      startAfter
-    ).structuredQuery
-  }
+    if (this.isDocumentPath) {
+      parent = this.parent + "/" + this.path
+      structuredQuery = this._docDescendantsQuery(allDescendants, batchSize, startAfter).structuredQuery
+    } else {
+      parent = this.parent
+      structuredQuery = this._collectionDescendantsQuery(
+        allDescendants,
+        batchSize,
+        startAfter
+      ).structuredQuery
+    }  
+   }
+
 
   return new Promise((resolve, reject) => {
     let docs = []

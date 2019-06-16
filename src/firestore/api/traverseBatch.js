@@ -5,7 +5,7 @@ const admin = require('firebase-admin')
 const chalk = require("chalk")
 const moment = require('moment')
 const TraverseBatchProgress = require('./TraverseBatchProgress')
-const Snapshot = require("./snapshot")
+const Snapshot = require("./Snapshot")
 const defaultVisitBatch = require('../visitors/visitBatch')
 const { logger } = require('../../commonutils')
 

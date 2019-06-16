@@ -89,7 +89,7 @@
       "console": "integratedTerminal",
       "name": "Launch node.js firestore-docs command",
       "program": "${workspaceFolder}/src/index.js",
-      "args": ["firestore-docs", "-p", "testCollection/testDoc/users", "-s"]
+      "args": ["firestore-docs", "-p", "bundles", "-s", "-v"]
     },
     {
       "name": "Chrome",

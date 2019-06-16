@@ -23,13 +23,16 @@ function Snapshot(doc, database) {
   const start = lastSlash < 0 ? 0 : lastSlash + 1
   this.id = doc.name.slice(start)
 
-
   const path = database && doc.name.startsWith(database) ? doc.name.slice(database.length + 1) : doc.name
   this.ref = { path }
 }
 
 Snapshot.prototype.data = function() {
-  return FirestoreParser(this.fields)
+  if (!this._data) {
+    this._data = FirestoreParser(this.fields)
+  }
+  
+  return this._data
 }
 
 module.exports = Snapshot

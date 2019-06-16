@@ -4,8 +4,7 @@ const { logger } = require('../../commonutils')
 
 const visit = async (doc, verbose) => {
   if (verbose) {
-    logger.info(Colors.result(doc.ref.path))
-    const data = doc.data()
+    logger.info(Colors.prep(doc.ref.path))
     logger.info(jsome.getColoredString(doc.data()))
     logger.info('')
   } else {

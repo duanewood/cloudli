@@ -168,8 +168,7 @@ The command line interface requires firebase [configuration](#configuration) as 
 Cloud firestore commands support various options for selecting documents.  To support scalability, 
 a [StructuredQuery](https://cloud.google.com/firestore/docs/reference/rest/v1/StructuredQuery) is used to 
 select documents in batches.  This approach does constrain document selection.  For example, there is no
-direct way to perform a regular expression-like filtered query of document parths against firestore.  
-However, several options are available to address most scenarios.  For example, using a recursive selection
+direct way to perform a regular expression-like filtered query of document paths against firestore. However, several options are available to address most scenarios.  For example, using a recursive selection
 from a starting collection path combined with a defined `collectionId` for a sub-collection allows for 
 selection of sub-collections across a sub-tree in the database.
 
@@ -180,7 +179,13 @@ The options available for document selection are:
 
 |Option|Description|Notes|
 |------|-----------|-----|
-|`-p, --path <path>`|The base path of the documents.  May be a collection or document.|
+|`-p, --path <path>`|The base path of the documents|May be a collection or document. If not specified, will include all root collections.|
+|`-r, --recursive`|Includes all documents under `path` recursively|Cannot be used with `--shallow`.  One of `--recursive` or `--shallow` must be specified if `path` is a collection.
+|`-s, --shallow`|Includes only documents in the collection if `path` is a collection or the documents in the collections directly under the document if `path` is a document|Cannot be used with `--recursive`.  One of `--recursive` or `--shallow` must be specified if `path` is a collection.
+|`-c, --collectionId <id>`|Only include documents in collections with name of `id`|
+|`-f, --filter <regex>`|Filter results to paths that match the supplied regular expression `regex`|This filter is applied after results are received from the query before processing a document so consider performance and load when using `--filter`. For best results, use `--path` and `--collectionId` to filter the query and then apply `--filter`. Cannot be used with `--idfilter`
+|`-i, --idfilter <id>`|Filter results to documents with `id`| This is a special case of `--filter`. Cannot be used with `--filter`.|
+|`-m, --min`|Limit results to include only document id and path|Useful when previewing results|
 
 ### Document Sets (DocSets)
 
@@ -235,14 +240,209 @@ bundle firestore-docs userPosts --verbose
 ```
 
 
-## Cloud Firestore Commands
+# Cloud Firestore Commands
 
-### firestore-docs
+The following sections provide details of the available commands for Cloud Firestore.
 
+## firestore-docs
 
 ```
 firestore-docs [docSetId]
 ```
+Gets firestore documents with an optional `docSetId`.  If docSetId is not specified and no other selection options are supplied, will include all documents in the database. The specified `docSetId` must be defined in config (see [above](#Document-Sets-(DocSets))).  
+
+### Options
+
+See [Document Selection](#Document-Selection) for details on selection options.
+
+#### Additional Options
+
+|Option|Description
+|------|-----------|-----|
+|`-v, --verbose`|Includes full document content in results|
+
+
+## firestore-get
+
+```
+firestore-get <path>
+```
+Gets firestore documents with a `path`.  The `path` may be for a collection or a document.
+
+This command uses the firestore client APIs and does not use the batch processing of other commands like [filrestore-docs](#firestore-docs).  This should be used for single documents for small collections.
+
+### Options
+
+|Option|Description
+|------|-----------|-----|
+|`-v, --verbose`|Includes full document content in results|
+
+## backup
+
+```
+backup [docSetId]
+```
+Backs up firestore documents with an optional `docSetId`.  If docSetId is not specified and no other selection options are supplied, will include all documents in the database. The specified `docSetId` must be defined in config (see [above](#Document-Sets-(DocSets))).  
+
+The backup files will be places in a subdirectory with a name based on the current timestamp.  A summary of the contents of the backup will be written to a markdown file named `backup-summary.md` in the timestamp subdirectory.
+
+### Options
+
+See [Document Selection](#Document-Selection) for details on selection options.
+
+#### Additional Options
+
+|Option|Description|Notes|
+|------|-----------|-----|
+|`-b, --basePath <basePath>`|Specifies the base backup path|Overrides `firestore.backupBasePath` in config
+|`-y, --bypassConfirm`|Bypasses confirmation prompt|Required when non-interactive stdout|
+|`-v, --verbose`|Displays document paths during backup|
+
+
+## restore
+
+```
+restore <basePath>
+```
+Restores all documents (.json files) under `basePath` to equivalent paths in firestore.
+
+### Options
+
+|Option|Description|Notes|
+|------|-----------|-----|
+|`-y, --bypassConfirm`|Bypasses confirmation prompt|Required when non-interactive stdout|
+|`-v, --verbose`|Displays files during restore|
+
+## upload
+
+```
+upload <basePath>
+```
+The `upload` command is an alias for [restore](#restore). The files under `basePath` don't have to be created by a [backup](#backup) command.  Uploads ("restores") all documents (.json files) under `basePath` to equivalent paths in firestore.
+
+### Options
+
+|Option|Description|Notes|
+|------|-----------|-----|
+|`-y, --bypassConfirm`|Bypasses confirmation prompt|Required when non-interactive stdout|
+|`-v, --verbose`|Displays files during upload|
+
+## delete
+
+```
+delete [docSetId]
+```
+Deletes firestore documents after backing up the files with an optional `docSetId`.  If docSetId is not specified and no other selection options are supplied, will include all documents in the database. The specified `docSetId` must be defined in config (see [above](#Document-Sets-(DocSets))).  
+
+### Options
+
+See [Document Selection](#Document-Selection) for details on selection options.
+
+#### Additional Options
+
+|Option|Description|Notes|
+|------|-----------|-----|
+|`-b, --basePath <basePath>`|Specifies the base backup path|Overrides `firestore.backupBasePath` in config
+|`-y, --bypassConfirm`|Bypasses confirmation prompt|Required when non-interactive stdout|
+|`-v, --verbose`|Displays document paths during backup and delete|
+
+## diff
+
+```
+diff <basePath> [docSetId]
+```
+Compares document files under `basePath` with firestore documents with an optional `docSetId`. If docSetId is not specified and no other selection options are supplied, will include all documents in the database. The specified `docSetId` must be defined in config (see [above](#Document-Sets-(DocSets))).
+
+Displays document field changes as well as document adds and deletes.  Optionally creates an html file with the differences.
+
+### Options
+
+See [Document Selection](#Document-Selection) for details on selection options.
+
+#### Additional Options
+
+|Option|Description|Notes|
+|------|-----------|-----|
+|`-y, --bypassConfirm`|Bypasses confirmation prompt|Required when non-interactive stdout|
+|`-w, --html [htmlFilename]`|Produces (web) html summary file with diff details|Uses `debug.outputPath` from config for default directory. Default filename is `<timestamp>.html`.
+
+
+## validate
+
+```
+validate [docSetId]
+```
+Validates firestore documents with an optional `docSetId`. If docSetId is not specified and no other selection options are supplied, will include all documents in the database. The specified `docSetId` must be defined in config (see [above](#Document-Sets-(DocSets))).
+
+Documents are validated using [JSON Schema](https://json-schema.org/) files that must be defined in config.
+The validation is performed using [Ajv](https://github.com/epoberezkin/ajv).
+
+### Schema Configuration
+
+To define the JSON Schemas for firestore documents, document paths are mapped to types.  The types are then mapped to JSON Schema definition files.  Types are defined in the `firestore.types` array. Each entry in the array is an object with `path` and `type` keys.  The `path` is a regular expression that is matched against the document path in firestore.
+
+Schemas are applied to documents for a type based on matching the `path` regular expression.
+
+```javascript
+{
+  "firestore": {
+    "types": [
+      { "path": "<path selection regular expression>", "type": "typename"},
+      // ... other types
+    ]
+  }
+}
+```
+
+For example:
+
+```javascript
+{
+  "firestore": {
+    "types": [
+      { "path": "^users\/[^/]+$", "type": "user" },
+      { "path": "^users\/[^/]+\/posts\/[^/]+$", "type": "post" }
+    ]
+  }
+}
+```
+
+Types are defined in the `schemas` entry in config, which contains entries for each type.  Each entry is an object with `schemaId` string and a `schemaFiles` array.
+
+```javascript
+{
+  "firestore": {
+    "types": [
+      { "path": "^users\/[^/]+$", "type": "user" },
+      { "path": "^users\/[^/]+\/posts\/[^/]+$", "type": "post" }
+    ]
+  },
+
+  "schemas": {
+    "user": {
+      "schemaId": "http://some/schemas/user.schema.json", // should match id in schema file
+      "schemaFiles": [
+        "./schemas/user.schema.json",                     // the main shcema file
+        "./schemas/some.ref.schema.json"                  // other referenced schemas
+        "./schemas/some.other.ref.schema.json"
+      ]
+    },
+    "post": {
+      "schemaId": "http://some/schemas/post.schema.json", // should match id in schema file
+      "schemaFiles": [
+        "./schemas/post.schema.json"                      // the main shcema file
+      ]
+    }
+  }
+}
+```
+
+
+### Options
+
+See [Document Selection](#Document-Selection) for details on selection options.
+
+
 
 
 

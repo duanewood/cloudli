@@ -49,6 +49,8 @@ const MIN_ID = "__id-9223372036854775808__"
  *                 WARNING: This filter is applied after receiving the results from the query
  *                          before calling visit function so consider performance / load considerations.
  *                          Use path and collectionId to filter the query and then apply filterRegex.
+ * @param {string} options.idfilter Filter results to documents with id.
+ *                        This is a special case of filterRegex. Cannot be used with filterRegex.
  * @param {function(doc)} batchConfig.visit async function called for each document.  
  *                        The doc parameter to the function is a simulation of DocumentSnapshot
  *                        but only contains id, name, and ref.path properties, and data() function.

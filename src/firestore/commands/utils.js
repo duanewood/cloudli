@@ -1,7 +1,10 @@
+const fs = require('fs-extra')
 const firestore = require('@google-cloud/firestore')
+const admin = require('firebase-admin')
 const Colors = require('../../Colors')
 const { isDocumentPath } = require('../api/apiutils')
 const { logger } = require('../../commonutils')
+
 
 const getClient = config => {
   if (!config.has('firebase.keyFilename')) {
@@ -14,6 +17,40 @@ const getClient = config => {
   })
 
   return client
+}
+
+let adminInitialized = false
+
+const initAdmin = config => {
+
+  if (admin.apps.length === 0) {
+    if (!config.has('firebase.keyFilename')) {
+      logger.error(chalk.red(`Error: Missing firebase.keyFilename in config`))
+      process.exit(1)
+    }
+
+    if (!config.has('firebase.databaseURL')) {
+      logger.error(chalk.red(`Error: Missing firebase.databaseURL in config`))
+      process.exit(1)
+    }
+
+    const keyFilename = config.get('firebase.keyFilename')
+    const databaseURL = config.get('firebase.databaseURL')
+
+    if (!fs.existsSync(keyFilename)) {
+      throw new Error(`firebase.keyFilename '${keyFilename}' does not exist`)
+    }
+    const serviceAccount = fs.readJsonSync(keyFilename)
+
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+      databaseURL: databaseURL
+    })
+
+    const firestore = admin.firestore()
+    const settings = { timestampsInSnapshots: true }
+    firestore.settings(settings)
+  }
 }
 
 /**
@@ -150,6 +187,7 @@ const traverseOptionsSummary = (traverseOptions) => {
 
 module.exports = {
   getClient,
+  initAdmin,
   getRefProp,
   traverseOptionsFromCommandOptions,
   traverseOptionsSummary

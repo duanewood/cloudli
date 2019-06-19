@@ -6,6 +6,9 @@
 # production
 /build
 
+# local config files contain secure data
+/config/local*
+
 /.keys
 
 /backups

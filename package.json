@@ -1,17 +1,33 @@
 {
-  "name": "planbundle-util",
-  "version": "1.0.0",
-  "description": "PlanBundle Server Utilities",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "backpack | ./node_modules/.bin/pino",
-    "build": "backpack build"
-  },
+  "name": "cloudli",
+  "version": "0.1.0",
+  "description": "Cloud Command Line Utlities for Firestore and AWS Elasticsearch",
   "author": "Duane Wood",
-  "license": "ISC",
+  "license": "MIT",
+  "homepage": "https://bitbucket.org/duanewood/cloudli",
+  "repository": {
+    "type": "git",
+    "url": "git@bitbucket.org:duanewood/cloudli.git"
+  },
+  "engines": {
+    "node": ">=8"
+  },
+  "keywords": [
+    "firestore",
+    "aws",
+    "elasticsearch",
+    "diff",
+    "backup",
+    "restore",
+    "jsonschema",
+    "validate",
+    "index",
+    "reindex",
+    "search"
+  ],
+  "preferGlobal": true,
   "bin": {
-    "bundle": "./src/index.js"
+    "cloudli": "./src/index.js"
   },
   "dependencies": {
     "@firebase/app-types": "^0.4.0",

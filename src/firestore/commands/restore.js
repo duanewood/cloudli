@@ -1,4 +1,5 @@
 const debug = require('debug')('bundle:restore')
+const admin = require('firebase-admin')
 const fs = require('fs-extra')
 const path = require('path')
 const { Subject, Observable, empty, from, of } = require('rxjs')
@@ -9,7 +10,7 @@ const utils = require('./utils')
 const FirestoreMapper = require('../api/FirestoreMapper')
 const { logger, confirm } = require('../../commonutils')
 
-const restoreAction = async (basePath, options, config, admin) => {
+const restoreAction = async (basePath, options, config) => {
   try {
     const verbose = !!options.verbose
 
@@ -23,6 +24,7 @@ const restoreAction = async (basePath, options, config, admin) => {
     if (confirmed) {
       logger.info(Colors.start(`Starting restore documents from ${basePath}`))
 
+      utils.initAdmin(config)
       const db = admin.firestore()
 
       const limits = {

@@ -6,7 +6,7 @@ const DiffVisitor = require('../visitors/diff')
 const utils = require('./utils')
 const { logger, confirm } = require('../../commonutils')
 
-const diffAction = async (basePath, docSetId, options, config, admin) => {
+const diffAction = async (basePath, docSetId, options, config) => {
 
   try {
     if (!fs.existsSync(basePath)) {

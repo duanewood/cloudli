@@ -11,9 +11,8 @@ const validate = require('./validate')
  * 
  * @param {object} program - command line program object (see commander package)
  * @param {object} config - configuration object - contains 'test' configuration settings ( see node-config package)
- * @param {object} admin - firebase admin api object
  */
-exports.addCommand = (program, config, admin) => {
+exports.addCommand = (program, config) => {
   program
   .command('firestore-docs [docSetId]')
   .description('Gets firestore documents using a batch query with an optional docSet.  If docSetId is not specified, includes all documents in the database. The specified docSetId must be defined in config.')
@@ -25,13 +24,13 @@ exports.addCommand = (program, config, admin) => {
   .option('-i, --idfilter <id>', 'Filter results to documents with id.  Cannot be used iwth --filter')
   .option('-m, --min', 'Minimal data returned - only include document ids in results')
   .option('-v, --verbose', 'Displays full documents of results.')
-  .action((docset, options) => docs.getDocsAction(docset, options, config, admin))
+  .action((docset, options) => docs.getDocsAction(docset, options, config))
 
   program
   .command('firestore-get <path>')
   .description('Gets firestore documents with a path.  The path may be for a collection or a document.')
   .option('-v, --verbose', 'Displays full documents of results.')
-  .action((path, options) => get.getAction(path, options, config, admin))
+  .action((path, options) => get.getAction(path, options, config))
 
   program
   .command('backup [docSetId]')
@@ -45,7 +44,7 @@ exports.addCommand = (program, config, admin) => {
   .option('-b, --basePath <basePath>', 'Specifies the base backup path.  Overrides firestore.backupBasePath in config.')
   .option('-y, --bypassConfirm', 'Bypasses confirmation prompt. Required when non-interactive stdout.')
   .option('-v, --verbose', 'Displays document paths during backup.')
-  .action((docSetId, options) => backup.backupAction(docSetId, options, config, admin))
+  .action((docSetId, options) => backup.backupAction(docSetId, options, config))
 
   program
   .command('restore <basePath>')
@@ -53,7 +52,7 @@ exports.addCommand = (program, config, admin) => {
   .description(`Restores all documents (.json files) under basePath to equivalent paths in firestore.`)
   .option('-y, --bypassConfirm', 'Bypasses confirmation prompt. Required when non-interactive stdout.')
   .option('-v, --verbose', 'Displays files during restore.')
-  .action((basePath, options) => restore.restoreAction(basePath, options, config, admin))
+  .action((basePath, options) => restore.restoreAction(basePath, options, config))
 
   program
   .command('delete [docSetId]')
@@ -67,7 +66,7 @@ exports.addCommand = (program, config, admin) => {
   .option('-b, --basePath <basePath>', 'Specifies the base backup path.  Overrides firestore.backupBasePath in config.')
   .option('-y, --bypassConfirm', 'Bypasses confirmation prompt. Required when non-interactive stdout.')
   .option('-v, --verbose', 'Displays document paths during backup and delete.')
-  .action((docSetId, options) => deleteDocs.deleteAction(docSetId, options, config, admin))
+  .action((docSetId, options) => deleteDocs.deleteAction(docSetId, options, config))
 
   program
   .command('diff <basePath> [docSetId]')
@@ -80,7 +79,7 @@ exports.addCommand = (program, config, admin) => {
   .option('-i, --idfilter <id>', 'Filter results to documents with id.  Cannot be used with --filter')
   .option('-y, --bypassConfirm', 'Bypasses confirmation prompt. Required when non-interactive stdout.')
   .option('-w, --html [htmlFilename]', 'Produce (web) html and css file for difference.  Uses debug.outputPath from config for default directory. Default filename is timestamp.html')
-  .action((basePath, docSetId, options) => diff.diffAction(basePath, docSetId, options, config, admin))
+  .action((basePath, docSetId, options) => diff.diffAction(basePath, docSetId, options, config))
 
   program
   .command('validate [docSetId]')
@@ -91,5 +90,5 @@ exports.addCommand = (program, config, admin) => {
   .option('-s, --shallow', 'Only include immediate sub-collections')
   .option('-f, --filter <regex>', 'Filter results using the supplied regular expression regex')
   .option('-i, --idfilter <id>', 'Filter results to documents with id.  Cannot be used with --filter')
-  .action((docSetId, options) => validate.validateAction(docSetId, options, config, admin))
+  .action((docSetId, options) => validate.validateAction(docSetId, options, config))
 }

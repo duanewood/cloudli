@@ -4,7 +4,7 @@ const showDoc = require('../visitors/showDoc')
 const utils = require('./utils')
 const { logger } = require('../../commonutils')
 
-const getDocsAction = async (docSetId, options, config, admin) => {
+const getDocsAction = async (docSetId, options, config) => {
 
   try {
     const traverseOptions = utils.traverseOptionsFromCommandOptions(docSetId, options, config)

@@ -6,7 +6,7 @@ const backup = require('../visitors/backup')
 const utils = require('./utils')
 const { logger, confirm } = require('../../commonutils')
 
-const backupAction = async (docSetId, options, config, admin) => {
+const backupAction = async (docSetId, options, config) => {
 
   try {
     

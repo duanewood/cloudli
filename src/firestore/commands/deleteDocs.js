@@ -1,3 +1,4 @@
+const admin = require('firebase-admin')
 const fs = require('fs-extra')
 const path = require('path')
 const Colors = require('../../Colors')
@@ -7,7 +8,7 @@ const utils = require('./utils')
 const { logger, confirm } = require('../../commonutils')
 const { backupAction } = require('./backup')
 
-const deleteAction = async (docSetId, options, config, admin) => {
+const deleteAction = async (docSetId, options, config) => {
 
   try {
     
@@ -24,12 +25,13 @@ const deleteAction = async (docSetId, options, config, admin) => {
     if (confirmed) {
 
       const backupOptions = {...options, bypassConfirm: true}
-      await backupAction(docSetId, backupOptions, config, admin)
+      await backupAction(docSetId, backupOptions, config)
 
       logger.info(Colors.start(`Starting delete`))
       const client = utils.getClient(config)
       const projectId = await client.getProjectId()
   
+      utils.initAdmin(config)
       const db = admin.firestore()
       const verbose = !!options.verbose
       const visitBatch = deleteVisitBatch(db, verbose)

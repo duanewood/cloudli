@@ -3,7 +3,7 @@
 // pinoDebug must be first - 
 const pinoDebug = require('pino-debug')
 
-const admin = require('firebase-admin')
+const fs = require('fs-extra')
 const program = require('commander')
 const config = require('config')
 const chalk = require('chalk')
@@ -15,12 +15,11 @@ const { initLogger, getLogger } = require('./commonutils')
  * Uses commander package for processing commands.
  * Command handlers are loaded based on commands array below.
  * 
- * Commands must export a function: addCommand(program, config, admin)
+ * Commands must export a function: addCommand(program, config)
  * that add appropriate subcommands.
  * 
  *    @param {object} program - command line program object (see commander package)
  *    @param {object} config - configuration object - can be used by command for settings
- *    @param {object} admin - firebase admin api object
  * 
  * Command line uses subcommands based on command objects
  * Usage: node src/index.js [<subcommand> [<subcommand options> [--help]]] | --version | --help
@@ -68,59 +67,37 @@ function main() {
   const prettyPrint = config.has('logger.prettyPrint') ? config.get('logger.prettyPrint') : true
   initLogger(pinoDebug, prettyPrint)
   const logger = getLogger()
-
-  if (!config.has('firebase.keyFilename')) {
-    logger.error(chalk.red(`Error: Missing firebase.keyFilename in config`))
-    process.exit(1)
-  }
-
-  if (!config.has('firebase.databaseURL')) {
-    logger.error(chalk.red(`Error: Missing firebase.databaseURL in config`))
-    process.exit(1)
-  }
-
-  const keyFilename = config.get('firebase.keyFilename')
-  const databaseURL = config.get('firebase.databaseURL')
-  const serviceAccount = require('../' + keyFilename)
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: databaseURL
-  })
-
-  const firestore = admin.firestore()
-  const settings = { timestampsInSnapshots: true }
-  firestore.settings(settings)
-
-  commands.forEach(command => {
-    const commandModule = require(`${command}`)
-    commandModule.addCommand(program, config, admin)
-  })
-
-  // error on unknown commands
-  program.on('command:*', () => {
-    logger.error(chalk.red('Invalid command: %s\nSee --help for a list of available commands.'), program.args.join(' '))
-    process.exit(1)
-  })
-
-  program.on('--help', () => {
-    logger.info('')
-    logger.info('Logging:')
-    logger.info('  $ export LEVEL=info')
-    logger.info(`    Level default is 'info'`)
-    logger.info(`    Levels are: 'fatal', 'error', 'warn', 'info', 'debug', 'trace' or 'silent'`)
-    logger.info('')
-    logger.info('Debug Logging examples (LEVEL must be debug or higher):')
-    logger.info('  $ export DEBUG=*')  
-    logger.info('  $ export DEBUG=bundle:*')  
-    logger.info('  $ export DEBUG=bundle:traverseBatch')  
-  })  
-
-  if (!process.argv.slice(2).length) {
-    program.outputHelp()
-  }
-
-  // this will execute the appropriate command based on parameters
+  
   try {
+    commands.forEach(command => {
+      const commandModule = require(`${command}`)
+      commandModule.addCommand(program, config)
+    })
+
+    // error on unknown commands
+    program.on('command:*', () => {
+      logger.error(chalk.red('Invalid command: %s\nSee --help for a list of available commands.'), program.args.join(' '))
+      process.exit(1)
+    })
+
+    program.on('--help', () => {
+      logger.info('')
+      logger.info('Logging:')
+      logger.info('  $ export LEVEL=info')
+      logger.info(`    Level default is 'info'`)
+      logger.info(`    Levels are: 'fatal', 'error', 'warn', 'info', 'debug', 'trace' or 'silent'`)
+      logger.info('')
+      logger.info('Debug Logging examples (LEVEL must be debug or higher):')
+      logger.info('  $ export DEBUG=*')  
+      logger.info('  $ export DEBUG=bundle:*')  
+      logger.info('  $ export DEBUG=bundle:traverseBatch')  
+    })  
+
+    if (!process.argv.slice(2).length) {
+      program.outputHelp()
+    }
+
+    // this will execute the appropriate command based on parameters
     program.parse(process.argv)
   } catch (error) {
     logger.error(chalk.red(`Error: ${error.message}`))

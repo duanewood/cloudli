@@ -1,11 +1,15 @@
+const admin = require('firebase-admin')
 const Colors = require('../../Colors')
 const showDoc = require('../visitors/showDoc')
 const apiutils = require('../api/apiutils')
+const { initAdmin } = require('./utils')
 const { logger } = require('../../commonutils')
 
-const getAction = async (path, options, config, admin) => {
+const getAction = async (path, options, config) => {
 
   try {
+
+    initAdmin(config)
     const db = admin.firestore()
     const visit = doc => showDoc(doc, options.verbose)
 

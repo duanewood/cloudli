@@ -8,7 +8,7 @@ const commonutils = require('../../commonutils')
 const SchemaValidator = require('../api/SchemaValidator')
 const { logger } = require('../../commonutils')
 
-const validateAction = async (docSetId, options, config, admin) => {
+const validateAction = async (docSetId, options, config) => {
 
   try {
     

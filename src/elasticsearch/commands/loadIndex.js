@@ -7,7 +7,7 @@ const firestoreUtils = require('../../firestore/commands/utils')
 const Colors = require('../../Colors')
 const { logger, confirm } = require('../../commonutils')
 
-async function loadIndexAction(index, options, config, admin) {
+async function loadIndexAction(index, options, config) {
   try {
     const indices = utils.getIndexConfigsFromParams(index, options, config)
 
@@ -24,7 +24,7 @@ async function loadIndexAction(index, options, config, admin) {
     if (confirmed) {
       logger.info(Colors.start(`Starting indexing of documents for indices ${indicesMsg}`))
       const client = firestoreUtils.getClient(config)
-      await loadIndices(indices, config, admin, client, verbose)
+      await loadIndices(indices, config, client, verbose)
       logger.info(Colors.complete(`Completed indexing documents.`))
     }
   } catch(error) {
@@ -33,15 +33,14 @@ async function loadIndexAction(index, options, config, admin) {
   }
 }
 
-async function loadIndices(indices, config, admin, client, verbose) {
+async function loadIndices(indices, config, client, verbose) {
   return Promise.all(indices.map(async indexConfig => {
-    const result = await loadIndex(indexConfig, config, admin, client, verbose)
+    const result = await loadIndex(indexConfig, config, client, verbose)
     return result
   }))
 }
 
-async function loadIndex(indexConfig, config, admin, client, verbose) {
-  const db = admin.firestore()
+async function loadIndex(indexConfig, config, client, verbose) {
   const index = indexConfig.name
   const traverseOptions = firestoreUtils.getRefProp(config, indexConfig, 'docSet')
   if (!traverseOptions) {

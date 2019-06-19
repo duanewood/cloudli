@@ -9,33 +9,6 @@ was used as a basis for the firestore document hierarchy traversal and
 batch processing.  [RxJS](https://github.com/ReactiveX/rxjs) was used for the restore 
 command to provide simlar batch concurrency control for file directory traversal and processing.
 
-The command framework allows for additional functions to be added.
-
-The CLI uses the [commander](https://github.com/tj/commander.js/) package for processing commands.
-Command handlers are loaded based on the `commands` array in [src/index.js](src/index.js).
-
-```javascript
-const commands = [
-  './elasticsearch/commands/elasticsearch', 
-  './firestore/commands/firestore',
-  './test/commands/test'
-]
-```
-
-Commands must export a function: 
-
-```javascript
-addCommand(program, config, admin)
-```
-
-that add appropriate subcommands.
-
-```
-   @param {object} program - command line program object (see commander package)
-   @param {object} config - configuration object - can be used by command for settings
-   @param {object} admin - firebase admin api object
-```
-
 Command line uses subcommands based on command objects
 
 Usage: 

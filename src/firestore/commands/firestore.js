@@ -5,6 +5,7 @@ const restore = require('./restore')
 const deleteDocs = require('./deleteDocs')
 const diff = require('./diff')
 const validate = require('./validate')
+const chalk = require('chalk')
 
 /**
  * Firestore commands
@@ -14,7 +15,8 @@ const validate = require('./validate')
  */
 exports.addCommand = (program, config) => {
   program
-  .command('firestore-docs [docSetId]')
+  .command('fire:docs [docSetId]')
+  .alias('docs')
   .description('Gets firestore documents using a batch query with an optional docSet.  If docSetId is not specified, includes all documents in the database. The specified docSetId must be defined in config.')
   .option('-p, --path <path>', 'The path of the documents.  May be a collection or document.')
   .option('-c, --collectionId <id>', 'If specified, will only include documents from collections with id.')
@@ -27,15 +29,17 @@ exports.addCommand = (program, config) => {
   .action((docset, options) => docs.getDocsAction(docset, options, config))
 
   program
-  .command('firestore-get <path>')
-  .description('Gets firestore documents with a path.  The path may be for a collection or a document.')
+  .command('fire:get <path>')
+  .alias('get')
+  .description('Gets specific firestore documents with a path.  The path may be for a collection or a document.')
   .option('-v, --verbose', 'Displays full documents of results.')
   .action((path, options) => get.getAction(path, options, config))
 
   program
-  .command('backup [docSetId]')
-  .description(`Backs up firestore documents using a batch query with an optional docSet. If docSetId is not specified, includes all documents in the database. The specified docSetId must be defined in config.`)
-  .option('-p, --path <path>', 'The path of the documents.  May be a collection or document.')
+  .command('fire:backup [docSetId]')
+  .alias('backup')
+  .description(chalk.blue(`Backs up firestore documents using a batch query with an optional docSet.\nIf docSetId is not specified, includes all documents in the database. \nThe specified docSetId must be defined in config.`))
+  .option('-p, --path <path>', chalk.green('The path of the documents.  May be a collection or document.'))
   .option('-c, --collectionId <id>', 'If specified, will only include documents from collections with id.')
   .option('-r, --recursive', 'Include all sub-collections')
   .option('-s, --shallow', 'Only include immediate sub-collections')
@@ -47,7 +51,9 @@ exports.addCommand = (program, config) => {
   .action((docSetId, options) => backup.backupAction(docSetId, options, config))
 
   program
-  .command('restore <basePath>')
+  .command('fire:restore <basePath>')
+  .alias('restore')
+  .alias('fire:upload')
   .alias('upload')
   .description(`Restores all documents (.json files) under basePath to equivalent paths in firestore.`)
   .option('-y, --bypassConfirm', 'Bypasses confirmation prompt. Required when non-interactive stdout.')
@@ -55,7 +61,8 @@ exports.addCommand = (program, config) => {
   .action((basePath, options) => restore.restoreAction(basePath, options, config))
 
   program
-  .command('delete [docSetId]')
+  .command('fire:delete [docSetId]')
+  .alias('delete')
   .description(`Deletes firestore documents after backing up the files. If docSetId is not specified, includes all documents in the database. The specified docSetId must be defined in config.`)
   .option('-p, --path <path>', 'The path of the documents.  May be a collection or document.')
   .option('-c, --collectionId <id>', 'If specified, will only include documents from collections with id.')
@@ -69,7 +76,8 @@ exports.addCommand = (program, config) => {
   .action((docSetId, options) => deleteDocs.deleteAction(docSetId, options, config))
 
   program
-  .command('diff <basePath> [docSetId]')
+  .command('fire:diff <basePath> [docSetId]')
+  .alias('diff')
   .description(`Compares document files under basePath with firestore documents using a batch query with an optional docSet. If docSetId is not specified, includes all documents in the database. The specified docSetId must be defined in config.`)
   .option('-p, --path <path>', 'The path of the documents.  May be a collection or document.')
   .option('-c, --collectionId <id>', 'If specified, will only include documents from collections with id.')
@@ -82,7 +90,8 @@ exports.addCommand = (program, config) => {
   .action((basePath, docSetId, options) => diff.diffAction(basePath, docSetId, options, config))
 
   program
-  .command('validate [docSetId]')
+  .command('fire:validate [docSetId]')
+  .alias('validate')
   .description(`Validates firestore documents using a batch query with an optional docSet. If docSetId is not specified, includes all documents in the database. The specified docSetId must be defined in config.`)
   .option('-p, --path <path>', 'The path of the documents.  May be a collection or document.')
   .option('-c, --collectionId <id>', 'If specified, will only include documents from collections with id.')

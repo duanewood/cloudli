@@ -140,7 +140,7 @@ async function reindexAction(index, options, config, admin) {
 
     }
   } catch(error) {
-    logger.error(Colors.red(`Error: ${error.message}`))
+    logger.error(Colors.error(`Error: ${error.message}`))
     process.exit(1)
   }
 }

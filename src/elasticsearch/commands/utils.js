@@ -19,7 +19,7 @@ function getIndexConfigsFromParams(index, options, config) {
 
   let indices = config.get('elasticsearch.indices')
   if (!Array.isArray(indices)) {
-    throw new Erorr(`indices setting in config must be an array of obects`)
+    throw new Error(`indices setting in config must be an array of objects`)
   }
 
   if (index !== '*') {
@@ -31,7 +31,7 @@ function getIndexConfigsFromParams(index, options, config) {
   }
   indices.forEach(indexObj => {
     if (!indexObj.name) {
-      throw new Error(`Missing name property from config for one or more index config`)
+      throw new Error(`Missing name property from config for one or more index configs`)
     }  
   })
 

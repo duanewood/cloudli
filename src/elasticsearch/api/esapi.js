@@ -91,7 +91,7 @@ const reindex = async (fromIndex, toIndex) => {
 
 }
 
-const search = async (text, indexOrAlias) => {
+const search = async (text, indexOrAlias, sourceFields) => {
   const body = `{
     "query": {
       "bool": {
@@ -102,7 +102,7 @@ const search = async (text, indexOrAlias) => {
         }
       }      
     },
-    "_source": ["id", "author", "authorUser.displayName", "name", "users"],  
+    ${ sourceFields ? `"_source": ${JSON.stringify(sourceFields)}, ` : '' }
     "highlight" : {
       "fields" : {
         "*" : {}

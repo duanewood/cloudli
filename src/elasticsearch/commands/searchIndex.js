@@ -1,4 +1,6 @@
 const chalk = require('chalk')
+const get = require('lodash.get')
+const isPlainObject = require('lodash.isplainobject')
 const esapi = require('../api/esapi')
 const utils = require('./utils')
 const Colors = require('../../Colors')
@@ -18,6 +20,7 @@ async function searchIndexAction(text, index, options, config, admin) {
 
   try {
     const indices = utils.getIndexConfigsFromParams(index, options, config)
+
     await searchIndices(text, indices, !!options.verbose)
   } catch(error) {
     logger.error(Colors.error(`Error: ${error.message}`))
@@ -35,23 +38,56 @@ async function searchIndexAction(text, index, options, config, admin) {
 async function searchIndices(text, indices, verbose) {
   return Promise.all(indices.map(async indexConfig => {
     const index = `${indexConfig.name}_read`
+
+    const search = indexConfig.search ? indexConfig.search : {}
+
+    const searchConfig = {
+      title: 'id: ${_id}',
+      verboseDetails: '${_source}',
+      ...search
+    }
+
     logger.info(Colors.prep(`Searching index '${index}' for '${text}'`))
-    const results = await esapi.search(text, index)
-    displayResults(JSON.parse(results), verbose)
+    const results = await esapi.search(text, index, searchConfig.sourceFields)
+    displayResults(JSON.parse(results), verbose, searchConfig)
   }))
 }
 
-function displayResults(results, verbose) {
+/**
+ * Formats a template string containing substitution parameters in the form ${name}
+ * 
+ * @param {string} template the template string containing substitution parameters in the form ${name}.
+ *                          name may be a nested name.  For example, ${item[0].product.name}
+ * @param {object} vars the object to use for substitution.  name is resolved within vars.  
+ *                          If any of the substitution values is an object, JSON.stringify will be
+ *                          used for the substitution.
+ * @return {string} the formatted string.  
+ */
+const format = (template, vars) => template.replace(/\${(.*?)}/g, (_, v) => {
+  const value = get(vars, v, v)
+  if (isPlainObject(value)) {
+    return JSON.stringify(value, null, 2)
+  } else {
+    return value
+  }
+})
+
+function displayResults(results, verbose, searchOptions) {
   if (results.hits.total === 0) {
     logger.info(Colors.warning(`No matches`))
   } else {
     logger.info(Colors.info(`Found ${results.hits.total} matches`))
+
     results.hits.hits.forEach(hit => {
-      const bundle = hit._source
+      const source = hit._source
+      const title = format(searchOptions.title, hit)
       if (verbose) {
         logger.info('')
-        logger.info(Colors.info(chalk.bold.underline(`Bundle: '${bundle.name || ""}' (${bundle.id})`)))
-        logger.info(Colors.info(`Author: ${bundle.authorUser.displayName || ""}`))
+        const verboseDetails = format(searchOptions.verboseDetails, hit)
+        logger.info(Colors.info(chalk.bold.underline(title)))
+        logger.info(Colors.info(verboseDetails))
+        // logger.info(Colors.info(chalk.bold.underline(`Bundle: '${source.name || ""}' (${source.id})`)))
+        // logger.info(Colors.info(`Author: ${source.authorUser.displayName || ""}`))
         
         if (hit.highlight) {
           for (let [key, highlightStrings] of Object.entries(hit.highlight)) {
@@ -61,7 +97,7 @@ function displayResults(results, verbose) {
           }
         }
       } else {
-        logger.info(Colors.info(`Bundle: '${bundle.name || ""}' (${bundle.id})`))
+        logger.info(Colors.info(title))
       }
     })
   }

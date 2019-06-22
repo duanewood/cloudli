@@ -29,6 +29,9 @@
   "bin": {
     "cloudli": "./src/index.js"
   },
+  "files": [
+    "src"
+  ],
   "dependencies": {
     "@firebase/app-types": "^0.4.0",
     "@google-cloud/firestore": "^2.0.0",
@@ -47,6 +50,8 @@
     "inquirer": "^6.3.1",
     "jsome": "^2.5.0",
     "jsondiffpatch": "^0.3.11",
+    "lodash.get": "^4.4.2",
+    "lodash.isplainobject": "^4.0.6",
     "moment": "^2.24.0",
     "path": "^0.12.7",
     "pino": "^5.12.6",

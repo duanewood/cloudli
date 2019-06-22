@@ -1,0 +1,29 @@
+{
+  "mappings": {
+    "_doc": {
+      "properties": {
+        "title": {
+          "type": "text",
+          "fields": {
+            "english": {
+              "type": "text",
+              "analyzer": "english"
+            }
+          }
+        },
+        "article": {
+          "type": "text",
+          "fields": {
+            "english": {
+              "type": "text",
+              "analyzer": "english"
+            }
+          }
+        },
+        "likes": {
+          "type": "integer"
+        }  
+      }
+    }
+  }
+}

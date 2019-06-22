@@ -8,15 +8,14 @@ const { logger } = require('../../commonutils')
  * Gets the current index that is tied to the 
  * <index name>_read and <index name>_write aliases.
  * 
- * The resulting index will be in the form <index name>_YYYYMMDDHHmm
+ * The resulting index will be in the form <index name>_YYYYMMDDHHmmss
  * 
  * @param {*} index The optional base <index name> (or * for all indices defined in config).  
  *                  If not supplied, defaults to all indices.
  * @param {*} options Command line options (see commmander) 
  * @param {*} config The config object.  Must contain "indices" element with name, path, objectMapper, indexMapping.
- * @param {*} admin The firebase admin object
  */
-async function getAliasIndexAction(index, options, config, admin) {
+async function getAliasIndexAction(index, options, config) {
 
   try {
     const indices = utils.getIndexConfigsFromParams(index, options, config)
@@ -36,7 +35,7 @@ async function getAliasIndexAction(index, options, config, admin) {
  * Gets the current index that is tied to the 
  * <index name>_read and <index name>_write aliases (for 1 or more indices)
  * 
- * The resulting index will be in the form <index name>_YYYYMMDDHHmm
+ * The resulting index will be in the form <index name>_YYYYMMDDHHmmss
  * 
  * @param {array} indices The array of IndexConfig objects based on the command line from config
  */

@@ -26,6 +26,7 @@ exports.addCommand = (program, config) => {
   program.command('es:create-index [index]')
   .alias('create-index')
   .description('Create elasticsearch index definition with the name <indexname>yyyyMMddHHmm')
+  .option('-a, --addAliases', 'Adds read alias (index_read) and write alias (index_write) for the index')
   .action((index, options) => esAction(config, () => createIndex.createIndexAction(index, options, config)))
 
   program.command('es:get-aliases [index]')

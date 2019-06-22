@@ -1,0 +1,18 @@
+/**
+ * Example of putting sensitive, environment-specific information in a local-development config file
+ * 
+ * Rename this to local-development (or local-environmentname) and fill in details.
+ * 
+ * Keyfile and service account files could be stored in a ./keys folder or other protected location.
+ * The .keys path should also be added to .gitignore so that the files are not added to source control.
+ */
+{
+  "firebase": {
+    "keyFilename": "path-to-your-project-firebase-adminsdk-keyfile.json",
+    "databaseURL": "https://your-project-database-url.com",
+    "projectId": "your-projectid"
+  },
+  "elasticsearch": {
+    "serviceAccountFilename": "path-to-your-elasticsearch-service-account-file.json"
+  }
+}

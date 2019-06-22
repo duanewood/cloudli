@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://cloudlixyz.com/schemas/post.schema.json",
+  "type": "object",
+  "title": "Post Schema",
+  "description": "A public or private post",
+  "required": [
+    "title",
+    "article",
+    "likes"
+  ],
+  "properties": {
+    "title": {
+      "type": "string",
+      "title": "The title of the post",
+      "examples": ["The Lovesong of J. Alfred Prufrock"]
+    },
+    "article": {
+      "type": "string",
+      "title": "The post content",
+      "examples": ["Let us go then, you and I,\nWhen the evening is spread out against the sky\nLike a patient etherized upon a table;"]
+    },
+    "likes": {
+      "type": "integer",
+      "minimum": 0,
+      "title": "The number of likes for the post",
+      "examples": [42]
+    }
+  },
+  "additionalProperties": false
+}

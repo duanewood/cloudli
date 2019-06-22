@@ -44,6 +44,23 @@ const getWriteAliasIndices = async (index) => {
   return Object.keys(aliasIndex)
 }
 
+const createAliases = async (index, aliases) => {
+  const body = 
+    `{
+      "actions": [
+        {
+          "add": {
+            "index": "${index}",
+            "aliases": [${ aliases.map(alias => `"${alias}"`).join(',') }]
+          }          
+        }
+      ]
+    }`
+
+  return awsApi('POST', '_aliases', body)
+
+}
+
 /**
  * Changes the alias from pointing to fromIndices to pointing to toIndices.
  * 
@@ -175,6 +192,7 @@ module.exports = {
   getReadAliasIndices,
   getWriteAliasIndices,
   changeAlias,
+  createAliases,
   reindex,
   search
 }

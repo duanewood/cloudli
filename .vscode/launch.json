@@ -8,9 +8,10 @@
       "type": "node",
       "request": "launch",
       "console": "integratedTerminal",
-      "name": "Launch node.js test command",
+      "name": "Cloudli",
       "program": "${workspaceFolder}/src/index.js",
-      "args": ["test"]
+      "args": ["create-index", "posts"],
+      "cwd": "${workspaceFolder}/example"
     },
     {
       "type": "node",

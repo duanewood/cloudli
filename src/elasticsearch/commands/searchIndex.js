@@ -14,9 +14,8 @@ const { logger } = require('../../commonutils')
  *                  If not supplied, defaults to all indices.
  * @param {*} options Command line options (see commmander) 
  * @param {*} config The config object.  Must contain "indices" element with name, path, objectMapper, indexMapping.
- * @param {*} admin The firebase admin object
  */
-async function searchIndexAction(text, index, options, config, admin) {
+async function searchIndexAction(text, index, options, config) {
 
   try {
     const indices = utils.getIndexConfigsFromParams(index, options, config)
@@ -49,8 +48,44 @@ async function searchIndices(text, indices, verbose) {
 
     logger.info(Colors.prep(`Searching index '${index}' for '${text}'`))
     const results = await esapi.search(text, index, searchConfig.sourceFields)
-    displayResults(JSON.parse(results), verbose, searchConfig)
+    displayResults(index, JSON.parse(results), verbose, searchConfig)
   }))
+}
+
+function displayResults(index, results, verbose, searchConfig) {
+  if (results.hits.total === 0) {
+    logger.info(Colors.warning(`${index}: No matches`))
+  } else {
+    logger.info(Colors.info(`${index}: Found ${results.hits.total} matches`))
+
+    results.hits.hits.forEach(hit => {
+      const source = hit._source
+      const title = format(searchConfig.title, hit)
+      if (verbose) {
+        logger.info('')
+        const verboseDetails = format(searchConfig.verboseDetails, hit)
+        logger.info(Colors.info(chalk.bold.underline(title)))
+        logger.info(Colors.info(verboseDetails))
+        
+        if (hit.highlight) {
+          for (let [key, highlightStrings] of Object.entries(hit.highlight)) {
+            highlightStrings.forEach(highlight => {
+              highlightToConsole(key, highlight)
+            })
+          }
+        }
+      } else {
+        logger.info(Colors.info(title))
+      }
+    })
+  }
+}
+
+function highlightToConsole(key, highlight) {
+  logger.info('')
+  logger.info(Colors.highlightKey(key))
+  const chalkString = highlight.replace(/<em>(.*?)<\/em>/g, (match, p1) => Colors.highlight(p1))
+  logger.info(chalkString)
 }
 
 /**
@@ -71,44 +106,6 @@ const format = (template, vars) => template.replace(/\${(.*?)}/g, (_, v) => {
     return value
   }
 })
-
-function displayResults(results, verbose, searchOptions) {
-  if (results.hits.total === 0) {
-    logger.info(Colors.warning(`No matches`))
-  } else {
-    logger.info(Colors.info(`Found ${results.hits.total} matches`))
-
-    results.hits.hits.forEach(hit => {
-      const source = hit._source
-      const title = format(searchOptions.title, hit)
-      if (verbose) {
-        logger.info('')
-        const verboseDetails = format(searchOptions.verboseDetails, hit)
-        logger.info(Colors.info(chalk.bold.underline(title)))
-        logger.info(Colors.info(verboseDetails))
-        // logger.info(Colors.info(chalk.bold.underline(`Bundle: '${source.name || ""}' (${source.id})`)))
-        // logger.info(Colors.info(`Author: ${source.authorUser.displayName || ""}`))
-        
-        if (hit.highlight) {
-          for (let [key, highlightStrings] of Object.entries(hit.highlight)) {
-            highlightStrings.forEach(highlight => {
-              highlightToConsole(key, highlight)
-            })
-          }
-        }
-      } else {
-        logger.info(Colors.info(title))
-      }
-    })
-  }
-}
-
-function highlightToConsole(key, highlight) {
-  logger.info('')
-  logger.info(Colors.highlightKey(key))
-  const chalkString = highlight.replace(/<em>([\s\S]*)<\/em>/g, (match, p1) => Colors.highlight(p1))
-  logger.info(chalkString)
-}
 
 module.exports = {
   searchIndexAction,

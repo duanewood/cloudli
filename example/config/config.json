@@ -1,8 +1,0 @@
-{
-  "debug": {
-    "outputPath": "./debug"
-  },
-  "logger": {
-    "prettyPrint": true
-  }
-}

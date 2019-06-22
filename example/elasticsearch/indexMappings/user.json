@@ -1,0 +1,26 @@
+{
+  "mappings": {
+    "_doc": {
+      "properties": {
+        "userid": {
+          "type": "keyword"
+        },
+        "fullName": {
+          "type": "text"
+        },
+        "birthDate": {
+          "type": "date"
+        },
+        "background": {
+          "type": "text",
+          "fields": {
+            "english": {
+              "type": "text",
+              "analyzer": "english"
+            }
+          }
+        }
+      }
+    }
+  }
+}

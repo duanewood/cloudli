@@ -8,7 +8,7 @@ const firestoreUtils = require('../../firestore/commands/utils')
 const Colors = require('../../Colors')
 const { logger, confirm } = require('../../commonutils')
 
-async function updateIndexReloadAction(index, options, config, admin) {
+async function updateIndexReloadAction(index, options, config) {
   try {
     const indices = utils.getIndexConfigsFromParams(index, options, config)
 
@@ -31,7 +31,7 @@ async function updateIndexReloadAction(index, options, config, admin) {
 
     if (confirmed) {
       logger.info(Colors.start(`Starting update index and reload documents for indices ${indicesMsg}`))
-      await updateIndexReload(indices, config, admin, verbose)
+      await updateIndexReload(indices, config, verbose)
       logger.info(Colors.complete(`Completed update index and reload documents.`))
     }
   } catch(error) {
@@ -40,7 +40,7 @@ async function updateIndexReloadAction(index, options, config, admin) {
   }
 }
 
-async function updateIndexReload(indices, config, admin, verbose) {
+async function updateIndexReload(indices, config, verbose) {
   const client = firestoreUtils.getClient(config)
 
   return Promise.all(indices.map(async indexConfig => {
@@ -68,7 +68,7 @@ async function updateIndexReload(indices, config, admin, verbose) {
     }
 
     try {
-      await loadIndex.loadIndex(indexConfig, config, admin, client, verbose)
+      await loadIndex.loadIndex(indexConfig, config, client, verbose)
     } catch(error) {
       try {
         // attempt to change write alias back to the original index
@@ -111,7 +111,7 @@ async function updateIndexReload(indices, config, admin, verbose) {
   }))
 }
 
-async function reindexAction(index, options, config, admin) {
+async function reindexAction(index, options, config) {
   try {
     const indices = utils.getIndexConfigsFromParams(index, options, config)
 
@@ -133,11 +133,9 @@ async function reindexAction(index, options, config, admin) {
     const confirmed = options.bypassConfirm || await confirm(Colors.warning(`Are you sure?`))
 
     if (confirmed) {
-
       logger.info(Colors.start(`Starting reindex for ${indicesMsg}`))
       await reindex(indices, verbose)
       logger.info(Colors.complete(`Completed reindex.`))
-
     }
   } catch(error) {
     logger.error(Colors.error(`Error: ${error.message}`))

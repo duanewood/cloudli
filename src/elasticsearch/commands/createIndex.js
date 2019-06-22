@@ -6,7 +6,7 @@ const esapi = require('../api/esapi')
 const Colors = require('../../Colors')
 const { logger } = require('../../commonutils')
 
-async function createIndexAction(index, options, config, admin) {
+async function createIndexAction(index, options, config) {
   try {
     const indices = utils.getIndexConfigsFromParams(index, options, config)
 
@@ -17,9 +17,11 @@ async function createIndexAction(index, options, config, admin) {
       }  
     })
 
+    const addAliases = !!options.addAliases
+
     const indicesMsg = `[${indices.map(indexConfig => indexConfig.name).join(', ')}]`
     logger.info(Colors.start(`Starting create indices for ${indicesMsg}`))
-    await createIndices(indices)
+    await createIndices(indices, addAliases)
     logger.info(Colors.complete(`Completed create indices.`))    
   } catch(error) {
     logger.error(Colors.error(`Error: ${error.message}`))
@@ -27,17 +29,24 @@ async function createIndexAction(index, options, config, admin) {
   }
 }
 
-async function createIndices(indices) {
+async function createIndices(indices, addAliases) {
   return Promise.all(indices.map(async indexConfig => {
-    return createIndex(indexConfig.name, indexConfig.indexMapping)
+    return createIndex(indexConfig.name, indexConfig.indexMapping, addAliases)
   }))
 }
 
-async function createIndex(index, indexMappingFile) {
+async function createIndex(index, indexMappingFile, addAliases) {
   const indexMappingJson = fs.readJsonSync(indexMappingFile)
-  const indexWithDateTime = `${index}_${moment().format('YYYYMMDDHHmm')}`
+  const indexWithDateTime = `${index}_${moment().format('YYYYMMDDHHmmss')}`
   await esapi.createIndex(indexWithDateTime, indexMappingJson)
-  logger.info(Colors.info(`Created index ${chalk.bold(indexWithDateTime)}`))
+  if (addAliases) {
+    const readAlias = `${index}_read`
+    const writeAlias = `${index}_write`
+    await esapi.createAliases(indexWithDateTime, [readAlias, writeAlias])
+    logger.info(Colors.info(`Created index ${chalk.bold(indexWithDateTime)} and aliases ${chalk.bold(readAlias)} and ${chalk.bold(writeAlias)}`))
+  } else {
+    logger.info(Colors.info(`Created index ${chalk.bold(indexWithDateTime)}`))
+  }
   return indexWithDateTime
 }
 

@@ -82,7 +82,7 @@ const visitIndexer = (indexConfig, verbose) => {
       logger.info(Colors.info(`Indexing ${doc.ref.path}`))
     }
     const docToIndex = mapper ? mapper(doc.data()) : doc.data()
-    const id = docToIndex.id
+    const id = doc.id
     if (id) {
       return esapi.indexDocument(writeIndex, docToIndex, doc.id)
     } else {

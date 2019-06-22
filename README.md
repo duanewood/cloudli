@@ -134,9 +134,9 @@ The command line interface requires firebase [configuration](#configuration) as 
   }
 ```
 
-## Cloud Firestore
+# Cloud Firestore
 
-### Document Selection
+## Document Selection
 
 Cloud firestore commands support various options for selecting documents.  To support scalability, 
 a [StructuredQuery](https://cloud.google.com/firestore/docs/reference/rest/v1/StructuredQuery) is used to 
@@ -417,9 +417,32 @@ See [Document Selection](#Document-Selection) for details on selection options.
 
 
 
+# Elasticsearch
+
+- info on AWS
+- info on configuration
+- info on index / alias structure
+
+https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/what-is-amazon-elasticsearch-service.html
+
+https://www.elastic.co/guide/en/elasticsearch/reference/6.7/index.html
 
 
-## Elasticsearch
+# Elasticsearch Commands
+
+The following sections provide details of the available commands for AWS Elasticsearch.
+
+## es:create-index
+
+```
+es:create-index [index]
+```
+Creates elasticsearch index definition with the name <index>YYYYMMDDHHmmss. 
+Requires a schema configuration entry containing the `indexMapping` file path.
+The `indexMapping` file must be json file that conforms to the body format of the elasticsearch [Create Index API](https://www.elastic.co/guide/en/elasticsearch/reference/6.7/indices-create-index.html).
+
+
+
 
 ## To Add
 

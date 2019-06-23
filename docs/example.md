@@ -122,3 +122,23 @@ cloudli es:create-index --addIndexes
 ```
 
 ![cloudli es:create-index --addIndexes](images/create-index.png)
+
+# Load documents into the indexes
+
+```
+cloudli es:load-index --verbose
+```
+
+![cloudli es:load-index --verbose](images/load-index.png)
+
+# Search the indexes
+
+```
+cloudli es:search like --verbose
+```
+
+![cloudli es:search like --verbose](images/search.png)
+
+
+
+

@@ -7,11 +7,14 @@
  * The .keys path should also be added to .gitignore so that the files are not added to source control.
  */
 {
+  // Required for firebase commands (and es:load-index and es:create-index-reload)
   "firebase": {
     "keyFilename": "path-to-your-project-firebase-adminsdk-keyfile.json",
     "databaseURL": "https://your-project-database-url.com",
     "projectId": "your-projectid"
   },
+
+  // Required for elasticsearch commands
   "elasticsearch": {
     "serviceAccountFilename": "path-to-your-elasticsearch-service-account-file.json"
   }

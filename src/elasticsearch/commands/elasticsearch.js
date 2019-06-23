@@ -34,8 +34,8 @@ exports.addCommand = (program, config) => {
   .description('Get the index aliases for the elasticsearch index')
   .action((index, options) => esAction(config, () => getAliasIndex.getAliasIndexAction(index, options, config)))
 
-  program.command('es:reload-index [index]')
-  .alias('reload-index')
+  program.command('es:create-reload-index [index]')
+  .alias('create-reload-index')
   .description('Create a new index using the defined mapping and loads documents from firestore for the index')
   .option('-y, --bypassConfirm', 'Bypasses confirmation prompt. Required when non-interactive stdout.')
   .option('-v, --verbose', 'Displays additional progress information.')

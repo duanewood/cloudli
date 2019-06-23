@@ -53,9 +53,15 @@ exports.addCommand = (program, config) => {
   program
   .command('fire:restore <basePath>')
   .alias('restore')
-  .alias('fire:upload')
-  .alias('upload')
   .description(`Restores all documents (.json files) under basePath to equivalent paths in firestore.`)
+  .option('-y, --bypassConfirm', 'Bypasses confirmation prompt. Required when non-interactive stdout.')
+  .option('-v, --verbose', 'Displays files during restore.')
+  .action((basePath, options) => restore.restoreAction(basePath, options, config))
+
+  program
+  .command('fire:upload <basePath>')
+  .alias('upload')
+  .description(`Uploads (restores) all documents (.json files) under basePath to equivalent paths in firestore.`)
   .option('-y, --bypassConfirm', 'Bypasses confirmation prompt. Required when non-interactive stdout.')
   .option('-v, --verbose', 'Displays files during restore.')
   .action((basePath, options) => restore.restoreAction(basePath, options, config))

@@ -10,7 +10,7 @@
       "console": "integratedTerminal",
       "name": "Cloudli",
       "program": "${workspaceFolder}/src/index.js",
-      "args": ["create-index", "posts"],
+      "args": ["fire:delete", "userPosts", "--verbose"],
       "cwd": "${workspaceFolder}/example"
     },
     {

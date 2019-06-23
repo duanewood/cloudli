@@ -11,7 +11,6 @@
       {
         "name": "xyz_users",
         "docSetRef": "firestore.docSets.users",
-        // "objectMapper": "userMapper",
         "indexMapping": "./elasticsearch/indexMappings/user.json",
         "search": {
           "sourceFields": ["fullName", "userid", "background"],
@@ -22,7 +21,6 @@
       {
         "name": "xyz_posts",
         "docSetRef": "firestore.docSets.posts",
-        // "objectMapper": "bundleMapper",
         "indexMapping": "./elasticsearch/indexMappings/post.json",
         "search": {
           "title": "Title: '${_source.title}' (${_id})",
@@ -32,7 +30,6 @@
       {
         "name": "xyz_user_posts",
         "docSetRef": "firestore.docSets.userPosts",
-        // "objectMapper": "bundleMapper",
         "indexMapping": "./elasticsearch/indexMappings/post.json",
         "search": {
           "title": "Title: '${_source.title}' (${_id})",

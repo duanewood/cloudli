@@ -8,12 +8,11 @@
 
 # local config files contain secure data
 /config/local*
+
 /example/config/local*
-
-/.keys
-
-/backups
-/debug
+/example/.keys
+/example/backups/*
+/example/debug/*
 
 # misc
 .DS_Store

@@ -33,7 +33,7 @@ Function|Description
 [Load Index](#es:load-index)|Load an index from a set of documents in firestore
 [Search](#es:search)|Searches for text in a defined index with optional highlighting
 [Reindex](#es:reindex)|Reindex documents to a new index mapping and adjust read and write aliases
-[Create Index and Reload](#es:create-reload-index)|Create a new index mapping, reload documents from firebase and adjust read and write aliases
+[Create Index and Reload](#es:create-reload-index)|Create a new index mapping, reload documents from firestore and adjust read and write aliases
 
 **Note**: Cloud Firestore and Elasticsearch commands can be used independently (with the exception of [Load Index](#es:load-index) and [Create Index and Reload](#es:create-reload-index), which index documents from firestore).
 
@@ -51,7 +51,7 @@ $ npm install -g cloudli
 
 ## Example Directory
 
-The [example directory](example) contains sample configuration, documents, index mappings, and JSON schemas that can be used to try out the commands.  The examples uses documents in the following structure:
+The [example directory](example) contains sample configuration, documents, index mappings, and JSON schemas that can be used to try out the commands.  The example uses documents in the following structure:
 
 ```
 ─ xyzposts          // contains public "post" documents

@@ -1,6 +1,18 @@
+# TODO
+
+- add validate documentation
+
+- include config, index mapping, and schema to example
+- add motivation, goals
+- Fix create-index if existing aliases exist
+- Add examples using paths and shallow/recursive, others
+- explain index structure 
+  - diagram for overall
+  - diagram for each reindex function
+
 # Example Commands
 
-The [example directory](../example) contains sample configuration, documents, index mappings, and JSON schemas that can be used to try out the commands.  The examples uses [documents](../example/docs) in the following structure:
+The [example directory](../example) contains sample configuration, documents, index mappings, and JSON schemas that can be used to try out the commands.  The example uses [documents](../example/docs) in the following structure:
 
 ```
 ─ xyzposts          // contains public "post" documents
@@ -8,7 +20,7 @@ The [example directory](../example) contains sample configuration, documents, in
     ├── user1
     │   └── posts   // contains user 1 "post" documents
     └── user2
-        └── posts   // contains user 1 "post" documents
+        └── posts   // contains user 2 "post" documents
 ```
 
 Index mappings [example/elasticsearch/indexMappings](../example/elasticsearch/indexMappings) and JSON Schemas [schemas](../example/schemas) are provided for `user` and `post` documents.
@@ -94,22 +106,54 @@ cloudli fire:diff backups/2019-06-23T00-22-49.089Z userPosts
 
 ![cloudli fire:diff backups/2019-06-23T00-22-49.089Z userPosts](images/diffafterrestore.png)
 
-
 ## Compare firestore user posts with other local files and generate diff html
 
-The [docs/v2](docs/v2) directories contain modified user posts to demonstrate the use of diff
+The [docs/edited-user-posts](docs/edited-user-posts) directories contain modified user posts to demonstrate the use of .
 
 ```
-cloudli fire:diff docs/v2 userPosts --html
+cloudli fire:diff docs/edited-user-posts userPosts --html
 ```
 
-![cloudli fire:diff docs/v2 userPosts --html](images/diffv2.png)
+![cloudli fire:diff docs/edited-user-posts userPosts --html](images/diff-edited.png)
 
-The resulting `./debug/2019-06-23T01-04-56.729Z.html`:
+The resulting `./debug/2019-06-24T21-48-45.227Z.html`:
 
 ![diff html](images/diffhtml.png)
 
 Note: You can also make changes manually using the [Firebase Console -> Database -> Cloud Firestore](https://console.firebase.google.com) and then run fire:diff using the original backup.
+
+## Load an invalid user post
+
+The [docs/invalid-user-posts](docs/invalid-user-posts) directory contains a new user post document that has invalid fields according to the JSON Schema for posts.
+
+```javascript
+xyzusers/user2/posts/user2post2
+
+{
+  poem: "Ulysses",
+  likes: -1,
+  article: "It little profits that an idle king,\n...",
+}
+```
+
+
+Load this document that will be used to demonstrate schema validation.
+
+```
+cloudli fire:upload docs/invalid-user-posts --verbose
+```
+
+![cloudli fire:upload docs/invalid-user-posts --verbose](images/upload-invalid.png)
+
+## Validate user posts
+
+This command will display schema validation errors for the invalid document `xyzusers/user2/posts/user2post2`.
+
+```
+cloudli fire:validate userPosts
+```
+
+![cloudli fire:validate userPosts](images/validate.png)
 
 # Elasticsearch Commands
 
@@ -138,6 +182,16 @@ cloudli es:search like --verbose
 ```
 
 ![cloudli es:search like --verbose](images/search.png)
+
+# Search a specific index
+
+Note that this uses English language stemming based on the indexMapping for `posts`. This allows the match of "renewing" given the search term of "renew".
+
+```
+cloudli es:search renew xyz_posts --verbose
+```
+
+![cloudli es:search renew xyz_posts --verbose](images/searchindex.png)
 
 
 

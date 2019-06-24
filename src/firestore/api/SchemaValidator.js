@@ -10,7 +10,7 @@ class SchemaValidator {
   }
 
   loadSchemas(schemasConfig) {
-    this.ajv = new Ajv()
+    this.ajv = new Ajv({ allErrors: true })
     if (!schemasConfig || (typeof schemasConfig !== 'object') || Array.isArray(schemasConfig)) {
       throw new Error(`Missing schemas object in config`)
     }

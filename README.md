@@ -621,9 +621,21 @@ The elasticsearch `serviceAccountFilename` file has the following format:
 
 ## Elasticsearch Index and Alias Structure
 
-All of the elasticsearch commands rely on a specific key and alias naming convention.  For each index definition, a base name is specified.  The actual index created in elasticsearch will have the name `<index base name>_YYYYMMDDHHmmss` with the timestamp the index is created.  For example, the index named `xyz_users` would be created in elasticsearch with a name like `xyz_users_20190622120418`.
+All of the elasticsearch commands rely on a specific key and alias naming convention.  For each index definition, a base name is specified.  The actual index created in elasticsearch will have the name `<index base name>_YYYYMMDDHHmmss` with the timestamp when the index is created.  For example, the index named `xyz_users` would be created in elasticsearch with a name like `xyz_users_20190622120418`.
 
 For each created index, two aliases are expected - one for read and one for write.  These aliases allow code to access the indexes without being tied to the timestamp name of the index and supports zero-downtime reindexing.  The aliases are expected to have the names `<index base name>_read` and `<index base name>_write`.  For example, the index named `xyz_users` must have read and write aliases named `xyz_users_read` and `xyz_users_write`, respectively.
+
+```
+Index base name: base
+
+Actual index: base_20190622120418
+
+Read alias: base_read -> base_20190622120418
+
+Write aliad: base_write -> base_20190622120418
+```
+
+
 
 For more information on AWS Elasticsearch, see:
 

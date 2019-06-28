@@ -1,4 +1,4 @@
-const debug = require('debug')('bundle:restore')
+const debug = require('debug')('cloudli:restore')
 const admin = require('firebase-admin')
 const fs = require('fs-extra')
 const path = require('path')

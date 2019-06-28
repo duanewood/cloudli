@@ -1,3 +1,4 @@
+const path = require('path')
 const chalk = require('chalk')
 const utils = require('./utils')
 const TraverseBatch = require('../../firestore/api/TraverseBatch')
@@ -44,10 +45,16 @@ async function loadIndex(indexConfig, config, client, verbose) {
   const index = indexConfig.name
   const traverseOptions = firestoreUtils.getRefProp(config, indexConfig, 'docSet')
   if (!traverseOptions) {
-    throw new Error(`Missing docSet in config: elasticsearch.indices.${indexConfig.name}`)
+    throw new Error(`Missing docSet in config: elasticsearch.indices.${index}`)
   }
   if (!traverseOptions.path) {
-    throw new Error(`Missing path in docSet for elasticsearch.indices.${indexConfig.name}`)
+    throw new Error(`Missing path in docSet for elasticsearch.indices.${index}`)
+  }
+
+  try {
+    await esapi.getWriteAliasIndices(index)
+  } catch(err) {
+    throw new Error(`Unable to get write alias ${index}_write: ` + err.message)
   }
 
   // TODO: consider using visitBatch to index multiple documents in one call
@@ -75,7 +82,7 @@ const visitIndexer = (indexConfig, verbose) => {
   const index = indexConfig.name
   const writeIndex = `${index}_write`
   const mapper = indexConfig.objectMapper 
-                 ? require(`../objectMappers/${indexConfig.objectMapper}`) 
+                 ? require(path.resolve(indexConfig.objectMapper))
                  : null
   return async doc => {
     if (verbose) {

@@ -25,8 +25,7 @@ exports.addCommand = (program, config) => {
 
   program.command('es:create-index [index]')
   .alias('create-index')
-  .description('Create elasticsearch index definition with the name <indexname>yyyyMMddHHmm')
-  .option('-a, --addAliases', 'Adds read alias (index_read) and write alias (index_write) for the index')
+  .description('Create elasticsearch index definition with the name <indexname>yyyyMMddHHmmss, along with read and write aliases')
   .action((index, options) => esAction(config, () => createIndex.createIndexAction(index, options, config)))
 
   program.command('es:get-aliases [index]')
@@ -61,7 +60,7 @@ exports.addCommand = (program, config) => {
  * @param {*} config the command line config object
  * @param {function} action the function to call after initializing the api
  */
-const esAction = (config, action) => {
+const esAction = async (config, action) => {
   try {
     if (!config || !config.has('elasticsearch.serviceAccountFilename')) {
       throw new Error(`Missing 'elasticsearch.serviceAccountFilename' entry in config`)
@@ -69,7 +68,7 @@ const esAction = (config, action) => {
 
     const serviceAccount = fs.readJsonSync(config.get('elasticsearch.serviceAccountFilename'))
     esapi.initApi(serviceAccount)
-    action()
+    await action()
   } catch(error) {
     logger.error(Colors.error(`Error: ${error.message}`))
     process.exit(1)

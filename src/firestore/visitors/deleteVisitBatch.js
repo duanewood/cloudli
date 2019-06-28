@@ -1,4 +1,4 @@
-const debug = require('debug')('bundle:delete')
+const debug = require('debug')('cloudli:delete')
 const Colors = require('../../Colors')
 const { logger } = require('../../commonutils')
 

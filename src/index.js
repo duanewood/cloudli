@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// pinoDebug must be first - 
+// pinoDebug must be first
 const pinoDebug = require('pino-debug')
 
 const fs = require('fs-extra')
@@ -40,17 +40,17 @@ const { initLogger, getLogger } = require('./commonutils')
  * 
  * To filter debug modules:
  * 
- *    For all bundle module debug:  export DEBUG=bundle:*
- *    For specific bundle module debug (example):  export DEBUG=bundle:traverseBatch
+ *    For all bundle module debug:  export DEBUG=cloudli:*
+ *    For specific bundle module debug (example):  export DEBUG=cloudli:traverseBatch
  * 
  * Note: LEVEL must be set to 'debug' or higher for debug messages to be included.
  * 
  * Modules with debug:
  * 
- *    bundle:delete
- *    bundle:restore
- *    bundle:traverseBatch
- *    bundle:elasticsearch
+ *    cloudli:delete
+ *    cloudli:restore
+ *    cloudli:traverseBatch
+ *    cloudli:elasticsearch
  */
 
 const commands = [
@@ -89,8 +89,8 @@ function main() {
       logger.info('')
       logger.info('Debug Logging examples (LEVEL must be debug or higher):')
       logger.info('  $ export DEBUG=*')  
-      logger.info('  $ export DEBUG=bundle:*')  
-      logger.info('  $ export DEBUG=bundle:traverseBatch')  
+      logger.info('  $ export DEBUG=cloudli:*')  
+      logger.info('  $ export DEBUG=cloudli:traverseBatch')  
     })  
 
     if (!process.argv.slice(2).length) {

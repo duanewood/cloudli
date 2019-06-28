@@ -1,8 +1,9 @@
-const debug = require('debug')('bundle:elasticsearch')
+const debug = require('debug')('cloudli:elasticsearch')
 const AWS = require('aws-sdk')
-// const serviceAccount = require('../../../.keys/aws-elasticsearch.json')
 
+const client = new AWS.HttpClient()
 let serviceAccount = null
+let endpoint = null
 
 /**
  * Elasticsearch APIs
@@ -10,10 +11,11 @@ let serviceAccount = null
  * Must call initApi with Service Account object before calling other APIs.
  * Service account object must include domain, region, id, and key.
  * 
- * Enable debug logging with DEBUG=bundle:elasticsearch
+ * Enable debug logging with DEBUG=cloudli:elasticsearch
  */
 const initApi = svcAcct => {
   serviceAccount = svcAcct
+  endpoint = new AWS.Endpoint(serviceAccount.domain)
 }
 
 const indexDocument = async (index, document, id) => {
@@ -58,7 +60,6 @@ const createAliases = async (index, aliases) => {
     }`
 
   return awsApi('POST', '_aliases', body)
-
 }
 
 /**
@@ -130,6 +131,7 @@ const search = async (text, indexOrAlias, sourceFields) => {
   return awsApi('POST', indexOrAlias + '/_search', body)
 }
 
+
 const awsApi = async (method, path, body, contentType) => {
 
   if (!serviceAccount) {
@@ -140,7 +142,6 @@ const awsApi = async (method, path, body, contentType) => {
   }
 
   return new Promise((resolve, reject) => {
-    const endpoint = new AWS.Endpoint(serviceAccount.domain)
     const request = new AWS.HttpRequest(endpoint, serviceAccount.region)
   
     request.method = method
@@ -160,22 +161,28 @@ const awsApi = async (method, path, body, contentType) => {
     const signer = new AWS.Signers.V4(request, 'es')
     signer.addAuthorization(credentials, new Date())
   
-    const client = new AWS.HttpClient()
     client.handleRequest(request, null, (response) => {
       debug(`awsApi ${method} ${path}: ${response.statusCode} ${response.statusMessage}`)
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        reject(new Error(`Error from AWS Api: ${method} ${path}: ${path}, error: ${response.statusCode} ${response.statusMessage}`))
-        return
-      }
 
       let responseBody = ''
       response.on('data', (chunk) => {
         responseBody += chunk
       })
-      response.on('end', (chunk) => {
+
+      response.on('end', () => {
         debug(`awsApi ${method} ${path}: Received 'end' of response. responseBody: ${responseBody}`)
+
+        if (response.statusCode != 200 && response.statusCode != 201) {
+          reject(new Error(`Error from AWS Api: ${method} ${path}: ${path}, error: ${response.statusCode} ${response.statusMessage}`))
+        }
+
         resolve(responseBody)
-      });
+      })
+
+      response.on('error', () => {
+        debug(`awsApi ${method} ${path}: Received 'error' of response. responseBody: ${responseBody}`)
+        reject(new Error(`Error from AWS Api: ${method} ${path}: ${path}, error: ${response.statusCode} ${response.statusMessage}`))
+    })
     }, (error) => {
       debug(`awsApi: ${method} ${path}: Error: ${error}`)
       reject(error)

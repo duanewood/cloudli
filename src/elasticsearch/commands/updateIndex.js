@@ -13,11 +13,24 @@ async function updateIndexReloadAction(index, options, config) {
     const indices = utils.getIndexConfigsFromParams(index, options, config)
 
     // validate that we have indexMapping for each index
-    indices.forEach(indexConfig => {
+    for (const indexConfig of indices) {
       if (!indexConfig.indexMapping ) {
         throw new Error(`Missing indexMapping property from config for index ${indexConfig.name}`)
       }  
-    })
+
+      // make sure aliases exist
+      try { 
+        await esapi.getReadAliasIndices(indexConfig.name)
+      } catch(err) {
+        throw new Error(`${indexConfig.name}_read alias is required`)
+      }
+
+      try { 
+        await esapi.getWriteAliasIndices(indexConfig.name) 
+      } catch(err) {
+        throw new Error(`${indexConfig.name}_write alias is required`)
+      }
+    }
 
     if (!process.stdout.isTTY && !options.bypassConfirm) {
       throw new Error('--bypassConfirm option required when redirecting output')
@@ -48,7 +61,7 @@ async function updateIndexReload(indices, config, verbose) {
     if (verbose) {
       logger.info(Colors.info(`Creating new index for ${index}`))
     }
-    const newIndex = await createIndex.createIndex(index, indexConfig.indexMapping)
+    const newIndex = await createIndex.createIndex(index, indexConfig.indexMapping, false) // false = don't create aliases
     const writeIndices = await esapi.getWriteAliasIndices(indexConfig.name)
 
     try {
@@ -116,11 +129,24 @@ async function reindexAction(index, options, config) {
     const indices = utils.getIndexConfigsFromParams(index, options, config)
 
     // validate that we have indexMapping for each index
-    indices.forEach(indexConfig => {
+    for (const indexConfig of indices) {
       if (!indexConfig.indexMapping ) {
         throw new Error(`Missing indexMapping property from config for index ${indexConfig.name}`)
       }  
-    })
+
+      // make sure aliases exist
+      try { 
+        await esapi.getReadAliasIndices(indexConfig.name)
+      } catch(err) {
+        throw new Error(`${indexConfig.name}_read alias is required`)
+      }
+
+      try { 
+        await esapi.getWriteAliasIndices(indexConfig.name) 
+      } catch(err) {
+        throw new Error(`${indexConfig.name}_write alias is required`)
+      }      
+    }
 
     if (!process.stdout.isTTY && !options.bypassConfirm) {
       throw new Error('--bypassConfirm option required when redirecting output')
@@ -149,7 +175,8 @@ async function reindex(indices, verbose) {
     if (verbose) {
       logger.info(Colors.info(`Creating new index for ${index}`))
     }
-    const newIndex = await createIndex.createIndex(index, indexConfig.indexMapping)
+
+    const newIndex = await createIndex.createIndex(index, indexConfig.indexMapping, false) // false = don't create aliases    
     const writeIndices = await esapi.getWriteAliasIndices(indexConfig.name)
 
     try {

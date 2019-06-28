@@ -1,6 +1,6 @@
 "use strict"
 
-const debug = require('debug')('bundle:traverseBatch')
+const debug = require('debug')('cloudli:traverseBatch')
 const admin = require('firebase-admin')
 const chalk = require("chalk")
 const moment = require('moment')
@@ -26,7 +26,7 @@ const MIN_ID = "__id-9223372036854775808__"
  * The approach is to use the runQuery api that takes a StructuredQuery and then iterate 
  * over the result in batches using a queueLoop (@see #_recursiveBatchVisit).  
  * 
- * Enable debug logging with DEBUG=bundle:traverseBatch
+ * Enable debug logging with DEBUG=cloudli:traverseBatch
  * 
  * @see https://github.com/firebase/firebase-tools/blob/master/src/firestore/delete.js
  * @see https://cloud.google.com/nodejs/docs/reference/firestore/1.3.x/v1.FirestoreClient#runQuery

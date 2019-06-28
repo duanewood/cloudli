@@ -1,10 +1,16 @@
 # TODO
 
 - add validate documentation
+- Fix create-index if existing aliases exist
+- figure out what to do with objectmapper
+
+- validate aliases exist for reload-index and reindex
+- update documentation for create-index
+    - remove --addAliases
+    - recapure screenshot for create-index
 
 - include config, index mapping, and schema to example
-- add motivation, goals
-- Fix create-index if existing aliases exist
+- add motivation, goals-
 - Add examples using paths and shallow/recursive, others
 - explain index structure 
   - diagram for overall
@@ -132,7 +138,7 @@ xyzusers/user2/posts/user2post2
 {
   poem: "Ulysses",
   likes: -1,
-  article: "It little profits that an idle king,\n...",
+  article: "It little profits that an idle king,\n..."
 }
 ```
 

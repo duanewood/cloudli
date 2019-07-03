@@ -2,10 +2,9 @@ const debug = require('debug')('cloudli:restore')
 const admin = require('firebase-admin')
 const fs = require('fs-extra')
 const path = require('path')
-const { Subject, Observable, empty, from, of } = require('rxjs')
-const { bufferTime, catchError, mergeMap, scan, tap, finalize } = require('rxjs/operators')
+const { Observable, empty, of } = require('rxjs')
+const { bufferTime, catchError, mergeMap, finalize } = require('rxjs/operators')
 const Colors = require('../../Colors')
-const backup = require('../visitors/backup')
 const utils = require('./utils')
 const FirestoreMapper = require('../api/FirestoreMapper')
 const { logger, confirm } = require('../../commonutils')
@@ -19,7 +18,8 @@ const restoreAction = async (basePath, options, config) => {
     }
 
     logger.info(Colors.prep(`About to restore documents from ${basePath}`))
-    const confirmed = options.bypassConfirm || await confirm(Colors.warning(`Are you sure?`))
+    const confirmed =
+      options.bypassConfirm || (await confirm(Colors.warning(`Are you sure?`)))
 
     if (confirmed) {
       logger.info(Colors.start(`Starting restore documents from ${basePath}`))
@@ -31,20 +31,22 @@ const restoreAction = async (basePath, options, config) => {
         readJsonConcurrency: 5,
         batchWrite: 100,
         waitForBatchMs: 200,
-        batchWriteConcurrency: 5,
+        batchWriteConcurrency: 5
       }
 
       const normalizedBasePath = path.normalize(basePath)
 
       // observable of recursive traversal of files starting with basePath
       const file$ = files(normalizedBasePath).pipe(
-
         // read json and map for storage
         mergeMap(
           async file => {
             const json = await fs.readJson(file)
             // strip off basePath and trailing .json
-            const docRefPath = file.slice(normalizedBasePath.length + 1, file.length - 5)
+            const docRefPath = file.slice(
+              normalizedBasePath.length + 1,
+              file.length - 5
+            )
             if (verbose) {
               logger.info(Colors.info(docRefPath))
             }
@@ -83,13 +85,17 @@ const restoreAction = async (basePath, options, config) => {
         catchError(async err => {
           logger.error(Colors.error(`Restore Error: ${err.message}`))
           return err
-        }),
+        })
       )
       file$.subscribe(docs => {
-        debug(Colors.debug('Processed: ' + docs.map(doc => doc.docRefPath).join(', ')))
+        debug(
+          Colors.debug(
+            'Processed: ' + docs.map(doc => doc.docRefPath).join(', ')
+          )
+        )
       })
     }
-  } catch(error) {
+  } catch (error) {
     logger.error(Colors.error(`Error: ${error.message}`))
     process.exit(1)
   }
@@ -106,7 +112,7 @@ const files = dir => {
       .then(() => subscriber.complete())
       .catch(err => {
         logger.error(Colors.error(`Error: ${err}`))
-        subscriber.error
+        subscriber.error(err)
       })
   })
 }
@@ -115,8 +121,12 @@ const getFiles = async (dir, visit) => {
   return fs.readdir(dir).then(async files => {
     const jsonFiles = files.filter(file => file.endsWith('.json'))
     jsonFiles.forEach(file => visit(path.join(dir, file)))
-    const subdirs = files.filter(file => fs.statSync(path.join(dir, file)).isDirectory())
-    return Promise.all(subdirs.map(subdir => getFiles(path.join(dir, subdir), visit)))
+    const subdirs = files.filter(file =>
+      fs.statSync(path.join(dir, file)).isDirectory()
+    )
+    return Promise.all(
+      subdirs.map(subdir => getFiles(path.join(dir, subdir), visit))
+    )
   })
 }
 

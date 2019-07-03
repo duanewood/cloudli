@@ -6,9 +6,7 @@ const { initAdmin } = require('./utils')
 const { logger } = require('../../commonutils')
 
 const getAction = async (path, options, config) => {
-
   try {
-
     initAdmin(config)
     const db = admin.firestore()
     const visit = doc => showDoc(doc, options.verbose)
@@ -20,12 +18,15 @@ const getAction = async (path, options, config) => {
         if (snapshot.empty) {
           return Promise.reject(new Error(`Collection '${path}' not found`))
         }
-        return Promise.all(snapshot.docs.map(async doc => {
-           return visit(doc)
-        }))
+        return Promise.all(
+          snapshot.docs.map(async doc => {
+            return visit(doc)
+          })
+        )
       })
       logger.info(Colors.complete(`Completed getting documents`))
-    } else { // documentPath
+    } else {
+      // documentPath
       logger.info(Colors.start(`Getting document ${path}`))
       const docRef = db.doc(path)
       await docRef.get().then(async doc => {
@@ -36,7 +37,7 @@ const getAction = async (path, options, config) => {
       })
       logger.info(Colors.complete(`Completed getting document`))
     }
-  } catch(error) {
+  } catch (error) {
     logger.error(Colors.error(`Error: ${error.message}`))
     process.exit(1)
   }
@@ -45,4 +46,3 @@ const getAction = async (path, options, config) => {
 module.exports = {
   getAction
 }
-

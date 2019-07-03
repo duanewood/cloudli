@@ -2,7 +2,6 @@ const chalk = require('chalk')
 const { logger } = require('../../commonutils')
 
 const testAction = async (options, config, admin) => {
-
   try {
     logger.info(chalk.green('Test Action Start'))
     logger.info(chalk.yellow('Test'))
@@ -11,7 +10,7 @@ const testAction = async (options, config, admin) => {
     logger.warn(chalk.yellow('Warn msg'))
     logger.error(chalk.red('Error msg'))
     logger.info(chalk.green('Test Action End'))
-  } catch(error) {
+  } catch (error) {
     logger.error(chalk.red(`Error: ${error.message}`))
     process.exit(1)
   }
@@ -20,4 +19,3 @@ const testAction = async (options, config, admin) => {
 module.exports = {
   testAction
 }
-

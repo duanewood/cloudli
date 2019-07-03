@@ -1,4 +1,4 @@
-const ProgressBar = require("progress")
+const ProgressBar = require('progress')
 
 /**
  * Progress bar for TraverseBatch that keeps track of the number of documents processd.
@@ -8,8 +8,10 @@ class TraverseBatchProgress {
   constructor(msg) {
     this.curr = 0
     if (process.stdout.isTTY) {
-      this.progressBar = new ProgressBar(msg || 'Processed :current docs (:rate docs/s)',
-                                         { total: Number.MAX_SAFE_INTEGER })
+      this.progressBar = new ProgressBar(
+        msg || 'Processed :current docs (:rate docs/s)',
+        { total: Number.MAX_SAFE_INTEGER }
+      )
     }
   }
 

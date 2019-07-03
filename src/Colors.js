@@ -20,7 +20,7 @@ const Colors = {
   highlight: txt => chalk.black.bgYellow(txt),
   changeItem: txt => chalk.yellow(txt),
   deleteItem: txt => chalk.red(txt),
-  matchItem: txt => chalk.cyan(txt),
+  matchItem: txt => chalk.cyan(txt)
 }
 
 module.exports = Colors

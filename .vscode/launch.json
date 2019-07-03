@@ -8,89 +8,9 @@
       "type": "node",
       "request": "launch",
       "console": "integratedTerminal",
-      "name": "Cloudli",
-      "program": "${workspaceFolder}/src/index.js",
-      "args": ["fire:delete", "userPosts", "--verbose"],
-      "cwd": "${workspaceFolder}/example"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "console": "integratedTerminal",
-      "name": "Launch node.js search command",
-      "program": "${workspaceFolder}/src/index.js",
-      "args": ["search", "ethan", "bundles", "-v"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "console": "integratedTerminal",
-      "name": "Launch node.js validate command",
-      "program": "${workspaceFolder}/src/index.js",
-      "args": ["validate", "bundles"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "console": "integratedTerminal",
-      "name": "Launch node.js restore command",
-      "program": "${workspaceFolder}/src/index.js",
-      "args": ["restore", "./backups/test"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "console": "integratedTerminal",
       "name": "Launch node.js get all document ids",
       "program": "${workspaceFolder}/src/index.js",
       "args": ["firestore-docs"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "console": "integratedTerminal",
-      "name": "Launch node.js firestore-get command",
-      "program": "${workspaceFolder}/src/index.js",
-      "args": ["firestore-get", "col1/doc1", "-v"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "console": "integratedTerminal",
-      "name": "Launch node.js backup command",
-      "program": "${workspaceFolder}/src/index.js",
-      "args": ["backup", "bundles"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "console": "integratedTerminal",
-      "name": "Launch node.js diff command",
-      "program": "${workspaceFolder}/src/index.js",
-      "args": ["diff", "./backups/2019-05-27T22-19-52.026Z", "all"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "console": "integratedTerminal",
-      "name": "Launch node.js diff html command",
-      "program": "${workspaceFolder}/src/index.js",
-      "args": ["diff", "-p", "testCollection", "-r", "./backups/test", "--html"]
-    },    {
-      "type": "node",
-      "request": "launch",
-      "console": "integratedTerminal",
-      "name": "Launch node.js elasticsearch command",
-      "program": "${workspaceFolder}/src/index.js",
-      "args": ["load-index", "bundles"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "console": "integratedTerminal",
-      "name": "Launch node.js firestore-docs command",
-      "program": "${workspaceFolder}/src/index.js",
-      "args": ["firestore-docs", "-p", "bundles", "-s", "-v"]
     },
     {
       "name": "Chrome",

@@ -14,11 +14,11 @@ const jsonParser = input => {
  */
 module.exports = function chalkPrettier(options) {
   // Deal with whatever options are supplied.
-  return function prettifier (inputData) {
+  return function prettifier(inputData) {
     let logObject
     if (typeof inputData === 'string') {
-      const parsedData = someJsonParser(inputData)
-      logObject = (isPinoLog(parsedData)) ? parsedData : undefined
+      const parsedData = jsonParser(inputData)
+      logObject = isPinoLog(parsedData) ? parsedData : undefined
     } else if (isObject(inputData) && isPinoLog(inputData)) {
       logObject = inputData
     }
@@ -30,11 +30,11 @@ module.exports = function chalkPrettier(options) {
     }
   }
 
-  function isObject (input) {
+  function isObject(input) {
     return Object.prototype.toString.apply(input) === '[object Object]'
   }
 
-  function isPinoLog (log) {
+  function isPinoLog(log) {
     return log && (log.hasOwnProperty('v') && log.v === 1)
   }
 }

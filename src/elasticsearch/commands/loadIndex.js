@@ -3,7 +3,6 @@ const chalk = require('chalk')
 const utils = require('./utils')
 const TraverseBatch = require('../../firestore/api/TraverseBatch')
 const esapi = require('../api/esapi')
-const commonutils = require('../../commonutils')
 const firestoreUtils = require('../../firestore/commands/utils')
 const Colors = require('../../Colors')
 const { logger, confirm } = require('../../commonutils')
@@ -18,32 +17,45 @@ async function loadIndexAction(index, options, config) {
 
     const verbose = !!options.verbose
 
-    const indicesMsg = `[${indices.map(indexConfig => indexConfig.name).join(', ')}]`
-    logger.info(Colors.prep(`About to index documents for indices ${indicesMsg}.`))
-    const confirmed = options.bypassConfirm || await confirm(Colors.warning(`Are you sure?`))
+    const indicesMsg = `[${indices
+      .map(indexConfig => indexConfig.name)
+      .join(', ')}]`
+    logger.info(
+      Colors.prep(`About to index documents for indices ${indicesMsg}.`)
+    )
+    const confirmed =
+      options.bypassConfirm || (await confirm(Colors.warning(`Are you sure?`)))
 
     if (confirmed) {
-      logger.info(Colors.start(`Starting indexing of documents for indices ${indicesMsg}`))
+      logger.info(
+        Colors.start(`Starting indexing of documents for indices ${indicesMsg}`)
+      )
       const client = firestoreUtils.getClient(config)
       await loadIndices(indices, config, client, verbose)
       logger.info(Colors.complete(`Completed indexing documents.`))
     }
-  } catch(error) {
+  } catch (error) {
     logger.error(Colors.error(`Error: ${error.message}`))
     process.exit(1)
   }
 }
 
 async function loadIndices(indices, config, client, verbose) {
-  return Promise.all(indices.map(async indexConfig => {
-    const result = await loadIndex(indexConfig, config, client, verbose)
-    return result
-  }))
+  return Promise.all(
+    indices.map(async indexConfig => {
+      const result = await loadIndex(indexConfig, config, client, verbose)
+      return result
+    })
+  )
 }
 
 async function loadIndex(indexConfig, config, client, verbose) {
   const index = indexConfig.name
-  const traverseOptions = firestoreUtils.getRefProp(config, indexConfig, 'docSet')
+  const traverseOptions = firestoreUtils.getRefProp(
+    config,
+    indexConfig,
+    'docSet'
+  )
   if (!traverseOptions) {
     throw new Error(`Missing docSet in config: elasticsearch.indices.${index}`)
   }
@@ -53,7 +65,7 @@ async function loadIndex(indexConfig, config, client, verbose) {
 
   try {
     await esapi.getWriteAliasIndices(index)
-  } catch(err) {
+  } catch (err) {
     throw new Error(`Unable to get write alias ${index}_write: ` + err.message)
   }
 
@@ -67,23 +79,28 @@ async function loadIndex(indexConfig, config, client, verbose) {
   }
 
   const projectId = await client.getProjectId()
-  const traverseBatch = new TraverseBatch(client, projectId, traverseOptions.path, 
-                                          traverseOptions, batchOptions)
-  return await traverseBatch.execute()
+  const traverseBatch = new TraverseBatch(
+    client,
+    projectId,
+    traverseOptions.path,
+    traverseOptions,
+    batchOptions
+  )
+  return traverseBatch.execute()
 }
 
 /**
  * Creates a visitor for TraverseBatch using the specified index configuration
- * 
+ *
  * @param {object} indexConfig the indexConfig entry for the index from config
  * @param {boolean} verbose true to display index and document names
  */
 const visitIndexer = (indexConfig, verbose) => {
   const index = indexConfig.name
   const writeIndex = `${index}_write`
-  const mapper = indexConfig.objectMapper 
-                 ? require(path.resolve(indexConfig.objectMapper))
-                 : null
+  const mapper = indexConfig.objectMapper
+    ? require(path.resolve(indexConfig.objectMapper))
+    : null
   return async doc => {
     if (verbose) {
       logger.info(Colors.info(`Indexing ${doc.ref.path}`))
@@ -93,7 +110,11 @@ const visitIndexer = (indexConfig, verbose) => {
     if (id) {
       return esapi.indexDocument(writeIndex, docToIndex, doc.id)
     } else {
-      logger.error(Colors.error(`Missing id for document ${doc.ref.path}. ${chalk.bold('Skipping')}`))
+      logger.error(
+        Colors.error(
+          `Missing id for document ${doc.ref.path}. ${chalk.bold('Skipping')}`
+        )
+      )
     }
   }
 }

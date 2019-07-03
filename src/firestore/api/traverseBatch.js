@@ -1,38 +1,35 @@
-"use strict"
+'use strict'
 
 const debug = require('debug')('cloudli:traverseBatch')
-const admin = require('firebase-admin')
-const chalk = require("chalk")
-const moment = require('moment')
+const chalk = require('chalk')
 const TraverseBatchProgress = require('./TraverseBatchProgress')
-const Snapshot = require("./Snapshot")
+const Snapshot = require('./Snapshot')
 const defaultVisitBatch = require('../visitors/visitBatch')
 const { logger } = require('../../commonutils')
 
-const MIN_ID = "__id-9223372036854775808__"
+const MIN_ID = '__id-9223372036854775808__'
 
 /**
  * TraverseBatch allows batch processing of documents in a Firestore database.
- * The path can be a document or a collection and allows shallow or recursive traversal 
+ * The path can be a document or a collection and allows shallow or recursive traversal
  * of descendent documents.
- * 
+ *
  * The supplied visit function is called for each selected document with a doc object.
  * The doc parameter to the function is a simulation of DocumentSnapshot
  * but only contains id, name, and ref.path properties, and data() function.
- * 
- * This code was adapted from the FirestoreDelete class in the google firebase-tools 
- * project on github.  
- * 
- * The approach is to use the runQuery api that takes a StructuredQuery and then iterate 
- * over the result in batches using a queueLoop (@see #_recursiveBatchVisit).  
- * 
+ *
+ * This code was adapted from the FirestoreDelete class in the google firebase-tools
+ * project on github.
+ *
+ * The approach is to use the runQuery api that takes a StructuredQuery and then iterate
+ * over the result in batches using a queueLoop (@see #_recursiveBatchVisit).
+ *
  * Enable debug logging with DEBUG=cloudli:traverseBatch
- * 
+ *
  * @see https://github.com/firebase/firebase-tools/blob/master/src/firestore/delete.js
  * @see https://cloud.google.com/nodejs/docs/reference/firestore/1.3.x/v1.FirestoreClient#runQuery
  * @see https://cloud.google.com/nodejs/docs/reference/firestore/1.3.x/google.firestore.v1#.StructuredQuery
  */
-
 
 /**
  * Construct a new Traverse Batch object
@@ -51,16 +48,16 @@ const MIN_ID = "__id-9223372036854775808__"
  *                          Use path and collectionId to filter the query and then apply filterRegex.
  * @param {string} options.idfilter Filter results to documents with id.
  *                        This is a special case of filterRegex. Cannot be used with filterRegex.
- * @param {function(doc)} batchConfig.visit async function called for each document.  
+ * @param {function(doc)} batchConfig.visit async function called for each document.
  *                        The doc parameter to the function is a simulation of DocumentSnapshot
  *                        but only contains id, name, and ref.path properties, and data() function.
- *                        NOTE: cannot be used if visitBatch is specified. 
- * @param {function(docs, tick)} batchConfig.visitBatch async function called for a batch of documents.  
+ *                        NOTE: cannot be used if visitBatch is specified.
+ * @param {function(docs, tick)} batchConfig.visitBatch async function called for a batch of documents.
  *                        The docs parameter to the function is an array of simulations of DocumentSnapshot
  *                        but only contains id, name, and ref.path properties, and data() function.
- *                        Tick is a function to call as items are processed - eg tick(1) for each file 
+ *                        Tick is a function to call as items are processed - eg tick(1) for each file
  *                        or tick(10) for all 10 files processed.
- *                        NOTE: cannot be used if visit is specified. 
+ *                        NOTE: cannot be used if visit is specified.
  * @param {number} batchConfig.readBatchSize (optional) the number of files to read at a time
  * @param {number} batchConfig.visitBatchSize (optional) the number of files to visit in one batch
  * @param {number} batchConfig.maxPendingVisits (optional) the maximum number of concurrent batch visits
@@ -79,23 +76,28 @@ function TraverseBatch(client, project, path, options, batchConfig) {
 
   // Remove any leading or trailing slashes from the path
   if (this.path) {
-    this.path = this.path.replace(/(^\/+|\/+$)/g, "")
+    this.path = this.path.replace(/(^\/+|\/+$)/g, '')
   }
 
   this.isDocumentPath = this._isDocumentPath(this.path)
   this.isCollectionPath = this._isCollectionPath(this.path)
 
   this.allDescendants = this.recursive
-  this.parent = "projects/" + project + "/databases/(default)/documents"
+  this.parent = 'projects/' + project + '/databases/(default)/documents'
 
   // process batchConfig
   this.batchConfig = batchConfig
   if (!batchConfig.visit && !batchConfig.visitBatch) {
-    throw new Error('BatchTraverse: visit or visitBatch must be specified in batchConfig')
+    throw new Error(
+      'BatchTraverse: visit or visitBatch must be specified in batchConfig'
+    )
   } else if (batchConfig.visit && batchConfig.visitBatch) {
-    throw new Error('BatchTraverse: Only one of visit or visitBatch may be specified in batchConfig')
+    throw new Error(
+      'BatchTraverse: Only one of visit or visitBatch may be specified in batchConfig'
+    )
   } else if (batchConfig.visit) {
-    const visitBatch = async (toVisitDocs, tick) => defaultVisitBatch(toVisitDocs, batchConfig.visit, tick)
+    const visitBatch = async (toVisitDocs, tick) =>
+      defaultVisitBatch(toVisitDocs, batchConfig.visit, tick)
     this.visitBatch = visitBatch
   } else {
     this.visitBatch = batchConfig.visitBatch
@@ -103,13 +105,14 @@ function TraverseBatch(client, project, path, options, batchConfig) {
 
   /** Tunable visit parameters */
   /** number to read in each iteration of the query */
-  this.readBatchSize = batchConfig.readBatchSize || 1000      // delete was 7500
+  this.readBatchSize = batchConfig.readBatchSize || 1000 // delete was 7500
   /** number to visit in one batch */
-  this.visitBatchSize = batchConfig.visitBatchSize || 100     // delete was 250 
+  this.visitBatchSize = batchConfig.visitBatchSize || 100 // delete was 250
   /** max number of concurrent visit batches */
-  this.maxPendingVisits = batchConfig.maxPendingVisits || 1   // delete was 15
+  this.maxPendingVisits = batchConfig.maxPendingVisits || 1 // delete was 15
   /** max number of records to keep in work queue */
-  this.maxQueueSize = batchConfig.maxQueueSize || (this.visitBatchSize * this.maxPendingVisits * 2)
+  this.maxQueueSize =
+    batchConfig.maxQueueSize || this.visitBatchSize * this.maxPendingVisits * 2
 
   this._validateOptions()
 }
@@ -119,48 +122,49 @@ function TraverseBatch(client, project, path, options, batchConfig) {
  */
 TraverseBatch.prototype._validateOptions = function() {
   if (this.recursive && this.shallow) {
-    throw new Error(
-      "Cannot pass recursive and shallow options together."
-    )
+    throw new Error('Cannot pass recursive and shallow options together.')
   }
 
   if (this.isCollectionPath && !this.recursive && !this.shallow) {
     throw new Error(
-      "Must pass recursive or shallow option when processing a collection."
+      'Must pass recursive or shallow option when processing a collection.'
     )
   }
 
   if (this.path) {
-    var pieces = this.path.split("/")
+    var pieces = this.path.split('/')
 
     if (pieces.length === 0) {
-      throw new Error("Path length must be greater than zero.")
+      throw new Error('Path length must be greater than zero.')
     }
-  
+
     var hasEmptySegment = pieces.some(function(piece) {
       return piece.length === 0
     })
-  
+
     if (hasEmptySegment) {
-      throw new Error("Path must not have any empty segments.")
-    }  
+      throw new Error('Path must not have any empty segments.')
+    }
   }
 }
 
 /**
  * Applies filterRegex to the current Document.
- * 
- * @param {Document} doc the Document returned from a query.  Must contain name property. 
+ *
+ * @param {Document} doc the Document returned from a query.  Must contain name property.
  * @return {boolean} true if filterRegex is set and matches the name of the current doc.
  *            The name is determined by stripping off the parent prefix (database prefix), if matches.
  */
 TraverseBatch.prototype._filterDoc = function(doc) {
   if (!this.filterRegex) {
-    return true    
+    return true
   }
 
   const database = this.parent
-  const path = database && doc.name.startsWith(database) ? doc.name.slice(database.length + 1) : doc.name
+  const path =
+    database && doc.name.startsWith(database)
+      ? doc.name.slice(database.length + 1)
+      : doc.name
   return this.filterRegex.test(path)
 }
 
@@ -176,7 +180,7 @@ TraverseBatch.prototype._isDocumentPath = function(path) {
     return false
   }
 
-  var pieces = path.split("/")
+  var pieces = path.split('/')
   return pieces.length % 2 === 0
 }
 
@@ -213,19 +217,19 @@ TraverseBatch.prototype._collectionDescendantsQuery = function(
 ) {
   var nullChar = String.fromCharCode(0)
 
-  let startAt = this.parent + "/" + this.path + "/" + MIN_ID
-  let endAt = this.parent + "/" + this.path + nullChar + "/" + MIN_ID
+  let startAt = this.parent + '/' + this.path + '/' + MIN_ID
+  let endAt = this.parent + '/' + this.path + nullChar + '/' + MIN_ID
 
   var where = {
     compositeFilter: {
-      op: "AND",
+      op: 'AND',
       filters: [
         {
           fieldFilter: {
             field: {
-              fieldPath: "__name__"
+              fieldPath: '__name__'
             },
-            op: "GREATER_THAN_OR_EQUAL",
+            op: 'GREATER_THAN_OR_EQUAL',
             value: {
               referenceValue: startAt
             }
@@ -234,9 +238,9 @@ TraverseBatch.prototype._collectionDescendantsQuery = function(
         {
           fieldFilter: {
             field: {
-              fieldPath: "__name__"
+              fieldPath: '__name__'
             },
-            op: "LESS_THAN",
+            op: 'LESS_THAN',
             value: {
               referenceValue: endAt
             }
@@ -255,13 +259,13 @@ TraverseBatch.prototype._collectionDescendantsQuery = function(
           allDescendants: allDescendants
         }
       ],
-      orderBy: [{ field: { fieldPath: "__name__" } }]
+      orderBy: [{ field: { fieldPath: '__name__' } }]
     }
   }
 
   if (this.min) {
     query.structuredQuery.select = {
-      fields: [{ fieldPath: "__name__" }]
+      fields: [{ fieldPath: '__name__' }]
     }
   }
 
@@ -305,13 +309,13 @@ TraverseBatch.prototype._docDescendantsQuery = function(
           allDescendants: allDescendants
         }
       ],
-      orderBy: [{ field: { fieldPath: "__name__" } }]
+      orderBy: [{ field: { fieldPath: '__name__' } }]
     }
   }
 
   if (this.min) {
     query.structuredQuery.select = {
-      fields: [{ fieldPath: "__name__" }]
+      fields: [{ fieldPath: '__name__' }]
     }
   }
 
@@ -331,14 +335,14 @@ TraverseBatch.prototype._docDescendantsQuery = function(
 
 /**
  * TODO: Remove this function when have fix for query
- * 
+ *
  * WORKAROUND: Handle case for shallow root collection and shallow non-root collection behavior differences
  *    For non-root shallow, use path = parent document of path with collectionId set to collectionId from path
  *    Check to make sure collectionId not specified (if so - don't modify)
  *    Note: shallow = !allDescendents
- * 
+ *
  *    *** THIS should be called with the collectionId from the path and allDescendants should be false
- * 
+ *
  * Construct a StructuredQuery to find descendant documents of a document.
  * The document itself will not be included
  * among the results.
@@ -358,7 +362,6 @@ TraverseBatch.prototype._docDescendantsQueryWorkaround = function(
   batchSize,
   startAfter
 ) {
-
   // collectionId will be the workaround collectionId
   // allDescendants should be null
   var query = {
@@ -369,13 +372,13 @@ TraverseBatch.prototype._docDescendantsQueryWorkaround = function(
           allDescendants: allDescendants
         }
       ],
-      orderBy: [{ field: { fieldPath: "__name__" } }]
+      orderBy: [{ field: { fieldPath: '__name__' } }]
     }
   }
 
   if (this.min) {
     query.structuredQuery.select = {
-      fields: [{ fieldPath: "__name__" }]
+      fields: [{ fieldPath: '__name__' }]
     }
   }
 
@@ -393,7 +396,6 @@ TraverseBatch.prototype._docDescendantsQueryWorkaround = function(
 
   return query
 }
-
 
 /**
  * Query for a batch of 'descendants' of a given path.
@@ -416,32 +418,46 @@ TraverseBatch.prototype._getDescendantBatch = function(
 
   /**
    * TODO: Remove when query issue is fixed
-   * 
+   *
    * WORKAROUND: Handle case for shallow root collection and shallow non-root collection behavior differences
    *    For non-root shallow, use path = parent document of path with collectionId set to collectionId from path
    *    Check to make sure collectionId not specified (if so - don't modify)
    *    Note: shallow = !allDescendents
    */
 
-  const colIdFromPath = this.path.includes('/') ? this.path.slice(this.path.lastIndexOf('/') + 1) : null
+  const colIdFromPath = this.path.includes('/')
+    ? this.path.slice(this.path.lastIndexOf('/') + 1)
+    : null
 
   // Check for special case - shallow query of non-root collection
   // and handle case where collectionId was specified (only use special case if collectionId not specifid or matches collectionId from path)
-  if (this.isCollectionPath && !allDescendants && this.path.includes('/')
-            && (!this.collectionId || this.collectionId === colIdFromPath)) { 
+  if (
+    this.isCollectionPath &&
+    !allDescendants &&
+    this.path.includes('/') &&
+    (!this.collectionId || this.collectionId === colIdFromPath)
+  ) {
     // SPECIAL CASE WORKAROUND - treat like document query of parent document and filter collectionId
-    parentDocPath = this.path.slice(0, this.path.lastIndexOf('/'))
+    const parentDocPath = this.path.slice(0, this.path.lastIndexOf('/'))
 
-    parent = this.parent + "/" + parentDocPath
-    structuredQuery = this._docDescendantsQueryWorkaround(colIdFromPath, /* allDescendants */ false, 
-                                                          batchSize, startAfter).structuredQuery
+    parent = this.parent + '/' + parentDocPath
+    structuredQuery = this._docDescendantsQueryWorkaround(
+      colIdFromPath,
+      /* allDescendants */ false,
+      batchSize,
+      startAfter
+    ).structuredQuery
     /**
      * END WORKAROUND - remove if condition and keep else block
-     */                                          
+     */
   } else {
     if (this.isDocumentPath) {
-      parent = this.parent + "/" + this.path
-      structuredQuery = this._docDescendantsQuery(allDescendants, batchSize, startAfter).structuredQuery
+      parent = this.parent + '/' + this.path
+      structuredQuery = this._docDescendantsQuery(
+        allDescendants,
+        batchSize,
+        startAfter
+      ).structuredQuery
     } else {
       parent = this.parent
       structuredQuery = this._collectionDescendantsQuery(
@@ -449,20 +465,22 @@ TraverseBatch.prototype._getDescendantBatch = function(
         batchSize,
         startAfter
       ).structuredQuery
-    }  
-   }
-
+    }
+  }
 
   return new Promise((resolve, reject) => {
     let docs = []
-    this.client.runQuery({ parent, structuredQuery })
+    this.client
+      .runQuery({ parent, structuredQuery })
       .on('data', response => {
         if (response.document) {
           docs.push(response.document)
         }
-      }).on('end', response => {
+      })
+      .on('end', response => {
         resolve(docs)
-      }).on('error', error => {
+      })
+      .on('error', error => {
         reject(error)
       })
   })
@@ -480,7 +498,7 @@ TraverseBatch.prototype._recursiveBatchVisit = function() {
   // /** number to read in each iteration of the query */
   // var readBatchSize = 1000  // delete was 7500
   // /** number to visit in one batch */
-  // var visitBatchSize = 100  // delete was 250 
+  // var visitBatchSize = 100  // delete was 250
   // /** max number of concurrent visit batches */
   // var maxPendingVisits = 1  // delete was 15
   // /** max number of records to keep in work queue */
@@ -493,21 +511,20 @@ TraverseBatch.prototype._recursiveBatchVisit = function() {
 
   // All temporary variables for the visit queue.
   var queue = []
-  var numPendingVisits = 0    // number of concurrent visit batches 
-  var pagesRemaining = true   // true until a query returns 0 results
-  var pageIncoming = false    // true when query promise is active
-  var lastDocName             // used as start point for next iteration of query
+  var numPendingVisits = 0 // number of concurrent visit batches
+  var pagesRemaining = true // true until a query returns 0 results
+  var pageIncoming = false // true when query promise is active
+  var lastDocName // used as start point for next iteration of query
 
   var failures = []
-  var retried = {}
 
   var queueLoop = function() {
-    if (queue.length == 0 && numPendingVisits == 0 && !pagesRemaining) {
+    if (queue.length === 0 && numPendingVisits === 0 && !pagesRemaining) {
       return true
     }
 
     if (failures.length > 0) {
-      debug("Found " + failures.length + " failed visits, failing.")
+      debug('Found ' + failures.length + ' failed visits, failing.')
       return true
     }
 
@@ -519,7 +536,7 @@ TraverseBatch.prototype._recursiveBatchVisit = function() {
         .then(function(docs) {
           pageIncoming = false
 
-          if (docs.length == 0) {
+          if (docs.length === 0) {
             pagesRemaining = false
             return
           }
@@ -533,7 +550,7 @@ TraverseBatch.prototype._recursiveBatchVisit = function() {
           lastDocName = docs[docs.length - 1].name
         })
         .catch(function(e) {
-          debug("Failed to fetch page after " + lastDocName, e.message)
+          debug('Failed to fetch page after ' + lastDocName, e.message)
           pageIncoming = false
         })
     }
@@ -542,7 +559,7 @@ TraverseBatch.prototype._recursiveBatchVisit = function() {
       return false
     }
 
-    if (queue.length == 0) {
+    if (queue.length === 0) {
       return false
     }
 
@@ -557,14 +574,16 @@ TraverseBatch.prototype._recursiveBatchVisit = function() {
 
     const snapshots = toVisit.map(doc => new Snapshot(doc, self.parent))
 
-    self.visitBatch(snapshots, count => self.progressBar.tick(count))
-    .then(() =>  {
+    self
+      .visitBatch(snapshots, count => self.progressBar.tick(count))
+      .then(() => {
         numPendingVisits--
-    }).catch(error => {
-      debug("Fatal error processing docs ", error.message)
-      failures = failures.concat(toVisit)
-      numPendingVisits--
-    })
+      })
+      .catch(error => {
+        debug('Fatal error processing docs ', error.message)
+        failures = failures.concat(toVisit)
+        numPendingVisits--
+      })
 
     return false
   }
@@ -574,20 +593,22 @@ TraverseBatch.prototype._recursiveBatchVisit = function() {
       if (queueLoop()) {
         clearInterval(intervalId)
 
-        if (failures.length == 0) {
+        if (failures.length === 0) {
           resolve()
         } else {
-          const failuresList = failures.map(failure => {
-            return new Snapshot(failure, self.parent).ref.path
-          }).join(', ')
-          reject(new Error("Failed to process documents " + failuresList))
+          const failuresList = failures
+            .map(failure => {
+              return new Snapshot(failure, self.parent).ref.path
+            })
+            .join(', ')
+          reject(new Error('Failed to process documents ' + failuresList))
         }
       }
     }, 0)
   })
 }
 
-const docCollectionIdRegex = new RegExp('(?:^.*\/|^)([^/]+)\/[^/]+$')
+const docCollectionIdRegex = new RegExp('(?:^.*/|^)([^/]+)/[^/]+$')
 
 /**
  * Visits everything under a given path. If the path represents
@@ -600,7 +621,6 @@ TraverseBatch.prototype._visitPath = function() {
   var self = this
   var initialVisit
   if (this.isDocumentPath) {
-
     // if there is a collectionId, don't visit if the parent collection is not
     if (self.collectionId) {
       const results = docCollectionIdRegex.exec(this.path)
@@ -608,20 +628,24 @@ TraverseBatch.prototype._visitPath = function() {
         initialVisit = Promise.resolve()
       }
     }
-    
+
     if (!initialVisit) {
-      initialVisit = this.client.getDocument({ name: this.parent + "/" + this.path })
+      initialVisit = this.client
+        .getDocument({ name: this.parent + '/' + this.path })
         .then(responses => {
           const doc = responses[0]
 
           // if there is a filterRegex, only visit if matches
           if (self._filterDoc(doc)) {
             const snapshots = [new Snapshot(doc, self.parent)]
-            return self.visitBatch(snapshots, count => self.progressBar.tick(count))  
+            return self.visitBatch(snapshots, count =>
+              self.progressBar.tick(count)
+            )
           } else {
             return Promise.resolve()
           }
-        }).catch(err => {          
+        })
+        .catch(err => {
           debug('visitPath:initialVisit:error', err.message)
           if (self.allDescendants) {
             // On a recursive visit, we are insensitive to
@@ -630,7 +654,9 @@ TraverseBatch.prototype._visitPath = function() {
           }
 
           // For a shallow visit, this error is fatal.
-          return Promise.reject(new Error("Unable to process " + chalk.cyan(this.path)))
+          return Promise.reject(
+            new Error('Unable to process ' + chalk.cyan(this.path))
+          )
         })
     }
   } else {
@@ -653,17 +679,20 @@ TraverseBatch.prototype._visitPath = function() {
  */
 TraverseBatch.prototype.visitDatabase = function() {
   var self = this
-  return this.client.listCollectionIds({ parent: this.parent })
+  return this.client
+    .listCollectionIds({ parent: this.parent })
     .catch(function(err) {
-      debug("visitDatabase:listCollectionIds:error", err.message)
-      return Promise.reject(new Error("Unable to list collection IDs"))
+      debug('visitDatabase:listCollectionIds:error', err.message)
+      return Promise.reject(new Error('Unable to list collection IDs'))
     })
     .then(function([collectionIds]) {
       var promises = []
 
-      logger.info(chalk.green(
-        "Visiting the following collections: " +
-          collectionIds.join(", ")))
+      logger.info(
+        chalk.green(
+          'Visiting the following collections: ' + collectionIds.join(', ')
+        )
+      )
 
       for (var i = 0; i < collectionIds.length; i++) {
         var collectionId = collectionIds[i]
@@ -672,14 +701,20 @@ TraverseBatch.prototype.visitDatabase = function() {
           shallow: self.shallow,
           recursive: self.recursive,
           min: self.min,
-          filterRegex: self.filterRegex,
+          filterRegex: self.filterRegex
         }
 
         if (self.collectionId) {
           options.collectionId = self.collectionId
         }
 
-        var visitOp = new TraverseBatch(self.client, self.project, collectionId, options, self.batchConfig)
+        var visitOp = new TraverseBatch(
+          self.client,
+          self.project,
+          collectionId,
+          options,
+          self.batchConfig
+        )
 
         promises.push(visitOp.execute())
       }

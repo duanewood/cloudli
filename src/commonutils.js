@@ -4,28 +4,33 @@ const prettifier = require('./chalk-prettier')
 
 /**
  * Displays a confirmation prompt
- * 
+ *
  * @param {string} prompt
  */
 module.exports.confirm = async function confirm(prompt) {
-  return inquirer.prompt({
-    name: 'confirm',
-    type: 'confirm',
-    message: prompt,
-    default: false
-  }).then(answers => {
-    if (answers.confirm) {
-      return answers.confirm
-    } else {
-      return false
-    }
-  })
+  return inquirer
+    .prompt({
+      name: 'confirm',
+      type: 'confirm',
+      message: prompt,
+      default: false
+    })
+    .then(answers => {
+      if (answers.confirm) {
+        return answers.confirm
+      } else {
+        return false
+      }
+    })
 }
 
 module.exports.initLogger = function initLogger(pinoDebug, pretty) {
-  const prettyPrint = (pretty === undefined) ? process.stdout.isTTY : pretty
-  // logger = pino({ prettyPrint, prettifier })
-  const logger = pino({ prettyPrint, prettifier, level: process.env.LEVEL || 'info' })
+  const prettyPrint = pretty === undefined ? process.stdout.isTTY : pretty
+  const logger = pino({
+    prettyPrint,
+    prettifier,
+    level: process.env.LEVEL || 'info'
+  })
   pinoDebug(logger)
 
   // Note: To map debug messages to pino levels:

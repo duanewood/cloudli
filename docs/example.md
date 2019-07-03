@@ -1,22 +1,3 @@
-# TODO
-
-- add validate documentation
-- Fix create-index if existing aliases exist
-- figure out what to do with objectmapper
-- fix issue with node not completing for getAliasIndexes
-- validate that aliases exist for reload-index and reindex
-- update documentation for create-index
-    - remove --addAliases
-    - recapure screenshot for create-index
-- include config, index mapping, and schema to example
-- add motivation, goals
-- explain index structure 
-  - diagram for overall
-  - diagram for each reindex function
-- Add examples using paths and shallow/recursive, others
-
-- add eslint, fix issues
-
 # Example Commands
 
 The [example directory](../example) contains sample configuration, documents, index mappings, and JSON schemas that can be used to try out the commands.  The example uses [documents](../example/docs) in the following structure:
@@ -507,10 +488,10 @@ cloudli es:search renew xyz_posts --verbose
 # Get the full name for an index
 
 ```
-cloudli es:get-aliases
+cloudli es:get-aliases xyz_users
 ```
 
-![cloudli es:get-aliases](images/get-aliases.png)
+![cloudli es:get-aliases xyz_users](images/get-aliases.png)
 
 # Create new index version and reload documents
 

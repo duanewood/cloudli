@@ -1,6 +1,4 @@
 const fs = require('fs-extra')
-const path = require('path')
-const chalk = require('chalk')
 const Ajv = require('ajv')
 
 class SchemaValidator {
@@ -11,7 +9,11 @@ class SchemaValidator {
 
   loadSchemas(schemasConfig) {
     this.ajv = new Ajv({ allErrors: true })
-    if (!schemasConfig || (typeof schemasConfig !== 'object') || Array.isArray(schemasConfig)) {
+    if (
+      !schemasConfig ||
+      typeof schemasConfig !== 'object' ||
+      Array.isArray(schemasConfig)
+    ) {
       throw new Error(`Missing schemas object in config`)
     }
 
@@ -22,7 +24,9 @@ class SchemaValidator {
 
       const schemaFiles = schemaConfig.schemaFiles
       if (!schemaFiles || !Array.isArray(schemaFiles)) {
-        throw new Error(`Missing schemaFiles array in schemas.${type} in config`)
+        throw new Error(
+          `Missing schemaFiles array in schemas.${type} in config`
+        )
       }
       for (let i = 0; i < schemaFiles.length; i++) {
         const schema = fs.readJsonSync(schemaFiles[i])
@@ -32,6 +36,7 @@ class SchemaValidator {
       this.schemaValidators[type] = { schemaId: schemaConfig.schemaId }
     }
 
+    // eslint-disable-next-line no-unused-vars
     for (let [type, schemaValidator] of Object.entries(this.schemaValidators)) {
       const validate = this.ajv.getSchema(schemaValidator.schemaId)
       schemaValidator.validate = validate

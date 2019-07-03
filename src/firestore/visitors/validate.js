@@ -9,8 +9,12 @@ const visit = async (doc, types, schemaValidator) => {
   // find the type entry based on the document path
   for (let i = 0; !type && i < types.length; i++) {
     const typeEntry = types[i]
-    if ((typeof typeEntry !== 'object') || !typeEntry.type || !typeEntry.path) {
-      throw new Error(`Invalid type definition in types array in config: ${JSON.stringify(typeEntry)}`)
+    if (typeof typeEntry !== 'object' || !typeEntry.type || !typeEntry.path) {
+      throw new Error(
+        `Invalid type definition in types array in config: ${JSON.stringify(
+          typeEntry
+        )}`
+      )
     }
     const pathRegEx = RegExp(typeEntry.path)
     if (pathRegEx.test(path)) {

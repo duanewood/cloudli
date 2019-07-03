@@ -7,7 +7,7 @@ const deleteVisitBatch = (db, verbose) => async (docRefs, tick) => {
   docRefs.forEach(docRef => {
     const ref = db.doc(docRef.ref.path)
     if (verbose) {
-      logger.info(Colors.info(`Deleting ${docRef.ref.path}`))  
+      logger.info(Colors.info(`Deleting ${docRef.ref.path}`))
     }
     batch.delete(ref, docRef.doc)
   })

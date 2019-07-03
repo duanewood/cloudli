@@ -1,18 +1,17 @@
-const fs = require('fs-extra')
-const path = require('path')
 const Colors = require('../../Colors')
 const TraverseBatch = require('../api/TraverseBatch')
 const validate = require('../visitors/validate')
 const utils = require('./utils')
-const commonutils = require('../../commonutils')
 const SchemaValidator = require('../api/SchemaValidator')
 const { logger } = require('../../commonutils')
 
 const validateAction = async (docSetId, options, config) => {
-
   try {
-    
-    const traverseOptions = utils.traverseOptionsFromCommandOptions(docSetId, options, config)
+    const traverseOptions = utils.traverseOptionsFromCommandOptions(
+      docSetId,
+      options,
+      config
+    )
 
     const client = utils.getClient(config)
     const projectId = await client.getProjectId()
@@ -29,19 +28,34 @@ const validateAction = async (docSetId, options, config) => {
       throw new Error(`Missing firestore.types array in config`)
     }
 
-    logger.info(Colors.start('Starting validatation of documents including: ' + utils.traverseOptionsSummary(traverseOptions)))
+    logger.info(
+      Colors.start(
+        'Starting validatation of documents including: ' +
+          utils.traverseOptionsSummary(traverseOptions)
+      )
+    )
 
     const visit = doc => validate(doc, types, validator)
 
     const batchOptions = {
       visit
     }
-    
+
     const path = traverseOptions.path || null
-    const traverseBatch = new TraverseBatch(client, projectId, path, traverseOptions, batchOptions)
-    await traverseBatch.execute()    
-    logger.info(Colors.complete(`Completed validation of ${traverseBatch.progressBar.curr} documents`))
-  } catch(error) {
+    const traverseBatch = new TraverseBatch(
+      client,
+      projectId,
+      path,
+      traverseOptions,
+      batchOptions
+    )
+    await traverseBatch.execute()
+    logger.info(
+      Colors.complete(
+        `Completed validation of ${traverseBatch.progressBar.curr} documents`
+      )
+    )
+  } catch (error) {
     logger.error(Colors.error(`Error: ${error.message}`))
     process.exit(1)
   }

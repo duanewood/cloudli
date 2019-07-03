@@ -5,7 +5,7 @@ const { logger } = require('../../commonutils')
 
 const visit = async (doc, basePath, verbose, addFile) => {
   if (verbose) {
-    logger.info(Colors.info(doc.ref.path))  
+    logger.info(Colors.info(doc.ref.path))
   }
 
   const filename = `${doc.id}.json`

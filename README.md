@@ -791,34 +791,32 @@ If any of the substitution variables is an object, it will be "pretty printed."
 es:reindex [index]
 ```
 
-Creates a new index using the defined mapping and reindexes all of the previously indexed documents for `index` using the elasticsearch [reindex API](https://www.elastic.co/guide/en/elasticsearch/reference/6.7/docs-reindex.html). If the documents are reindexed successfully, the read and write aliases for each index will be asigned to the new index and the old index will be deleted.
+Creates a new index using the defined mapping and reindexes all of the previously indexed documents for `index` using the elasticsearch [reindex API](https://www.elastic.co/guide/en/elasticsearch/reference/6.7/docs-reindex.html). Use this command to reindex all documents in elasticsearch using a new index mapping. If the documents are reindexed successfully, the read and write aliases for each index will be asigned to the new index and the old index will be deleted.
 
 `es:reindex` uses the following process:
 
 1. Starts with read and write aliases pointing to an index
 
-    ![es:reindex step 1](docs/images/es_create-reload-index-1.png)
+    ![es:reindex step 1](docs/images/es-reindex-1.png)
 
 2. Create a new timestamp-based index
 
-    ![es:reindex step 3](docs/images/es_create-reload-index-2.png)
+    ![es:reindex step 2](docs/images/es-reindex-2.png)
 
-3. Move the read alias to point to the new index. 
+3. Move the write alias to point to the new index. 
 
     Note that reads still occur using the read alias that points to the old index.  Application
     reads that occur before the reindex action completes will not see any newly indexed documents.
 
-    ![es:reindex step 3](docs/images/es_create-reload-index-3.png)
+    ![es:reindex step 3](docs/images/es-reindex-3.png)
 
 4. Reindex all documents from the old index to the new index.
 
-    ![es:reindex step 4](docs/images/es_create-reload-index-4.png)
+    ![es:reindex step 4](docs/images/es-reindex-4.png)
 
 5. Move the write alias to point to the new index and delete the old index.
 
-    ![es:reindex step 5](docs/images/es_create-reload-index-5.png)
-
-
+    ![es:reindex step 5](docs/images/es-reindex-5.png)
 
 ***WARNING!*** This will delete the old index and all of the original indexed documents once all of the documents are reindexed successfully.
 
@@ -839,7 +837,34 @@ Requires an index configuration entry in `elasticsearch.indices` for each `index
 es:create-reload-index [index]
 ```
 
-Creates a new index using the defined mapping and loads documents from firestore for the `index`. If the documents are loaded successfully, the read and write aliases for each index will be asigned to the new index and the old index will be deleted.
+Creates a new index using the defined mapping and loads documents from firestore for the `index`. Use this command to if you want all documents to be reindexed from the firestore source using a defined index mapping.  If the documents are loaded successfully, the read and write aliases for each index will be asigned to the new index and the old index will be deleted.
+
+`es:create-reload-index` uses the following process:
+
+1. Starts with read and write aliases pointing to an index
+
+    ![es:create-reload-index step 1](docs/images/es-reindex-1.png)
+
+2. Create a new timestamp-based index
+
+    ![es:create-reload-index step 2](docs/images/es-reindex-2.png)
+
+3. Move the write alias to point to the new index. 
+
+    Note that reads still occur using the read alias that points to the old index.  Application
+    reads that occur before the load action completes will not see any newly indexed documents.
+
+    ![es:create-reload-index step 3](docs/images/es-reindex-3.png)
+
+4. Load all documents from firebase using the defined docSet for the index to the new index.
+
+    ![es:create-reload-index step 4](docs/images/es-create-reload-index-4.png)
+
+5. Move the write alias to point to the new index and delete the old index.
+
+    ![es:create-reload-index step 5](docs/images/es-reindex-5.png)
+
+
 
 ***WARNING!*** This will delete the old index and all of the original indexed documents once all of the documents are loaded successfully from the firestore DocSets.
 

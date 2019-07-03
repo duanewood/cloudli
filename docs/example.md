@@ -9,12 +9,12 @@
     - remove --addAliases
     - recapure screenshot for create-index
 - include config, index mapping, and schema to example
-
 - add motivation, goals
-- Add examples using paths and shallow/recursive, others
 - explain index structure 
   - diagram for overall
   - diagram for each reindex function
+- Add examples using paths and shallow/recursive, others
+
 - add eslint, fix issues
 
 # Example Commands
@@ -331,6 +331,43 @@ cloudli fire:docs users --verbose
 
 ![cloudli fire:docs users --verbose](images/docsverbose.png)
 
+
+## Get a list of user documents using command line options instead of a DocSet
+
+### users shallow
+
+```
+cloudli fire:docs -p xyzusers --shallow
+```
+
+![cloudli fire:docs -p xyzusers --shallow](images/get-docs-options-users.png)
+
+### users recursive
+
+```
+cloudli fire:docs -p xyzusers --recursive
+```
+
+![cloudli fire:docs -p xyzusers --recursive](images/get-docs-options-users-recursive.png)
+
+### user posts
+
+This demonstrates using a recursive query with a specific collection id.  Note that this does not include the root `posts` collection.
+
+```
+cloudli fire:docs -p xyzusers --collectionId posts --recursive
+```
+
+![cloudli fire:docs -p xyzusers --collectionId posts --recursive](images/userposts-options.png)
+
+### specific document
+
+```
+cloudli fire:docs -p xyzusers/user1/posts/user1post3 --verbose
+```
+
+![cloudli fire:docs -p xyzusers/user1/posts/user1post3 --verbose](images/get-docs-doc-options.png)
+
 ## Backup the user posts using a DocSet
 
 ```
@@ -486,7 +523,6 @@ cloudli es:create-reload-index xyz_users --verbose
 ```
 
 ![cloudli es:create-reload-index xyz_users --verbose](images/create-reload-index.png)
-
 
 # Create new index version and reindex documents from the old index version
 

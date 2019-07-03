@@ -2,7 +2,7 @@
 
 [Upload](#fire:upload), [Backup](#fire:backup), [Restore](#fire:restore), [Diff](#fire:diff), [Validate](#fire:validate), [Search](#es:search), [Load Index](#es:load-index), [Reindex](#es:reindex), and more.
 
-Provides command line functions for administering Google Cloud firestore and Amazon Elasticsearch.
+Provides command line functions for administering Google Cloud Firestore and Amazon Elasticsearch.
 
 The commands are designed to be scalable by processing in batches where appropriate 
 and controlling concurrency with various constraints.  The batch delete code from 
@@ -36,6 +36,23 @@ Function|Description
 [Create Index and Reload](#es:create-reload-index)|Create a new index mapping, reload documents from firestore and adjust read and write aliases
 
 **Note**: Cloud Firestore and Elasticsearch commands can be used independently (with the exception of [Load Index](#es:load-index) and [Create Index and Reload](#es:create-reload-index), which index documents from firestore).
+
+## Motivation
+
+While working with Google Cloud FIrestore, I found myself manually updating firestore documents as code evolved.  I needed to update existing documents as the implied schemas evolved. Finding the documents to update became a challenge.  I also needed a way to see changes that have occurred.
+
+When I added search using Amazon Elasticsearch along with Firebase Cloud Functions, I needed to be able to update the index mappings and reindex documents.  In some cases, I wanted to discard the original indexed documents and reindex from the Firestore source documents.
+
+The need to simplify these tasks led to the creation of this tool.  It has improved my productivity and I hope others will find it useful.
+
+## Goals
+
+Some of the objectives for this tool are:
+
+- Simplify common administrative tasks for cloud-based capabilities (initially Cloud Firestore and Amazon Elasticsearch)
+- Scale by controlling resource consumption (memory, recursion, batch size, etc)
+- Generalize the implementation to support other document structures, schemas, and index mappings
+- Support extensible logging and debugging
 
 ## Getting Started
 

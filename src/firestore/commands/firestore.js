@@ -23,7 +23,7 @@ exports.addCommand = (program, config) => {
   .option('-r, --recursive', 'Include all sub-collections')
   .option('-s, --shallow', 'Only include immediate sub-collections')
   .option('-f, --filter <regex>', 'Filter results using the supplied regular expression regex')
-  .option('-i, --idfilter <id>', 'Filter results to documents with id.  Cannot be used iwth --filter')
+  .option('-i, --idfilter <id>', 'Filter results to documents with id.  Cannot be used with --filter')
   .option('-m, --min', 'Minimal data returned - only include document ids in results')
   .option('-v, --verbose', 'Displays full documents of results.')
   .action((docset, options) => docs.getDocsAction(docset, options, config))

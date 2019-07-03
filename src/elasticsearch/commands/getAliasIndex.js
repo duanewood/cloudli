@@ -45,10 +45,10 @@ async function getAliasIndices(indices) {
     const readIndices = await esapi.getReadAliasIndices(index)
     const writeIndices = await esapi.getWriteAliasIndices(index)  
     readIndices.forEach(i => {
-      logger.info(Colors.info(`Index for ${chalk.bold(index)} read alias: ${chalk.bold(i)}`))
+      logger.info(Colors.info(`Index name for read alias (${chalk.bold(`${index}_read`)}): ${chalk.bold(i)}`))
     })
     writeIndices.forEach(i => {
-      logger.info(Colors.info(`Index for ${chalk.bold(index)} write alias: ${chalk.bold(i)}`))
+      logger.info(Colors.info(`Index name for write alias (${chalk.bold(`${index}_write`)}): ${chalk.bold(i)}`))
     })
   }))
 }

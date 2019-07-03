@@ -511,7 +511,7 @@ Cloudli supports commands for Amazon Elasticsearch, including:
 
 Function|Description
 --------|-----------
-[Create Index](#es:create-index)|Create an index from a mapping with optional aliases
+[Create Index](#es:create-index)|Create an index from a mapping with aliases
 [Get Aliases](#es:get-aliases)|Get the index name for the read and write aliases
 [Load Index](#es:load-index)|Load an index from a set of documents in firestore
 [Search](#es:search)|Searches for text in a defined index with optional highlighting
@@ -653,18 +653,11 @@ The following sections provide details of the available commands for AWS Elastic
 es:create-index [index]
 ```
 
-Creates elasticsearch index definition with the name <index>_YYYYMMDDHHmmss. 
+Creates elasticsearch index definition with the name `<index>_YYYYMMDDHHmmss`. Also adds read alias (`<index>_read`) and write alias (`<index>_write`) for the new index.
 
 If `index` is not specified, the index named in the `elasticsearch.defaultIndex` config entry will be used. If there is no `elasticsearch.defaultIndex` then all defined indexes will be used.  
 
 Requires an index configuration entry in `elasticsearch.indices` for each `index`.  The entry must contain an `indexMapping` file path. The `indexMapping` file must be json file that conforms to the body format of the elasticsearch [Create Index API](https://www.elastic.co/guide/en/elasticsearch/reference/6.7/indices-create-index.html).
-
-### Options
-
-|Option|Description|
-|------|-----------|
-|`a, --addAliases`|Adds read alias (`index_read`) and write alias (`index_write`) for the index|
-
 
 ## es:get-aliases
 
@@ -799,6 +792,33 @@ es:reindex [index]
 ```
 
 Creates a new index using the defined mapping and reindexes all of the previously indexed documents for `index` using the elasticsearch [reindex API](https://www.elastic.co/guide/en/elasticsearch/reference/6.7/docs-reindex.html). If the documents are reindexed successfully, the read and write aliases for each index will be asigned to the new index and the old index will be deleted.
+
+`es:reindex` uses the following process:
+
+1. Starts with read and write aliases pointing to an index
+
+    ![es:reindex step 1](docs/images/es_create-reload-index-1.png)
+
+2. Create a new timestamp-based index
+
+    ![es:reindex step 3](docs/images/es_create-reload-index-2.png)
+
+3. Move the read alias to point to the new index. 
+
+    Note that reads still occur using the read alias that points to the old index.  Application
+    reads that occur before the reindex action completes will not see any newly indexed documents.
+
+    ![es:reindex step 3](docs/images/es_create-reload-index-3.png)
+
+4. Reindex all documents from the old index to the new index.
+
+    ![es:reindex step 4](docs/images/es_create-reload-index-4.png)
+
+5. Move the write alias to point to the new index and delete the old index.
+
+    ![es:reindex step 5](docs/images/es_create-reload-index-5.png)
+
+
 
 ***WARNING!*** This will delete the old index and all of the original indexed documents once all of the documents are reindexed successfully.
 

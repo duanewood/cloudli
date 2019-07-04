@@ -2,7 +2,7 @@
 
 ## Command Line Utilities for Google Firebase Firestore and Amazon Elasticsearch
 
-[Upload](#fire:upload), [Backup](#fire:backup), [Restore](#fire:restore), [Diff](#fire:diff), [Validate](#fire:validate), [Search](#es:search), [Load Index](#es:load-index), [Reindex](#es:reindex), and more.
+[Upload](#fireupload), [Backup](#firebackup), [Restore](#firerestore), [Diff](#firediff), [Validate](#firevalidate), [Search](#essearch), [Load Index](#esload-index), [Reindex](#esreindex), and more.
 
 Provides command line functions for administering Google Cloud Firestore and Amazon Elasticsearch.
 
@@ -16,8 +16,8 @@ Cloudli supports the following [Cloud Firestore](#Cloud-Firestore) commands:
 
 Function|Description
 --------|-----------
-[Get Documents](#fire:docs)|Get document id's or full documents from firestore with various query options
-[Get Document or Collection](#fire:get)|Gets document id's or full documents for a specific document or collection path
+[Get Documents](#firedocs)|Get document id's or full documents from firestore with various query options
+[Get Document or Collection](#fireget)|Gets document id's or full documents for a specific document or collection path
 [Backup](#fire:backup)|Backup documents to a local path
 [Restore](#fire:restore)|Restore documents from a local path to firestore.  Alias of `fire:upload`
 [Upload](#fire:upload)|Upload documents from a local path to firestore. Alias of `fire:restore`

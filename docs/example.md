@@ -194,30 +194,44 @@ The JSON Schemas for `post` and `user` documents are as follows.
 
 ```javascript
 {
-  "mappings": {
-    "_doc": {
-      "properties": {
-        "userid": {
-          "type": "keyword"
-        },
-        "fullName": {
-          "type": "text"
-        },
-        "birthDate": {
-          "type": "date"
-        },
-        "background": {
-          "type": "text",
-          "fields": {
-            "english": {
-              "type": "text",
-              "analyzer": "english"
-            }
-          }
-        }
-      }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://cloudlixyz.com/schemas/user.schema.json",
+  "type": "object",
+  "title": "User Schema",
+  "description": "An Xyz user",
+  "required": [
+    "userid",
+    "fullName",
+    "birthDate",
+    "background"
+  ],
+  "properties": {
+    "userid": {
+      "type": "string",
+      "format": "email",
+      "title": "The userid",
+      "description": "Must be a valid email address",
+      "examples": ["theshins@cloudlixyz.com"]
+    },
+    "fullName": {
+      "type": "string",
+      "title": "The user's full name",
+      "examples": ["Alfred Prufrock"]
+    },
+    "birthDate": {
+      "type": "string",
+      "format": "date",
+      "title": "User user's birthdate",
+      "examples": ["1995-05-03"]
+    },
+    "background": {
+      "type": ["string", "null"],
+      "title": "The user's background",
+      "description": "The user's interests or other background notes",
+      "examples": ["I like pina coladas"]
     }
-  }
+  },
+  "additionalProperties": false
 }
 ```
 

@@ -29,7 +29,7 @@ Cloudli supports the following [Amazon Elasticsearch](#Elasticsearch) commands:
 
 Function|Description
 --------|-----------
-[Create Index](#escreate-index)|Create an index from a mapping with optional aliases
+[Create Index](#escreate-index)|Create an index from a mapping with aliases
 [Get Aliases](#esget-aliases)|Get the index name for the read and write aliases
 [Load Index](#esload-index)|Load an index from a set of documents in firestore
 [Search](#essearch)|Searches for text in a defined index with optional highlighting

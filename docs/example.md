@@ -21,6 +21,13 @@ These commands should be executed from the example directory.
 
 The configuration is defined in two config files for demonstration purposes: `default.json` and `local-development.json`.  Note that an example `local-development.json` file is supplied in [example/config/example-local-development.json](../example/config/example-local-development.json).  Copy this to `local-development.json` and fill in the information for your environment.
 
+**Note**: The example configuration sets the debug outputPath to `./debug`.  This will be the location where html output files for the `diff` command will be generated.  Also, the firestore backupPath is set to `./backups`.  Change these paths to existing directories or create the example directories as follows (execute from the example directory):
+
+```
+mkdir debug
+mkdir backups
+```
+
 ### default.json
 
 ```javascript

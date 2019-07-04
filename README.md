@@ -534,7 +534,7 @@ Function|Description
 [Load Index](#esload-index)|Load an index from a set of documents in firestore
 [Search](#essearch)|Searches for text in a defined index with optional highlighting
 [Reindex](#esreindex)|Reindex documents to a new index mapping and adjust read and write aliases
-[Create Index and Reload](#escreate-reload-index)|Create a new index mapping, reload documents from firebase and adjust read and write aliases
+[Create Index and Reload](#escreate-reload-index)|Create a new index mapping, reload documents from firestore and adjust read and write aliases
 
 Each of these commands can operate on one or more indices defined in the `elasticsearch.indices` array in config. The default index name used when no index is specified for a command can be defined using the `elasticsearch.defaultIndex` entry.  Each index enry has the following format:
 
@@ -832,7 +832,7 @@ Creates a new index using the defined mapping and reindexes all of the previousl
 
     ![es:reindex step 4](docs/images/es-reindex-4.png)
 
-5. Move the write alias to point to the new index and delete the old index.
+5. Move the read alias to point to the new index and delete the old index.
 
     ![es:reindex step 5](docs/images/es-reindex-5.png)
 
@@ -855,7 +855,7 @@ Requires an index configuration entry in `elasticsearch.indices` for each `index
 es:create-reload-index [index]
 ```
 
-Creates a new index using the defined mapping and loads documents from firestore for the `index`. Use this command to if you want all documents to be reindexed from the firestore source using a defined index mapping.  If the documents are loaded successfully, the read and write aliases for each index will be asigned to the new index and the old index will be deleted.
+Creates a new index using the defined mapping and loads documents from firestore for the `index`. Use this command if you want all documents to be reindexed from the firestore source using a defined index mapping.  If the documents are loaded successfully, the read and write aliases for each index will be asigned to the new index and the old index will be deleted.
 
 `es:create-reload-index` uses the following process:
 
@@ -874,14 +874,13 @@ Creates a new index using the defined mapping and loads documents from firestore
 
     ![es:create-reload-index step 3](docs/images/es-reindex-3.png)
 
-4. Load all documents from firebase using the defined docSet for the index to the new index.
+4. Load all documents from firestore using the defined docSet for the index to the new index.
 
     ![es:create-reload-index step 4](docs/images/es-create-reload-index-4.png)
 
-5. Move the write alias to point to the new index and delete the old index.
+5. Move the read alias to point to the new index and delete the old index.
 
     ![es:create-reload-index step 5](docs/images/es-reindex-5.png)
-
 
 
 ***WARNING!*** This will delete the old index and all of the original indexed documents once all of the documents are loaded successfully from the firestore DocSets.

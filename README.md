@@ -261,8 +261,8 @@ To simplify the use of multiple selection options, [Document Sets](#Document-Set
 
 The options available for document selection are:
 
-|Option|Description|Notes|
-|------|-----------|-----|
+|Option                           |Description|Notes|
+|---------------------------------|-----------|-----|
 |`-p, --path <path>`|The base path of the documents|May be a collection or document. If not specified, will include all root collections.|
 |`-r, --recursive`|Includes all documents under `path` recursively|Cannot be used with `--shallow`.  One of `--recursive` or `--shallow` must be specified if `path` is a collection.
 |`-s, --shallow`|Includes only documents in the collection if `path` is a collection or the documents in the collections directly under the document if `path` is a document|Cannot be used with `--recursive`.  One of `--recursive` or `--shallow` must be specified if `path` is a collection.

@@ -339,8 +339,8 @@ See [Document Selection](#Document-Selection) for details on selection options.
 
 #### Additional Options
 
-|Option|Description
-|------|-----------|-----|
+|Option|Description|
+|------|-----------|
 |`-v, --verbose`|Includes full document content in results|
 
 
@@ -355,8 +355,8 @@ This command uses the firestore client APIs and does not use the batch processin
 
 ### Options
 
-|Option|Description
-|------|-----------|-----|
+|Option|Description|
+|------|-----------|
 |`-v, --verbose`|Includes full document content in results|
 
 ## fire:backup

@@ -1,13 +1,13 @@
 {
   "name": "cloudli",
   "version": "0.1.0",
-  "description": "Command line utilities for Google Firebase Firestore and Amazon Elasticsearch",
+  "description": "Command line utilities for Google Cloud Firestore and Amazon Elasticsearch",
   "author": "Duane Wood",
   "license": "MIT",
-  "homepage": "https://bitbucket.org/duanewood/cloudli",
+  "homepage": "https://github.com/duanewood/cloudli",
   "repository": {
     "type": "git",
-    "url": "git@bitbucket.org:duanewood/cloudli.git"
+    "url": "git@github.com:duanewood/cloudli.git"
   },
   "engines": {
     "node": ">=8"

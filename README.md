@@ -49,7 +49,7 @@ The need to simplify these tasks led to the creation of this tool.  It has impro
 
 ## Goals
 
-Some of the objectives for this tool are:
+Some of the goals for this tool are:
 
 - Simplify common administrative tasks for cloud-based capabilities (initially Cloud Firestore and Amazon Elasticsearch)
 - Scale by controlling resource consumption (memory, recursion, batch size, etc)

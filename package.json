@@ -33,6 +33,9 @@
   "files": [
     "src"
   ],
+  "scripts": {
+    "lint": "./node_modules/.bin/eslint src/**/*.js"
+  },
   "dependencies": {
     "@firebase/app-types": "^0.4.0",
     "@google-cloud/firestore": "^2.0.0",

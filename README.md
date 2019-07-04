@@ -1,6 +1,6 @@
 # Cloudli - [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/your/your-project/blob/master/LICENSE)
 
-## Command Line Utilities for Google Firebase Firestore and Amazon Elasticsearch
+## Command Line Utilities for Google Cloud Firestore and Amazon Elasticsearch
 
 [Upload](#fireupload), [Backup](#firebackup), [Restore](#firerestore), [Diff](#firediff), [Validate](#firevalidate), [Search](#essearch), [Load Index](#esload-index), [Reindex](#esreindex), and more.
 
@@ -29,14 +29,14 @@ Cloudli supports the following [Amazon Elasticsearch](#Elasticsearch) commands:
 
 Function|Description
 --------|-----------
-[Create Index](#es:create-index)|Create an index from a mapping with optional aliases
-[Get Aliases](#es:get-aliases)|Get the index name for the read and write aliases
-[Load Index](#es:load-index)|Load an index from a set of documents in firestore
-[Search](#es:search)|Searches for text in a defined index with optional highlighting
-[Reindex](#es:reindex)|Reindex documents to a new index mapping and adjust read and write aliases
-[Create Index and Reload](#es:create-reload-index)|Create a new index mapping, reload documents from firestore and adjust read and write aliases
+[Create Index](#escreate-index)|Create an index from a mapping with optional aliases
+[Get Aliases](#esget-aliases)|Get the index name for the read and write aliases
+[Load Index](#esload-index)|Load an index from a set of documents in firestore
+[Search](#essearch)|Searches for text in a defined index with optional highlighting
+[Reindex](#esreindex)|Reindex documents to a new index mapping and adjust read and write aliases
+[Create Index and Reload](#escreate-reload-index)|Create a new index mapping, reload documents from firestore and adjust read and write aliases
 
-**Note**: Cloud Firestore and Elasticsearch commands can be used independently (with the exception of [Load Index](#es:load-index) and [Create Index and Reload](#es:create-reload-index), which index documents from firestore).
+**Note**: Cloud Firestore and Elasticsearch commands can be used independently (with the exception of [Load Index](#esload-index) and [Create Index and Reload](#escreate-reload-index), which index documents from firestore).
 
 ## Motivation
 
@@ -242,14 +242,14 @@ Cloudli supports commands for Google Cloud Firestore, including:
 
 Function|Description
 --------|-----------
-[Get Documents](#fire:docs)|Get document id's or full documents from firestore with various query options
-[Get Document or Collection](#fire:get)|Gets document id's or full documents for a specific document or collection path
-[Backup](#fire:backup)|Backup documents to a local path
-[Restore](#fire:restore)|Restore documents from a local path to firestore.  Alias of `fire:upload`
-[Upload](#fire:upload)|Upload documents from a local path to firestore. Alias of `fire:restore`
-[Delete](#fire:delete)|Backup and delete documents from firestore
-[Diff](#fire:diff)|Compare firestore documents to local document files. Display results on command line or in html.
-[Validate](#fire:validate)|Validate firestore documents using [JSON Schema](https://json-schema.org/) definitions
+[Get Documents](#firedocs)|Get document id's or full documents from firestore with various query options
+[Get Document or Collection](#fireget)|Gets document id's or full documents for a specific document or collection path
+[Backup](#firebackup)|Backup documents to a local path
+[Restore](#firerestore)|Restore documents from a local path to firestore.  Alias of `fire:upload`
+[Upload](#fireupload)|Upload documents from a local path to firestore. Alias of `fire:restore`
+[Delete](#firedelete)|Backup and delete documents from firestore
+[Diff](#firediff)|Compare firestore documents to local document files. Display results on command line or in html.
+[Validate](#firevalidate)|Validate firestore documents using [JSON Schema](https://json-schema.org/) definitions
 
 ## Document Selection
 
@@ -400,7 +400,7 @@ Restores all documents (.json files) under `basePath` to equivalent paths in fir
 ```
 fire:upload <basePath>
 ```
-The `fire:upload` command is an alias for [fire:restore](#fire:restore). The files under `basePath` don't have to be created by a [fire:backup](#fire:backup) command.  Uploads ("restores") all documents (.json files) under `basePath` to equivalent paths in firestore.
+The `fire:upload` command is an alias for [fire:restore](#firerestore). The files under `basePath` don't have to be created by a [fire:backup](#firebackup) command.  Uploads ("restores") all documents (.json files) under `basePath` to equivalent paths in firestore.
 
 ### Options
 
@@ -529,12 +529,12 @@ Cloudli supports commands for Amazon Elasticsearch, including:
 
 Function|Description
 --------|-----------
-[Create Index](#es:create-index)|Create an index from a mapping with aliases
-[Get Aliases](#es:get-aliases)|Get the index name for the read and write aliases
-[Load Index](#es:load-index)|Load an index from a set of documents in firestore
-[Search](#es:search)|Searches for text in a defined index with optional highlighting
-[Reindex](#es:reindex)|Reindex documents to a new index mapping and adjust read and write aliases
-[Create Index and Reload](#es:create-reload-index)|Create a new index mapping, reload documents from firebase and adjust read and write aliases
+[Create Index](#escreate-index)|Create an index from a mapping with aliases
+[Get Aliases](#esget-aliases)|Get the index name for the read and write aliases
+[Load Index](#esload-index)|Load an index from a set of documents in firestore
+[Search](#essearch)|Searches for text in a defined index with optional highlighting
+[Reindex](#esreindex)|Reindex documents to a new index mapping and adjust read and write aliases
+[Create Index and Reload](#escreate-reload-index)|Create a new index mapping, reload documents from firebase and adjust read and write aliases
 
 Each of these commands can operate on one or more indices defined in the `elasticsearch.indices` array in config. The default index name used when no index is specified for a command can be defined using the `elasticsearch.defaultIndex` entry.  Each index enry has the following format:
 

@@ -1,4 +1,4 @@
-# Cloudli * [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/your/your-project/blob/master/LICENSE)
+# Cloudli   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/your/your-project/blob/master/LICENSE)
 
 ## Command Line Utilities for Google Firebase Firestore and Amazon Elasticsearch
 
@@ -8,8 +8,7 @@ Provides command line functions for administering Google Cloud Firestore and Ama
 
 The commands are designed to be scalable by processing in batches where appropriate 
 and controlling concurrency with various constraints.  The batch delete code from 
-[firebase-tools](https://github.com/firebase/firebase-tools/blob/master/src/firestore/delete.js) 
-was used as a basis for the firestore document hierarchy traversal and
+[firebase-tools](https://github.com/firebase/firebase-tools/blob/master/src/firestore/delete.js) was used as a basis for the firestore document hierarchy traversal and
 batch processing.  [RxJS](https://github.com/ReactiveX/rxjs) was used for the restore 
 command to provide similar batch concurrency control for file directory traversal and processing.
 

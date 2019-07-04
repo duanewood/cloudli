@@ -59,7 +59,7 @@ const commands = [
 ]
 
 function main() {
-  program.version('0.1.0')
+  program.version('0.1.2')
 
   // get from config - default is true
   const prettyPrint = config.has('logger.prettyPrint')

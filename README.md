@@ -18,12 +18,12 @@ Function|Description
 --------|-----------
 [Get Documents](#firedocs)|Get document id's or full documents from firestore with various query options
 [Get Document or Collection](#fireget)|Gets document id's or full documents for a specific document or collection path
-[Backup](#fire:backup)|Backup documents to a local path
-[Restore](#fire:restore)|Restore documents from a local path to firestore.  Alias of `fire:upload`
-[Upload](#fire:upload)|Upload documents from a local path to firestore. Alias of `fire:restore`
-[Delete](#fire:delete)|Backup and delete documents from firestore
-[Diff](#fire:diff)|Compare firestore documents to local document files. Display results on command line or in html.
-[Validate](#fire:validate)|Validate firestore documents using [JSON Schema](https://json-schema.org/) definitions
+[Backup](#firebackup)|Backup documents to a local path
+[Restore](#firerestore)|Restore documents from a local path to firestore.  Alias of `fire:upload`
+[Upload](#fireupload)|Upload documents from a local path to firestore. Alias of `fire:restore`
+[Delete](#firedelete)|Backup and delete documents from firestore
+[Diff](#firediff)|Compare firestore documents to local document files. Display results on command line or in html.
+[Validate](#firevalidate)|Validate firestore documents using [JSON Schema](https://json-schema.org/) definitions
 
 Cloudli supports the following [Amazon Elasticsearch](#Elasticsearch) commands:
 

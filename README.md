@@ -44,11 +44,7 @@ Here are a few examples of available commands.  See [Example Directory below](#E
 
 ### Example: fire:diff
 
-![fire:diff](docs/images/diff-edited.png)
-
-#### Resulting diff html
-
-![fire:diff html](docs/images/diffhtml.png)
+![fire:diff](docs/images/diffafterrestore.png)
 
 ### Example: fire:validate
 

@@ -38,6 +38,26 @@ Function|Description
 
 **Note**: Cloud Firestore and Elasticsearch commands can be used independently (with the exception of [Load Index](#esload-index) and [Create Index and Reload](#escreate-reload-index), which index documents from firestore).
 
+## Examples
+
+Here are a few examples of available commands:
+
+### Example: fire:diff
+
+![fire:diff](docs/images/diffafterrestore.png)
+
+### Example: fire:validate
+
+![fire:validate](docs/images/validate.png)
+
+### Example: es:reindex
+
+![es:reindex](docs/images/reindex.png)
+
+### Example: es:search
+
+![es:search](docs/images/searchindex.png)
+
 ## Motivation
 
 While working with Google Cloud FIrestore, I found myself manually updating firestore documents as code evolved.  I needed to update existing documents as the implied schemas evolved. Finding the documents to update became a challenge.  I also needed a way to see changes that have occurred.

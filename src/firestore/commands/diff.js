@@ -77,7 +77,6 @@ const diffAction = async (basePath, docSetId, options, config) => {
       const projectId = await client.getProjectId()
 
       const path = traverseOptions.path || null
-      // const visit = doc => diff(doc, basePath, htmlFilename)
       const visitor = new DiffVisitor(basePath, htmlFilename)
       const visit = doc => visitor.visit(doc)
       const batchOptions = { visit }

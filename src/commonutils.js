@@ -33,17 +33,6 @@ module.exports.initLogger = function initLogger(pinoDebug, pretty) {
   })
   pinoDebug(logger)
 
-  // Note: To map debug messages to pino levels:
-  //
-  // pinoDebug(logger, {
-  //   auto: true, // default
-  //   map: {
-  //     'example:server': 'info',
-  //     'express:router': 'debug',
-  //     '*': 'trace' // everything else - trace
-  //   }
-  // })
-
   module.exports.logger = logger
   return logger
 }

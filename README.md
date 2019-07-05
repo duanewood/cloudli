@@ -40,7 +40,7 @@ Function|Description
 
 ## Examples
 
-Here are a few examples of available commands:
+Here are a few examples of available commands.  See [Example Directory below](#Example-Directory) for additional examples and instructions for running the examples.
 
 ### Example: fire:diff
 

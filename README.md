@@ -224,7 +224,7 @@ Output displayed on the interactive console will be displayed with colors and wi
   },
 ```
 
-Note that even with prettyPrint set to false, redirected output will be in pino (json) format.  This output can be piped to [pino-pretty](https://github.com/pinojs/pino-pretty), [pino-colada](https://github.com/lrlna/pino-colada) or pino [transports]( https://github.com/pinojs/pino/blob/master/docs/transports.md).
+Note that even with prettyPrint set to true, redirected output will be in pino (json) format.  This output can be piped to [pino-pretty](https://github.com/pinojs/pino-pretty), [pino-colada](https://github.com/lrlna/pino-colada) or pino [transports]( https://github.com/pinojs/pino/blob/master/docs/transports.md).
 
 For example, to use pino-colada:
 
@@ -375,7 +375,7 @@ fire:get <path>
 ```
 Gets firestore documents with a `path`.  The `path` may be for a collection or a document.
 
-This command uses the firestore client APIs and does not use the batch processing of other commands like [filrestore-docs](#firestore-docs).  This should be used for single documents for small collections.
+This command uses the firestore client APIs and does not use the batch processing of other commands like [filrestore-docs](#firestore-docs).  This should be used for single documents or small collections.
 
 ### Options
 
@@ -390,7 +390,7 @@ fire:backup [docSetId]
 ```
 Backs up firestore documents with an optional `docSetId`.  If docSetId is not specified and no other selection options are supplied, will include all documents in the database. The specified `docSetId` must be defined in config (see [above](#Document-Sets-(DocSets))).  
 
-The backup files will be places in a subdirectory with a name based on the current timestamp.  A summary of the contents of the backup will be written to a markdown file named `backup-summary.md` in the timestamp subdirectory.
+The backup files will be placed in a subdirectory with a name based on the current timestamp.  A summary of the contents of the backup will be written to a markdown file named `backup-summary.md` in the timestamp subdirectory.
 
 ### Options
 
@@ -815,7 +815,7 @@ The `sourceFields` option supplies an array of field names from the indexed docu
 
 Title is always displayed for results.  The default title is "`id: ${_id}`". Verbose details are only displayed if the `--verbose` option is supplied. Note that highlights will also be displayed following the verbose details.
 
-The `title` and `verboseDetails` template strings may contain substition variables in the form `${varname}`.  Available substitution variables include:
+The `title` and `verboseDetails` template strings may contain substitution variables in the form `${varname}`.  Available substitution variables include:
 
 Variable Name|Description
 -------------|-----------

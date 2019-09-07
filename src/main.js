@@ -4,7 +4,8 @@ const pinoDebug = require('pino-debug')
 const program = require('commander')
 const config = require('config')
 const chalk = require('chalk')
-const { initLogger, getLogger } = require('./commonutils')
+const Colors = require('./Colors')
+const { initLogger, getLogger, confirm } = require('./commonutils')
 
 const standardCommandPaths = [
   './elasticsearch/commands/elasticsearch',
@@ -120,9 +121,12 @@ function init() {
 }
 
 init()
+const logger = getLogger()
 
 module.exports = {
   runCommands,
   standardCommands,
-  getLogger
+  logger,
+  Colors,
+  confirm
 }

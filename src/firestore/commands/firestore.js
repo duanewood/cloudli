@@ -5,7 +5,6 @@ const restore = require('./restore')
 const deleteDocs = require('./deleteDocs')
 const diff = require('./diff')
 const validate = require('./validate')
-const chalk = require('chalk')
 
 /**
  * Firestore commands
@@ -58,15 +57,11 @@ exports.addCommand = (program, config) => {
     .command('fire:backup [docSetId]')
     .alias('backup')
     .description(
-      chalk.blue(
-        `Backs up firestore documents using a batch query with an optional docSet.\nIf docSetId is not specified, includes all documents in the database. \nThe specified docSetId must be defined in config.`
-      )
+      `Backs up firestore documents using a batch query with an optional docSet.\nIf docSetId is not specified, includes all documents in the database. \nThe specified docSetId must be defined in config.`
     )
     .option(
       '-p, --path <path>',
-      chalk.green(
-        'The path of the documents.  May be a collection or document.'
-      )
+      'The path of the documents.  May be a collection or document.'
     )
     .option(
       '-c, --collectionId <id>',

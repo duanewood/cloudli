@@ -12,6 +12,7 @@ const standardCommandPaths = [
   './firestore/commands/firestore'
 ]
 const standardCommands = []
+let firestoreUtils = null
 
 /**
  * Cloudli Command Line Interface
@@ -120,6 +121,28 @@ function init() {
   initStandardCommands()
 }
 
+function getFirestoreUtils() {
+  if (!firestoreUtils) {
+    const {
+      getClient,
+      getRefProp,
+      traverseOptionsFromCommandOptions,
+      traverseOptionsSummary
+    } = require('./firestore/commands/utils')
+    const TraverseBatch = require('./firestore/api/TraverseBatch')
+
+    firestoreUtils = {
+      TraverseBatch,
+      getClient,
+      getRefProp,
+      traverseOptionsFromCommandOptions,
+      traverseOptionsSummary
+    }
+  }
+
+  return firestoreUtils
+}
+
 init()
 const logger = getLogger()
 
@@ -128,5 +151,6 @@ module.exports = {
   standardCommands,
   logger,
   Colors,
-  confirm
+  confirm,
+  getFirestoreUtils
 }

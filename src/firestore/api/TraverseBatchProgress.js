@@ -8,10 +8,9 @@ class TraverseBatchProgress {
   constructor(msg) {
     this.curr = 0
     if (process.stdout.isTTY) {
-      this.progressBar = new ProgressBar(
-        msg || 'Processed :current docs (:rate docs/s)',
-        { total: Number.MAX_SAFE_INTEGER }
-      )
+      this.progressBar = new ProgressBar(msg || 'Processed :current docs', {
+        total: Number.MAX_SAFE_INTEGER
+      })
     }
   }
 

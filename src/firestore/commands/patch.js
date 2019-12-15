@@ -22,7 +22,9 @@ const patchAction = async (patches, docSetId, options, config) => {
     const patchFns = getPatchFunctions(patches)
 
     logger.info(
-      Colors.prep(`About to backup documents and then patch the documents using patches: ${patches}.`)
+      Colors.prep(
+        `About to backup documents and then patch the documents using patches: ${patches}.`
+      )
     )
     logger.info(
       Colors.prep(
@@ -76,7 +78,11 @@ function getPatchFunctions(patches) {
     try {
       return require(path.resolve(`./patches/${patchName}`))
     } catch (error) {
-      logger.error(Colors.error(`Error: Unable to load patch ${patchName}, error: ${error}`))
+      logger.error(
+        Colors.error(
+          `Error: Unable to load patch ${patchName}, error: ${error}`
+        )
+      )
       process.exit(1)
     }
   })

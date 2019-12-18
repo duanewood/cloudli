@@ -4,6 +4,7 @@ const backup = require('./backup')
 const restore = require('./restore')
 const deleteDocs = require('./deleteDocs')
 const diff = require('./diff')
+const patch = require('./patch')
 const validate = require('./validate')
 
 /**
@@ -158,6 +159,46 @@ exports.addCommand = (program, config) => {
     )
     .action((docSetId, options) =>
       deleteDocs.deleteAction(docSetId, options, config)
+    )
+
+  program
+    .command('fire:patch <patches> [docSetId]')
+    .alias('patch')
+    .description(
+      `Patches firestore documents using patches after backing up the files. The patches parameter is one or more patches separated by commas.  The patch function modules must be in the directory ./patches, in js modules named <patchname>.js. If docSetId is not specified, includes all documents in the database. The specified docSetId must be defined in config.`
+    )
+    .option(
+      '-p, --path <path>',
+      'The path of the documents.  May be a collection or document.'
+    )
+    .option(
+      '-c, --collectionId <id>',
+      'If specified, will only include documents from collections with id.'
+    )
+    .option('-r, --recursive', 'Include all sub-collections')
+    .option('-s, --shallow', 'Only include immediate sub-collections')
+    .option(
+      '-f, --filter <regex>',
+      'Filter results using the supplied regular expression regex'
+    )
+    .option(
+      '-i, --idfilter <id>',
+      'Filter results to documents with id.  Cannot be used with --filter'
+    )
+    .option(
+      '-b, --basePath <basePath>',
+      'Specifies the base backup path.  Overrides firestore.backupBasePath in config.'
+    )
+    .option(
+      '-y, --bypassConfirm',
+      'Bypasses confirmation prompt. Required when non-interactive stdout.'
+    )
+    .option(
+      '-v, --verbose',
+      'Displays document paths during backup and delete.'
+    )
+    .action((patches, docSetId, options) =>
+      patch.patchAction(patches, docSetId, options, config)
     )
 
   program

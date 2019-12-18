@@ -716,7 +716,11 @@ TraverseBatch.prototype.visitDatabase = function() {
           self.batchConfig
         )
 
-        promises.push(visitOp.execute())
+        const traversePromise = visitOp.execute().then(result => {
+          // add counts from each traverse into overall TraverseBatch object
+          self.progressBar.tick(visitOp.progressBar.curr)
+        })
+        promises.push(traversePromise)
       }
 
       return Promise.all(promises)
@@ -746,7 +750,9 @@ TraverseBatch.prototype.execute = function() {
       self.progressBar.forceRender()
     })
   } else {
-    return self.visitDatabase()
+    return self.visitDatabase().then(() => {
+      self.progressBar.forceRender()
+    })
   }
 }
 

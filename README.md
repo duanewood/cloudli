@@ -24,6 +24,7 @@ Function|Description
 [Delete](#firedelete)|Backup and delete documents from firestore
 [Diff](#firediff)|Compare firestore documents to local document files. Display results on command line or in html.
 [Validate](#firevalidate)|Validate firestore documents using [JSON Schema](https://json-schema.org/) definitions
+[Patch](#firepatch)|Patch firestore documents using a defined function
 
 Cloudli supports the following [Amazon Elasticsearch](#Elasticsearch) commands:
 
@@ -274,6 +275,7 @@ Function|Description
 [Delete](#firedelete)|Backup and delete documents from firestore
 [Diff](#firediff)|Compare firestore documents to local document files. Display results on command line or in html.
 [Validate](#firevalidate)|Validate firestore documents using [JSON Schema](https://json-schema.org/) definitions
+[Patch](#firepatch)|Patch firestore documents using a defined function
 
 ## Document Selection
 
@@ -546,6 +548,52 @@ Types are defined in the `schemas` entry in config, which contains entries for e
 
 See [Document Selection](#Document-Selection) for details on selection options.
 
+## fire:patch
+
+```
+fire:patch <patches> [docSetId]
+```
+Patches firestore documents using patches after backing up the files. The patches parameter is one or more patches separated by commas.  The patch modules must be in the directory `./patches`, in js modules named `<patchname>.js`. If `docSetId` is not specified, includes all documents in the database. The specified docSetId must be defined in config (see [above](#Document-Sets-(DocSets))).
+
+Patch functions will be passed an object that is a simulation of DocumentSnapshot containing id, name, ref.path, data() and returns the new document data object or null if no patch is applied.  For example:
+
+```javascript
+// file: ./patches/mypatch_20191218.js
+
+/**
+ * Applies a patch to a document.  
+ * 
+ * @param {object} docSnap simulation of DocumentSnapshot containing id, name, ref.path, data()
+ * @returns updated data object or null if not patched
+ */
+function patch(docSnap) {
+  if (docSnap.ref.path === 'xyzposts/publicpost1') {
+    // apply a patch only for a specific document
+    const original = docSnap.data()
+    return {
+      ...original,
+      newField: 'This field was added by a patch function'
+    }
+  } 
+
+  // don't apply the patch
+  return null
+}
+
+module.exports = patch
+```
+
+Apply the example patch above using:
+
+```
+cloudli fire:patch mypatch_20191218
+```
+
+This example patch only applies a patch based on a path but any criteria can be used.  The patch can also be applied to all document, if desired.  Also, document selection command line options may be used to identify the documents to patch.  Also note that documents in the command line selection criteria will be backed up even if no patches are applied.
+
+### Options
+
+See [Document Selection](#Document-Selection) for details on selection options.
 
 # Elasticsearch
 

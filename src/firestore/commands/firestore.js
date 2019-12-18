@@ -165,7 +165,7 @@ exports.addCommand = (program, config) => {
     .command('fire:patch <patches> [docSetId]')
     .alias('patch')
     .description(
-      `Patches firestore documents using patches after backing up the files. The patches parameter is one or more patches separated by commas.  The patch modules must be in ./patches, in a js modiles named <patchname>.js. If docSetId is not specified, includes all documents in the database. The specified docSetId must be defined in config.`
+      `Patches firestore documents using patches after backing up the files. The patches parameter is one or more patches separated by commas.  The patch function modules must be in the directory ./patches, in js modules named <patchname>.js. If docSetId is not specified, includes all documents in the database. The specified docSetId must be defined in config.`
     )
     .option(
       '-p, --path <path>',

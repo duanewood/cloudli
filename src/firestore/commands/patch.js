@@ -46,7 +46,9 @@ const patchAction = async (patches, docSetId, options, config) => {
       const db = admin.firestore()
 
       const verbose = !!options.verbose
-      const visit = doc => patchVisit(db, doc, patchFns, verbose)
+      let patchCount = 0
+      const incrCount = () => patchCount++
+      const visit = doc => patchVisit(db, doc, patchFns, verbose, incrCount)
       const batchOptions = {
         visit
       }
@@ -62,7 +64,7 @@ const patchAction = async (patches, docSetId, options, config) => {
       await traverseBatch.execute()
       logger.info(
         Colors.complete(
-          `Completed patch of ${traverseBatch.progressBar.curr} documents`
+          `Completed patch of ${patchCount} document(s) from ${traverseBatch.progressBar.curr} selected document(s)`
         )
       )
     }

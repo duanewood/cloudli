@@ -1,7 +1,7 @@
 const Colors = require('../../Colors')
 const { logger } = require('../../commonutils')
 
-const visit = async (db, doc, patchFns, verbose) => {
+const visit = async (db, doc, patchFns, verbose, incrCount) => {
   let docData = doc.data()
   let patched = false
   for (const patchFn of patchFns) {
@@ -16,6 +16,7 @@ const visit = async (db, doc, patchFns, verbose) => {
   }
 
   if (patched) {
+    incrCount()
     const ref = db.doc(doc.ref.path)
     return ref.set(docData)
   }

@@ -43,5 +43,5 @@ function getIndexConfigsFromParams(index, options, config) {
 }
 
 module.exports = {
-  getIndexConfigsFromParams: getIndexConfigsFromParams
+  getIndexConfigsFromParams
 }

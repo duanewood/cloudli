@@ -14,7 +14,7 @@ const { logger } = require('../../commonutils')
  * @param {object} program - command line program object (see commander package)
  * @param {object} config - configuration object - contains 'elasticsearch' configuration settings
  */
-exports.addCommand = (program, config) => {
+const addCommand = (program, config) => {
   program
     .command('es:load-index [index]')
     .alias('load-index')
@@ -120,4 +120,9 @@ const esAction = async (config, action) => {
     logger.error(Colors.error(`Error: ${error.message}`))
     process.exit(1)
   }
+}
+
+module.exports = {
+  addCommand,
+  esAction
 }

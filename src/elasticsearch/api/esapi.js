@@ -215,6 +215,7 @@ const awsApi = async (method, path, body, contentType) => {
 
 module.exports = {
   initApi,
+  awsApi,
   indexDocument,
   deleteDocumentFromIndex,
   createIndex,

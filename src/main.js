@@ -151,12 +151,13 @@ init()
 const logger = getLogger()
 
 const esapi = require('./elasticsearch/api/esapi')
-const { getIndexConfigsFromParams } = require('./elasticsearch/commands/utils')
+const { getIndexConfigsFromParams, formatTemplateString } = require('./elasticsearch/commands/utils')
 const { esAction } = require('./elasticsearch/commands/elasticsearch')
 
 const elasticsearch = {
   ...esapi,
   getIndexConfigsFromParams,
+  formatTemplateString,
   esAction
 }
 

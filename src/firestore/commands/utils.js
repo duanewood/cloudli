@@ -27,15 +27,15 @@ const initAdmin = config => {
       process.exit(1)
     }
 
-    if (!config.has('firebase.databaseURL')) {
-      logger.error(
-        Colors.error(`Error: Missing firebase.databaseURL in config`)
-      )
-      process.exit(1)
-    }
+    // if (!config.has('firebase.databaseURL')) {
+    //   logger.error(
+    //     Colors.error(`Error: Missing firebase.databaseURL in config`)
+    //   )
+    //   process.exit(1)
+    // }
 
     const keyFilename = config.get('firebase.keyFilename')
-    const databaseURL = config.get('firebase.databaseURL')
+    // const databaseURL = config.get('firebase.databaseURL')
 
     if (!fs.existsSync(keyFilename)) {
       throw new Error(`firebase.keyFilename '${keyFilename}' does not exist`)
@@ -44,7 +44,7 @@ const initAdmin = config => {
 
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
-      databaseURL: databaseURL
+      // databaseURL: databaseURL
     })
 
     const firestore = admin.firestore()

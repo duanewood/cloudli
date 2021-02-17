@@ -114,7 +114,16 @@ const esAction = async (config, action) => {
     const serviceAccount = fs.readJsonSync(
       config.get('elasticsearch.serviceAccountFilename')
     )
-    esapi.initApi(serviceAccount)
+
+    let prefixName = ''
+    if (config.has('elasticsearch.indexPrefix')) {
+      prefixName = config.get('elasticsearch.indexPrefix')
+    }
+    if (prefixName !== '') {
+      logger.info(Colors.prep(`Using environment index prefix '${prefixName}'`))
+    }
+
+    esapi.initApi(serviceAccount, prefixName)
     await action()
   } catch (error) {
     logger.error(Colors.error(`Error: ${error.message}`))

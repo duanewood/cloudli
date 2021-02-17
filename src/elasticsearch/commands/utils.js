@@ -1,5 +1,6 @@
 const get = require('lodash.get')
 const isPlainObject = require('lodash.isplainobject')
+const esapi = require('../api/esapi')
 
 /**
  * Gets the list of IndexConfig objects based on command line parameters.
@@ -42,7 +43,12 @@ function getIndexConfigsFromParams(index, options, config) {
     }
   })
 
-  return indices
+  const envIndices = indices.map(indexObj => ({
+    ...indexObj,
+    name: esapi.getEnvIndexName(indexObj.name)
+  }))
+
+  return envIndices
 }
 
 /**

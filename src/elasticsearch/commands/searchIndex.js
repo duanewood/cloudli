@@ -1,10 +1,9 @@
 const chalk = require('chalk')
-const get = require('lodash.get')
-const isPlainObject = require('lodash.isplainobject')
 const esapi = require('../api/esapi')
 const utils = require('./utils')
 const Colors = require('../../Colors')
 const { logger } = require('../../commonutils')
+const { formatTemplateString } = require('./utils')
 
 /**
  * Searches one or more indices for text.
@@ -62,10 +61,10 @@ function displayResults(index, results, verbose, searchConfig) {
     logger.info(Colors.info(`${index}: Found ${results.hits.total} matches`))
 
     results.hits.hits.forEach(hit => {
-      const title = format(searchConfig.title, hit)
+      const title = formatTemplateString(searchConfig.title, hit)
       if (verbose) {
         logger.info('')
-        const verboseDetails = format(searchConfig.verboseDetails, hit)
+        const verboseDetails = formatTemplateString(searchConfig.verboseDetails, hit)
         logger.info(Colors.info(chalk.bold.underline(title)))
         logger.info(Colors.info(verboseDetails))
 
@@ -91,26 +90,6 @@ function highlightToConsole(key, highlight) {
   )
   logger.info(chalkString)
 }
-
-/**
- * Formats a template string containing substitution parameters in the form ${name}
- *
- * @param {string} template the template string containing substitution parameters in the form ${name}.
- *                          name may be a nested name.  For example, ${item[0].product.name}
- * @param {object} vars the object to use for substitution.  name is resolved within vars.
- *                          If any of the substitution values is an object, JSON.stringify will be
- *                          used for the substitution.
- * @return {string} the formatted string.
- */
-const format = (template, vars) =>
-  template.replace(/\${(.*?)}/g, (_, v) => {
-    const value = get(vars, v, v)
-    if (isPlainObject(value)) {
-      return JSON.stringify(value, null, 2)
-    } else {
-      return value
-    }
-  })
 
 module.exports = {
   searchIndexAction,

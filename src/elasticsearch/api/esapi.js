@@ -3,6 +3,7 @@ const AWS = require('aws-sdk')
 
 const client = new AWS.HttpClient()
 let serviceAccount = null
+let envIndexPrefix = ''
 let endpoint = null
 
 /**
@@ -13,9 +14,14 @@ let endpoint = null
  *
  * Enable debug logging with DEBUG=cloudli:elasticsearch
  */
-const initApi = svcAcct => {
+const initApi = (svcAcct, indexPrefix = '') => {
   serviceAccount = svcAcct
+  envIndexPrefix = indexPrefix
   endpoint = new AWS.Endpoint(serviceAccount.domain)
+}
+
+const getEnvIndexName = indexName => {
+  return envIndexPrefix + indexName
 }
 
 const indexDocument = async (index, document, id) => {
@@ -215,6 +221,8 @@ const awsApi = async (method, path, body, contentType) => {
 
 module.exports = {
   initApi,
+  getEnvIndexName,
+  awsApi,
   indexDocument,
   deleteDocumentFromIndex,
   createIndex,

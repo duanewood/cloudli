@@ -150,11 +150,23 @@ function getFirestoreUtils() {
 init()
 const logger = getLogger()
 
+const esapi = require('./elasticsearch/api/esapi')
+const { getIndexConfigsFromParams, formatTemplateString } = require('./elasticsearch/commands/utils')
+const { esAction } = require('./elasticsearch/commands/elasticsearch')
+
+const elasticsearch = {
+  ...esapi,
+  getIndexConfigsFromParams,
+  formatTemplateString,
+  esAction
+}
+
 module.exports = {
   runCommands,
   standardCommands,
   logger,
   Colors,
   confirm,
-  getFirestoreUtils
+  getFirestoreUtils,
+  elasticsearch
 }

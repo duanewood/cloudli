@@ -1,3 +1,7 @@
+const get = require('lodash.get')
+const isPlainObject = require('lodash.isplainobject')
+const esapi = require('../api/esapi')
+
 /**
  * Gets the list of IndexConfig objects based on command line parameters.
  * If index is null or undefined, defaults to all indices in config.
@@ -39,9 +43,35 @@ function getIndexConfigsFromParams(index, options, config) {
     }
   })
 
-  return indices
+  const envIndices = indices.map(indexObj => ({
+    ...indexObj,
+    name: esapi.getEnvIndexName(indexObj.name)
+  }))
+
+  return envIndices
 }
 
+/**
+ * Formats a template string containing substitution parameters in the form ${name}
+ *
+ * @param {string} template the template string containing substitution parameters in the form ${name}.
+ *                          name may be a nested name.  For example, ${item[0].product.name}
+ * @param {object} vars the object to use for substitution.  name is resolved within vars.
+ *                          If any of the substitution values is an object, JSON.stringify will be
+ *                          used for the substitution.
+ * @return {string} the formatted string.
+ */
+const formatTemplateString = (template, vars) =>
+  template.replace(/\${(.*?)}/g, (_, v) => {
+    const value = get(vars, v, v)
+    if (isPlainObject(value)) {
+      return JSON.stringify(value, null, 2)
+    } else {
+      return value
+    }
+  })
+
 module.exports = {
-  getIndexConfigsFromParams: getIndexConfigsFromParams
+  getIndexConfigsFromParams,
+  formatTemplateString
 }

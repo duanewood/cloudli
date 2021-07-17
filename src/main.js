@@ -59,7 +59,7 @@ let firestoreUtils = null
  */
 
 function runCommands(commands) {
-  program.version('0.1.4')
+  program.version('1.3.0')
 
   const logger = getLogger()
 
@@ -112,12 +112,34 @@ function initStandardCommands() {
   })
 }
 
+function initGCloudCredentials(logger) {
+  if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    logger.info(
+      Colors.info(`Using Google Default Credentials: ${ process.env.GOOGLE_APPLICATION_CREDENTIALS }`)
+    )
+  } else {
+    if (!config.has('firebase.keyFilename')) {
+      logger.error(
+        Colors.error(`Error: Missing firebase.keyFilename in config`)
+      )
+      process.exit(1)
+    }
+  
+    const keyFilename = config.get('firebase.keyFilename')    
+    process.env.GOOGLE_APPLICATION_CREDENTIALS = keyFilename
+    logger.info(
+      Colors.info(`Setting Google Default Credentials: ${ process.env.GOOGLE_APPLICATION_CREDENTIALS }`)
+    )
+  }
+}
+
 function init() {
   // get from config - default is true
   const prettyPrint = config.has('logger.prettyPrint')
     ? config.get('logger.prettyPrint')
     : true
-  initLogger(pinoDebug, prettyPrint)
+  const logger = initLogger(pinoDebug, prettyPrint)
+  initGCloudCredentials(logger)
   initStandardCommands()
 }
 

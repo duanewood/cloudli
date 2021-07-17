@@ -6,47 +6,51 @@ const { isDocumentPath } = require('../api/apiutils')
 const { logger } = require('../../commonutils')
 
 const getClient = config => {
-  if (!config.has('firebase.keyFilename')) {
-    logger.error(Colors.error(`Error: Missing firebase.keyFilename in config`))
-    process.exit(1)
-  }
+  // if (!config.has('firebase.keyFilename')) {
+  //   logger.error(Colors.error(`Error: Missing firebase.keyFilename in config`))
+  //   process.exit(1)
+  // }
 
-  const client = new firestore.v1.FirestoreClient({
-    keyFilename: config.get('firebase.keyFilename')
-  })
+  // const client = new firestore.v1.FirestoreClient({
+  //   keyFilename: config.get('firebase.keyFilename')
+  // })
 
+  // use GCloud Default Credentials
+  const client = new firestore.v1.FirestoreClient()
   return client
 }
 
 const initAdmin = config => {
   if (admin.apps.length === 0) {
-    if (!config.has('firebase.keyFilename')) {
-      logger.error(
-        Colors.error(`Error: Missing firebase.keyFilename in config`)
-      )
-      process.exit(1)
-    }
-
-    // if (!config.has('firebase.databaseURL')) {
+    // if (!config.has('firebase.keyFilename')) {
     //   logger.error(
-    //     Colors.error(`Error: Missing firebase.databaseURL in config`)
+    //     Colors.error(`Error: Missing firebase.keyFilename in config`)
     //   )
     //   process.exit(1)
     // }
 
-    const keyFilename = config.get('firebase.keyFilename')
-    // const databaseURL = config.get('firebase.databaseURL')
+    // // if (!config.has('firebase.databaseURL')) {
+    // //   logger.error(
+    // //     Colors.error(`Error: Missing firebase.databaseURL in config`)
+    // //   )
+    // //   process.exit(1)
+    // // }
 
-    if (!fs.existsSync(keyFilename)) {
-      throw new Error(`firebase.keyFilename '${keyFilename}' does not exist`)
-    }
-    const serviceAccount = fs.readJsonSync(keyFilename)
+    // const keyFilename = config.get('firebase.keyFilename')
+    // // const databaseURL = config.get('firebase.databaseURL')
 
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-      // databaseURL: databaseURL
-    })
+    // if (!fs.existsSync(keyFilename)) {
+    //   throw new Error(`firebase.keyFilename '${keyFilename}' does not exist`)
+    // }
+    // const serviceAccount = fs.readJsonSync(keyFilename)
 
+    // admin.initializeApp({
+    //   credential: admin.credential.cert(serviceAccount),
+    //   // databaseURL: databaseURL
+    // })
+
+    // use GCloud Default Credentials
+    admin.initializeApp()
     const firestore = admin.firestore()
     const settings = { timestampsInSnapshots: true }
     firestore.settings(settings)

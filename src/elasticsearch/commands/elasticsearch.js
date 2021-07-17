@@ -111,6 +111,7 @@ const esAction = async (config, action) => {
       )
     }
 
+    // TODO: support secrets
     const serviceAccount = fs.readJsonSync(
       config.get('elasticsearch.serviceAccountFilename')
     )

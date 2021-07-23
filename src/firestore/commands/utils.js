@@ -51,6 +51,10 @@ const initAdmin = config => {
 
     // use GCloud Default Credentials
     admin.initializeApp()
+    if (!process.env.GCLOUD_PROJECT && admin.app().options.credential && admin.app().options.credential.projectId) {
+      process.env.GCLOUD_PROJECT = admin.app().options.credential.projectId
+    }
+
     const firestore = admin.firestore()
     const settings = { timestampsInSnapshots: true }
     firestore.settings(settings)

@@ -1,12 +1,12 @@
-import { SecretManagerServiceClient } from '@google-cloud/secret-manager'
+const { SecretManagerServiceClient } = require('@google-cloud/secret-manager')
 
 const secrets = {}
 
 const client = new SecretManagerServiceClient()
 
-export async function getSecret(key) {
+async function getSecret(projectId, key) {
   const name =  `projects/${projectId}/secrets/${key}/versions/latest`
-  // console.log('getSecret: name:', name)
+  console.log('getSecret: name:', name)
   let secret = secrets[name]
   if (secret) {
     return secret
@@ -20,3 +20,5 @@ export async function getSecret(key) {
     return secret  
   }
 }
+
+module.exports = { getSecret }

@@ -7,6 +7,7 @@ const updateIndex = require('./updateIndex')
 const searchIndex = require('./searchIndex')
 const Colors = require('../../Colors')
 const { logger } = require('../../commonutils')
+const { getSecret } = require('../../utils/env')
 
 /**
  * Elasticsearch commands
@@ -104,22 +105,36 @@ const addCommand = (program, config) => {
  * @param {function} action the function to call after initializing the api
  */
 const esAction = async (config, action) => {
+  // TODO: support secrets
+
   try {
-    if (!config || !config.has('elasticsearch.serviceAccountFilename')) {
+    if (!config || (!config.has('elasticsearch.filename') && !config.has('elasticsearch.secretName'))) {
       throw new Error(
-        `Missing 'elasticsearch.serviceAccountFilename' entry in config`
+        `Missing elasticsearch entry in config containing either elasticsearch.filename or elasticsearch.secretName`
       )
     }
 
-    // TODO: support secrets
-    const serviceAccount = fs.readJsonSync(
-      config.get('elasticsearch.serviceAccountFilename')
-    )
+    let projectId = config.has('firebase.projectId') ? config.get('firebase.projectId') : process.env.GCLOUD_PROJECT
+    if (!projectId) {
+      throw new Error(
+        `Project Id must be defined in firebase.projectId in config or in the GCLOUD_PROJECT environment variable.`
+      )
+    }
+    
+    let serviceAccount
+
+    // prefer secret
+    if (config.has('elasticsearch.secretName')) {
+      serviceAccount = await getSecret(projectId, config.get('elasticsearch.secretName'))
+    } else {
+      serviceAccount = fs.readJsonSync(config.get('elasticsearch.filename'))  
+    }
 
     let prefixName = ''
     if (config.has('elasticsearch.indexPrefix')) {
       prefixName = config.get('elasticsearch.indexPrefix')
     }
+
     if (prefixName !== '') {
       logger.info(Colors.prep(`Using environment index prefix '${prefixName}'`))
     }

@@ -40,6 +40,7 @@
   "dependencies": {
     "@firebase/app-types": "^0.6.1",
     "@google-cloud/firestore": "^4.7.1",
+    "@google-cloud/secret-manager": "^3.4.0",
     "@hapi/bourne": "^2.0.0",
     "ajv": "^6.10.0",
     "aws-sdk": "^2.458.0",

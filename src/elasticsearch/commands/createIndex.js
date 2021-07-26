@@ -8,6 +8,8 @@ const { logger } = require('../../commonutils')
 
 async function createIndexAction(index, options, config) {
   try {
+    const skipExisting = !!options.skipExisting
+
     const indices = utils.getIndexConfigsFromParams(index, options, config)
 
     // validate that we have indexMapping for each index
@@ -24,7 +26,7 @@ async function createIndexAction(index, options, config) {
       .map(indexConfig => indexConfig.name)
       .join(', ')}]`
     logger.info(Colors.start(`Starting create indices for ${indicesMsg}`))
-    await createIndices(indices, addAliases)
+    await createIndices(indices, addAliases, skipExisting)
     logger.info(Colors.complete(`Completed create indices.`))
   } catch (error) {
     logger.error(Colors.error(`Error: ${error.message}`))
@@ -32,15 +34,15 @@ async function createIndexAction(index, options, config) {
   }
 }
 
-async function createIndices(indices, addAliases) {
+async function createIndices(indices, addAliases, skipExisting) {
   return Promise.all(
     indices.map(async indexConfig => {
-      return createIndex(indexConfig.name, indexConfig.indexMapping, addAliases)
+      return createIndex(indexConfig.name, indexConfig.indexMapping, addAliases, skipExisting)
     })
   )
 }
 
-async function createIndex(index, indexMappingFile, addAliases) {
+async function createIndex(index, indexMappingFile, addAliases, skipExisting) {
   if (addAliases) {
     // make sure aliases don't already exist
     let readIndices
@@ -52,6 +54,14 @@ async function createIndex(index, indexMappingFile, addAliases) {
     try {
       writeIndices = await esapi.getWriteAliasIndices(index)
     } catch (err) {}
+
+    if (skipExisting && readIndices && writeIndices) {
+      const readIndicesString = readIndices.map(i => `${index}_read -> ${i}`).join('\n') + '\n'
+      const writeIndicesString = writeIndices.map(i => `${index}_write -> ${i}`).join('\n') + '\n'
+      logger.warn(Colors.warning(`Skipping index because aliases already exist:\n${readIndicesString +
+        writeIndicesString}`))
+      return "skipped"
+    }
 
     if (readIndices || writeIndices) {
       const readIndicesString = readIndices

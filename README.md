@@ -749,6 +749,12 @@ If `index` is not specified, the index named in the `elasticsearch.defaultIndex`
 
 Requires an index configuration entry in `elasticsearch.indices` for each `index`.  The entry must contain an `indexMapping` file path. The `indexMapping` file must be json file that conforms to the body format of the elasticsearch [Create Index API](https://www.elastic.co/guide/en/elasticsearch/reference/6.7/indices-create-index.html).
 
+### Options
+
+|Option|Description|Notes|
+|------|-----------|-----|
+|`-s, --skipExisting`|Skips creating an index if the read and write aliases already exist|
+
 ## es:get-aliases
 
 ```

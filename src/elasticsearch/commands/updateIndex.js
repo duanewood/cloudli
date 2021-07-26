@@ -79,8 +79,9 @@ async function updateIndexReload(indices, config, verbose) {
       const newIndex = await createIndex.createIndex(
         index,
         indexConfig.indexMapping,
-        false
-      ) // false = don't create aliases
+        false,  // don't create aliases
+        false   // don't skip existing indexes
+      ) 
       const writeIndices = await esapi.getWriteAliasIndices(indexConfig.name)
 
       try {
@@ -236,8 +237,9 @@ async function reindex(indices, verbose) {
       const newIndex = await createIndex.createIndex(
         index,
         indexConfig.indexMapping,
-        false
-      ) // false = don't create aliases
+        false,  // don't create aliases
+        false   // don't skip existing indexes
+      ) 
       const writeIndices = await esapi.getWriteAliasIndices(indexConfig.name)
 
       try {

@@ -38,6 +38,10 @@ const addCommand = (program, config) => {
     .description(
       'Create elasticsearch index definition with the name <indexname>yyyyMMddHHmmss, along with read and write aliases'
     )
+    .option(
+      '-s, --skipExisting',
+      'Skips creating an index if the read and write aliases already exist.'
+    )
     .action((index, options) =>
       esAction(config, () =>
         createIndex.createIndexAction(index, options, config)

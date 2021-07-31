@@ -103,6 +103,7 @@ function runCommands(commands) {
     program.parse(process.argv)
   } catch (error) {
     logger.error(chalk.red(`Error: ${error.message}`))
+    process.exit(1)
   }
 }
 

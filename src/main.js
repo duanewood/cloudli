@@ -59,7 +59,7 @@ let firestoreUtils = null
  */
 
 function runCommands(commands) {
-  program.version('1.3.0')
+  program.version('1.4.3')
 
   const logger = getLogger()
 

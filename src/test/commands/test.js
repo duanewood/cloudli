@@ -10,7 +10,10 @@ const logging = require('./logging')
 exports.addCommand = (program, config, admin) => {
   program
     .command('test')
-    .description('Performs development experiments.')
+    .addHelpText(
+      'after',
+      'Performs development experiments.'
+    )
     .option('-v, --verbose', 'Displays additional information.')
     .action(options => logging.testAction(options, config, admin))
 }

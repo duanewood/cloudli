@@ -59,7 +59,7 @@ let firestoreUtils = null
  */
 
 function runCommands(commands) {
-  program.version('1.4.3')
+  program.version('1.4.4')
 
   const logger = getLogger()
 
@@ -94,6 +94,8 @@ function runCommands(commands) {
       logger.info('  $ export DEBUG=cloudli:*')
       logger.info('  $ export DEBUG=cloudli:traverseBatch')
     })
+
+    program.addHelpCommand(false)
 
     if (!process.argv.slice(2).length) {
       program.outputHelp()

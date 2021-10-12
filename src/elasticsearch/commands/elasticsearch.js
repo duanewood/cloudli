@@ -19,7 +19,10 @@ const addCommand = (program, config) => {
   program
     .command('es:load-index [index]')
     .alias('load-index')
-    .description('Load elasticsearch index from firestore.')
+    .addHelpText(
+      'after',
+      '\nLoad elasticsearch index from firestore.'
+    )
     .option(
       '-y, --bypassConfirm',
       'Bypasses confirmation prompt. Required when non-interactive stdout.'
@@ -35,8 +38,9 @@ const addCommand = (program, config) => {
   program
     .command('es:create-index [index]')
     .alias('create-index')
-    .description(
-      'Create elasticsearch index definition with the name <indexname>yyyyMMddHHmmss, along with read and write aliases'
+    .addHelpText(
+      'after',
+      '\nCreate elasticsearch index definition with the name <indexname>yyyyMMddHHmmss, along with read and write aliases'
     )
     .option(
       '-s, --skipExisting',
@@ -51,7 +55,10 @@ const addCommand = (program, config) => {
   program
     .command('es:get-aliases [index]')
     .alias('get-aliases')
-    .description('Get the index aliases for the elasticsearch index')
+    .addHelpText(
+      'after',
+      '\nGet the index aliases for the elasticsearch index'
+    )
     .action((index, options) =>
       esAction(config, () =>
         getAliasIndex.getAliasIndexAction(index, options, config)
@@ -61,8 +68,9 @@ const addCommand = (program, config) => {
   program
     .command('es:create-reload-index [index]')
     .alias('create-reload-index')
-    .description(
-      'Create a new index using the defined mapping and loads documents from firestore for the index'
+    .addHelpText(
+      'after',
+      '\nCreate a new index using the defined mapping and loads documents from firestore for the index'
     )
     .option(
       '-y, --bypassConfirm',
@@ -78,8 +86,9 @@ const addCommand = (program, config) => {
   program
     .command('es:reindex [index]')
     .alias('reindex')
-    .description(
-      'Create a new index using the defined mapping and reindexes all documents for the index'
+    .addHelpText(
+      'after',
+      '\nCreate a new index using the defined mapping and reindexes all documents for the index'
     )
     .option(
       '-y, --bypassConfirm',
@@ -93,7 +102,10 @@ const addCommand = (program, config) => {
   program
     .command('es:search <text> [index]')
     .alias('search')
-    .description('Search elasticsearch for text in an index or all indexes')
+    .addHelpText(
+      'after',
+      '\nSearch elasticsearch for text in an index or all indexes'
+    )
     .option('-v, --verbose', 'Displays matching content in results.')
     .action((text, index, options) =>
       esAction(config, () =>

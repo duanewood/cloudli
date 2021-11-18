@@ -616,10 +616,14 @@ Each of these commands can operate on one or more indices defined in the `elasti
     "name": "<index name>",
 
     // docSetRef is required for es:load-index and es:create-reload-index
-    "docSetRef": "<DocSet config entry reference", 
+    "docSetRef": "<DocSet config entry reference>", 
+
+    // (optional) array of collections containing documents that will be merged with documents
+    // before indexing.  The documents must have the same id as the document being indexed.
+    "extendCollections": ["<firestore collection path>"], 
 
     // indexMapping is required for es:create-index, es:reindex, and es:create-reload-index
-    "indexMapping": "<path to indexMapping file for creating an index",
+    "indexMapping": "<path to indexMapping file for creating an index>",
 
     // optional search configuration for es:search
     "search": {
@@ -780,6 +784,9 @@ If `index` is not specified, the index named in the `elasticsearch.defaultIndex`
 **WARNING!**: This will overwrite any documents with matching id's in the selected indexes.
 
 Requires an index configuration entry in `elasticsearch.indices` for each `index` with a `docSetRef` entry that contains the dot-separated path to the DocSet definition in config. In the following example config, the index named `xyz_users` has a `docSetRef` of `"firestore.docSets.users"` that refers to the `users` DocSet definition. See [Document Sets](#Document-Sets-(DocSets)) for more information.
+
+The index configuration may contain an optional `extendCollections` value that is an array of firestore collection paths.  If provided, the load-index process will merge the document with 
+the same id as the primary document being indexed before indexing, for each collection path specified in the `extendCollections` aray.
 
 ```javascript
 {

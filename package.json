@@ -1,6 +1,6 @@
 {
   "name": "cloudli",
-  "version": "1.4.4",
+  "version": "1.5.0",
   "description": "Command line utilities for Google Cloud Firestore and Amazon Elasticsearch",
   "author": "Duane Wood",
   "license": "MIT",

@@ -55,10 +55,10 @@ async function searchIndices(text, indices, verbose) {
 }
 
 function displayResults(index, results, verbose, searchConfig) {
-  if (results.hits.total === 0) {
+  if (results.hits.total.value === 0) {
     logger.info(Colors.warning(`${index}: No matches`))
   } else {
-    logger.info(Colors.info(`${index}: Found ${results.hits.total} matches`))
+    logger.info(Colors.info(`${index}: Found ${results.hits.total.value} matches`))
 
     results.hits.hits.forEach(hit => {
       const title = formatTemplateString(searchConfig.title, hit)

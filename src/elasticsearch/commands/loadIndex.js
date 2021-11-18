@@ -1,6 +1,7 @@
 const path = require('path')
 const chalk = require('chalk')
 const utils = require('./utils')
+const admin = require('firebase-admin')
 const TraverseBatch = require('../../firestore/api/TraverseBatch')
 const esapi = require('../api/esapi')
 const firestoreUtils = require('../../firestore/commands/utils')
@@ -9,6 +10,7 @@ const { logger, confirm } = require('../../commonutils')
 
 async function loadIndexAction(index, options, config) {
   try {
+    firestoreUtils.initAdmin(config)
     const indices = utils.getIndexConfigsFromParams(index, options, config)
 
     if (!process.stdout.isTTY && !options.bypassConfirm) {
@@ -105,10 +107,40 @@ const visitIndexer = (indexConfig, verbose) => {
     if (verbose) {
       logger.info(Colors.info(`Indexing ${doc.ref.path}`))
     }
-    const docToIndex = mapper ? mapper(doc.data()) : doc.data()
+
+    let rawDoc = doc.data()
+    // merge in any documents from extendCollections
+    if (indexConfig.extendCollections) {
+      const db = admin.firestore()
+      for (const col of indexConfig.extendCollections) {
+        const extendDocRef = db.doc(`${col}/${doc.id}`)
+        const extendDocSnap = await extendDocRef.get()
+        if (extendDocSnap.exists) {
+          if (verbose) {
+            logger.info(Colors.info(`Extending ${doc.ref.path} with ${extendDocRef.path}`))
+          }
+          const extendDoc = extendDocSnap.data() 
+          rawDoc = {
+            ...rawDoc,
+            ...extendDoc
+          }
+        }
+      }
+    }
+
+    const docToIndex = mapper ? mapper(rawDoc) : rawDoc
     const id = doc.id
     if (id) {
-      return esapi.indexDocument(writeIndex, docToIndex, doc.id)
+      try {
+        const result = await esapi.indexDocument(writeIndex, docToIndex, doc.id)
+        return result  
+      } catch (error) {
+        logger.error(
+          Colors.error(
+            `Error indexing ${doc.ref.path}: ${error}`
+          )
+        )  
+      }
     } else {
       logger.error(
         Colors.error(

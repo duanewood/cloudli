@@ -6,7 +6,7 @@ const client = new SecretManagerServiceClient()
 
 async function getSecret(projectId, key) {
   const name =  `projects/${projectId}/secrets/${key}/versions/latest`
-  console.log('getSecret: name:', name)
+  // console.log('getSecret: name:', name)
   let secret = secrets[name]
   if (secret) {
     return secret
